@@ -18,7 +18,8 @@
    const after=whole.slice(offset+found.length,offset+found.length+40);
    // If amount clearly describes a single serving, piece or fruit, do not scale.
    if(/(?:\bper\s+(?:bowl|serving|meal|portion)|\beach)\b/i.test(after.slice(0,25)))return found;
-   if(/\b(?:per|each|one)\s*$/i.test(before)||/[×x]\s*$/i.test(before))return found;
+   if(/\b(?:per|each|one|five|four|two|three)\s*$/i.test(before)||/[×x]\s*$/i.test(before))return found;
+   if(/\b(?:walnuts?|flaxseed|raw equivalent)\b/i.test(after.slice(0,35)) && /(?:per serving|per meal|each|and one|per bowl)/i.test(after.slice(0,100))) return found;
    return fmt(Number(number)*multiplier)+" "+unit;
   });
  }
