@@ -190,7 +190,7 @@ window.FOOD_DATA = {
         [
           625,
           "g",
-          "raw Ocean Chef coho salmon (buy 2 × 500 g packs; leave 375 g frozen)"
+          "raw Ocean Chef coho salmon (125 g raw per serving; buy whole 500 g packs as needed)"
         ],
         [
           2,
@@ -410,7 +410,7 @@ window.FOOD_DATA = {
         [
           700,
           "mL",
-          "water to start; add 200–400 mL more if needed"
+          "water for lentil simmer; add extra only as needed"
         ],
         [
           50,
