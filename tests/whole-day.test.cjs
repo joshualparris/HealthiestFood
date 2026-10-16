@@ -95,3 +95,14 @@ test('timer storage rejects fabricated and unsafe recipe IDs',()=>{
  assert.equal(Object.keys(timers.clean({'<img>:0':entry('<img>:0','<img>')})).length,0);
  assert.equal(Object.keys(timers.clean({'br-oats:0':entry('br-oats:0','br-oats')})).length,1);
 });
+
+test('dated planner exposes an editable, locally saved, unpriced weekly ingredient checklist',()=>{
+ const planner=source('food-planner.js'),css=source('site.css');
+ assert.match(planner,/function shoppingRows\(days\)/);
+ assert.match(planner,/if\(slot\.done\)continue/);
+ assert.match(planner,/Weekly shopping checklist/);
+ assert.match(planner,/data-plan-shop/);
+ assert.match(planner,/SHOP_KEY/);
+ assert.match(planner,/shopChecks\[week\]/);
+ assert.match(css,/\.planner-shopping-items/);
+});
