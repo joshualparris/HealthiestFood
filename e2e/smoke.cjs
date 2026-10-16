@@ -43,6 +43,24 @@ async function main(){
       await page.locator('#view-home').waitFor({state:'visible'});
       assert.match(await page.title(),/Good Food, Long Game/);
     });
+    if(!process.env.SMOKE_URL)await check('mobile podcast/video navigation and source-linked topic search',async()=>{
+      await page.locator('.mobile-nav [data-goto="media"]').click();
+      await page.locator('#view-media').waitFor({state:'visible'});
+      assert.equal(await page.locator('#mediaResults .media-resource').count(),23);
+      await page.locator('[data-media-kind="video"]').click();
+      assert.equal(await page.locator('#mediaResults .media-resource').count(),7);
+      await page.locator('#mediaTopic').selectOption('Food safety');
+      assert.equal(await page.locator('#mediaResults .media-resource').count(),5);
+      await page.locator('#mediaSearch').fill('leftovers');
+      assert.equal(await page.locator('#mediaResults .media-resource').count(),1);
+      const media=page.locator('#mediaResults .media-resource').first();
+      assert.match(await media.innerText(),/What it does not prove/);
+      assert.equal(await media.locator('a[target="_blank"]').count(),2);
+      await page.locator('#mediaSearch').fill('');
+      await page.locator('#mediaTopic').selectOption('all');
+      await page.locator('[data-media-kind="all"]').click();
+      assert.equal(await page.locator('#mediaResults .media-resource').count(),23);
+    });
     await check('17 recipes and category controls render',async()=>{
       await page.locator('.mobile-nav [data-goto="recipes"]').click();
       assert.equal(await page.locator('#recipeCards .recipe-card').count(),17);
