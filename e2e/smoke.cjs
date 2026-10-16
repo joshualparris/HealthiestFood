@@ -108,6 +108,42 @@ async function main(){
     });
     await check('no uncaught browser runtime errors',async()=>assert.deepEqual(runtimeErrors,[]));
     await page.close();
+    await check('dated Woolworths shopper observation is saved without claiming live prices',async()=>{
+      const p=await browser.newPage({viewport:{width:390,height:844}});
+      await p.goto(base+'/product-check.html',{waitUntil:'domcontentloaded'});
+      const product=p.locator('.verify-card[data-product-id="98523"]');
+      await product.waitFor();
+      await product.locator('[data-field="price"]').fill('4.25');
+      await product.locator('[data-field="stock"]').selectOption('available');
+      await product.locator('[data-field="labelChecked"]').check();
+      await product.locator('[data-save-product]').click();
+      await p.reload({waitUntil:'domcontentloaded'});
+      assert.equal(await p.locator('.verify-card[data-product-id="98523"] [data-field="price"]').inputValue(),'4.25');
+      const record=await p.evaluate(()=>JSON.parse(localStorage.getItem('good-food-dubbo-product-check-v1'))['98523']);
+      assert.equal(record.stock,'available');
+      assert.ok(record.observedAt);
+      await p.goto(base+'/index.html#plan',{waitUntil:'domcontentloaded'});
+      const result=await p.evaluate(()=>window.FoodShopping.lookup('John West springwater sardines, 110 g','tins'));
+      assert.equal(result.price,4.25);
+      assert.match(result.priceSource,/Your Dubbo observation/);
+      await p.close();
+    });
+    await check('on-device test deadlines catch up after simulated time-away and reload',async()=>{
+      const p=await browser.newPage({viewport:{width:390,height:844}});
+      await p.goto(base+'/device-timer-check.html',{waitUntil:'domcontentloaded'});
+      await p.locator('#beginDeviceTest').click();
+      await p.evaluate(()=>{
+        const k='good-food-phone-timer-test-v1';
+        const data=JSON.parse(localStorage.getItem(k));
+        for(const t of Object.values(data.timers))t.deadline=Date.now()-150000;
+        localStorage.setItem(k,JSON.stringify(data));
+      });
+      await p.reload({waitUntil:'domcontentloaded'});
+      assert.equal((await p.locator('#stateA').innerText()).startsWith('Finished'),true);
+      assert.equal((await p.locator('#stateB').innerText()).startsWith('Finished'),true);
+      assert.match(await p.locator('#deviceStatus').innerText(),/does NOT prove an alarm/);
+      await p.close();
+    });
     for(const width of [360,390,430,768,1280]){
       await check('no horizontal overflow at '+width+'px',async()=>{
         const p=await browser.newPage({viewport:{width,height:850}});
