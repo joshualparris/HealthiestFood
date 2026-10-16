@@ -30,3 +30,24 @@ test('The completion action is disabled until every self-check is acknowledged',
  assert.ok(app.includes('done.disabled=remaining!==0'));
  assert.ok(app.includes('required.every(x=>cook.safetyChecked.includes(x.id))'));
 });
+
+test('HF-048 preflight prevents false confidence with large hot batches',()=>{
+ const meal=r("a",["chickpeas","brown rice"],"Bake vegetables, simmer sauce, chill and freeze");
+ meal.yield=5;
+ const large=safety.checklist(meal,5);
+ const small=safety.checklist(meal,1);
+ assert.ok(large.some(x=>x.id==="capacity"&&x.source.includes("foodauthority.nsw.gov.au")));
+ assert.ok(!small.some(x=>x.id==="capacity"));
+ assert.match(safety.capacityWarning(meal,7),/7 hot portions/);
+ assert.match(safety.capacityWarning(meal,5),/BEFORE cooking/);
+ assert.match(safety.capacityWarning(meal,5),/separate sessions/);
+ assert.equal(safety.capacityWarning(meal,1),"");
+ const chilled=r("sn-apple",["apple"],"Wash and slice; serve immediately");chilled.yield=5;
+ assert.equal(safety.capacityWarning(chilled,5),"");
+ const h=safety.render(meal,[],5);
+ assert.match(h,/data-cook-safety="capacity"/);
+ const app=fs.readFileSync("app.js","utf8");
+ assert.match(app,/capacityWarning\(r,cook\.portions\)/);
+ assert.match(app,/checklist\(recipe\(cook\.id\),cook\.portions\)/);
+ assert.match(app,/render\(r,cook\.safetyChecked,cook\.portions\)/);
+});
