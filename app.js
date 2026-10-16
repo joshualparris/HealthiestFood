@@ -72,6 +72,28 @@ function renderCards(){
  $("#recipeCards").innerHTML=R.filter(r=>recipeType==="all"||r.category===recipeType).map(card).join("");
  $$("[data-recipe-type]").forEach(b=>{const on=b.dataset.recipeType===recipeType;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",on?"true":"false");});
 }
+// The expanded detail is part of the same filtered collection, not a separate featured lunch.
+function selectRecipe(id){
+ const entry=R.find(r=>r.id===id);
+ if(!entry)return false;
+ selected=entry.id;
+ state.selected=selected;
+ servings=entry.yield;
+ save();
+ return true;
+}
+function changeRecipeType(type){
+ if(!["all","breakfast","lunch","dinner","snack"].includes(type))return;
+ recipeType=type;
+ // Filtering cards alone leaves the old lunch expanded under Breakfasts.
+ // Keep the detail in the selected category, preserving the chosen recipe when possible.
+ if(type!=="all"&&recipe(selected).category!==type){
+  const first=R.find(r=>r.category===type);
+  if(first)selectRecipe(first.id);
+ }
+ renderCards();
+ renderDetail();
+}
 function formatNum(n){return Number(n.toFixed(2)).toLocaleString("en-AU",{maximumFractionDigits:2});}
 function renderDetail(){
  const r=recipe(selected),multiplier=servings/r.yield;
@@ -215,8 +237,8 @@ function fallbackCopy(content){const t=document.createElement("textarea");t.valu
 function resetAll(){if(!confirm("Clear all saved shopping ticks and 20-day planning progress on this device?"))return;state=makeState();save();renderShop();renderPlan();toast("Progress reset");}
 document.addEventListener("click",e=>{
  const nav=e.target.closest("[data-goto]");if(nav){setRoute(nav.dataset.goto);return}
- const typeBtn=e.target.closest("[data-recipe-type]");if(typeBtn){recipeType=typeBtn.dataset.recipeType;renderCards();return;}
- const choice=e.target.closest("[data-select]");if(choice){selected=choice.dataset.select;state.selected=selected;servings=recipe(selected).yield;save();setRoute("recipes");renderDetail();setTimeout(()=>$("#selected-recipe")?.scrollIntoView({behavior:"smooth",block:"start"}),40);return}
+ const typeBtn=e.target.closest("[data-recipe-type]");if(typeBtn){changeRecipeType(typeBtn.dataset.recipeType);return;}
+ const choice=e.target.closest("[data-select]");if(choice){if(!selectRecipe(choice.dataset.select))return;if(recipeType!=="all"&&recipe(selected).category!==recipeType)recipeType=recipe(selected).category;renderCards();setRoute("recipes");renderDetail();setTimeout(()=>$("#selected-recipe")?.scrollIntoView({behavior:"smooth",block:"start"}),40);return}
  const scaled=e.target.closest("[data-servings]");if(scaled){servings=Math.max(1,Math.min(20,servings+Number(scaled.dataset.servings)));state.cookPortions[selected]=servings;save();renderDetail();return}
  const start=e.target.closest("[data-start]");if(start){openCook(start.dataset.start);return}
  if(e.target.closest("#jumpToShop")){setRoute("shop");return}
