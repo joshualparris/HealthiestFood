@@ -30,7 +30,7 @@ test('photo markup has descriptive alt text and fallback illustration for missin
  vm.runInNewContext(file('whole-day-data.js'),sandbox);
  const ids=sandbox.window.FOOD_DATA.recipes.map(r=>r.id);
  assert.equal(ids.length,17);
- assert.deepEqual(ids.filter(id=>!expected.includes(id)).sort(),['a','b','c','d','sn-apple','sn-eggs','sn-berries'].sort());
+ assert.deepEqual(Array.from(ids.filter(id=>!expected.includes(id))).sort(),['a','b','c','d','sn-apple','sn-eggs','sn-berries'].sort());
 });
 test('offline shell includes the photographs and all displayed photo files exist',()=>{
  const sw=file('service-worker.js');
