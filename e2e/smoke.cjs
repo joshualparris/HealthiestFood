@@ -102,6 +102,7 @@ async function main(){
       }
       await page.locator('[data-recipe-type="breakfast"]').click();
       await page.locator('#recipeCards [data-select="br-eggs"]').click();
+      await page.waitForFunction(()=>document.querySelector('#recipeDetail h2')?.textContent?.includes('Spinach, mushroom & egg scramble'),null,{timeout:3500});
       assert.match(await page.locator('#recipeDetail h2').innerText(),/Spinach, mushroom & egg scramble/);
       await page.locator('.mobile-nav [data-goto="home"]').click();
       await page.locator('#featuredCards [data-select="a"]').click();
