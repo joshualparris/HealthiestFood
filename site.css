@@ -227,3 +227,9 @@
 .nutrient-detail-inner li{margin:7px 0}
 .nutrient-detail-inner small{display:block;color:#718174}
 @media(max-width:540px){.nutrient-details summary{font-size:12px}.nutrient-warning{padding:11px}}
+
+.cook-wake-control{display:flex;flex-wrap:wrap;align-items:center;gap:9px 16px;padding:10px 22px;background:#e8f0df;border-bottom:1px solid #d5e0cc;font-size:12px}
+.cook-wake-control button{min-height:44px;background:#fff;border:1px solid #b7cba9;border-radius:99px;color:#234c38;font-size:12px;font-weight:800;padding:8px 15px}
+.cook-wake-control button[aria-pressed="true"]{background:#204b37;color:#fff;border-color:#204b37}
+.cook-wake-control small{flex:1 1 195px;color:#456451;line-height:1.5}
+.cook-wake-control a{color:#255943;font-weight:700}
