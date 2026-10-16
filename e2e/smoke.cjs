@@ -59,12 +59,12 @@ async function main(){
       const cookingLink=page.locator('#view-home .hero-actions a[href="cooking-methods.html"]');
       assert.equal(await cookingLink.count(),1);
       assert.match(await cookingLink.innerText(),/Compare cooking methods/);
-      const popup=await browser.newPage({viewport:{width:390,height:844}});
-      await popup.goto(base,{waitUntil:'domcontentloaded'});
-      await popup.locator('#view-home .hero-actions a[href="cooking-methods.html"]').click();
-      await popup.waitForURL(/cooking-methods\.html/);
-      assert.match(await popup.title(),/Cooking|method/i);
-      await popup.close();
+      // The destination must remain a real HTML link, not a button painted
+      // into the hero image. Validate the destination without waiting for
+      // external embeds/font requests to finish loading in another tab.
+      const destination=await page.request.get(new URL(await cookingLink.getAttribute('href'),base+'/').href,{timeout:15000});
+      assert.equal(destination.status(),200);
+      assert.match(await destination.text(),/<title>[^<]*[Cc]ooking/i);
     });
     await check('canonical ingredient IDs connect all 17 meals without changing recipes',async()=>{
       const stats=await page.evaluate(()=>{
