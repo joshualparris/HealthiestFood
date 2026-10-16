@@ -31,7 +31,7 @@ let lastFocus=null, toastTimeout=null;
 function toast(message){const t=$("#toast"); t.textContent=message;t.classList.add("show");clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove("show"),3400);}
 function setRoute(route){const target=["home","recipes","plan","shop","science"].includes(route)?route:"home"; if(location.hash!== "#"+target){location.hash=target;return}renderView(target);}
 function renderView(route){const target=["home","recipes","plan","shop","science"].includes(route)?route:"home";
- $$(".view").forEach(v=>v.classList.toggle("hidden",v.id!=="view-"+target));
+ $$(".view").forEach(v=>{const inactive=v.id!=="view-"+target;v.classList.toggle("hidden",inactive);v.hidden=inactive;v.inert=inactive;});
  $$("[data-route]").forEach(a=>{const active=a.dataset.route===target;a.classList.toggle("active",active);if(active)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
  $$(".mobile-nav button").forEach(b=>b.classList.toggle("active",b.dataset.goto===target));
  if(target==="shop")renderShop();
