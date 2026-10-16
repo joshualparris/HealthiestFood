@@ -13,7 +13,7 @@
   {key:"salmon",test:/salmon/i,unit:"g",pack:500,price:19,buy:"Ocean Chef Coho Salmon 500 g (raw equivalent; confirm substitution)",url:"https://www.woolworths.com.au/shop/productdetails/6050076"},
   {key:"tofu",test:/\btofu\b/i,unit:"g",pack:650,price:6.99,buy:"Evergreen Hard Tofu 650 g (check product and protein label)",url:"https://www.woolworths.com.au/shop/productdetails/595465"},
   {key:"chickpeas",test:/chickpeas/i,unit:"g",pack:252,price:0.95,buy:"Woolworths No Added Salt Chickpeas 420 g tin (~252 g drained)",url:"https://www.woolworths.com.au/shop/productdetails/259399"},
-  {key:"blackbeans",test:/black beans/i,unit:"g",pack:252,price:1.50,buy:"Woolworths No Added Salt Black Beans 420 g tin (~252 g drained)",url:"https://www.woolworths.com.au/shop/productdetails/663581"},
+  {key:"blackbeans",test:/black beans/i,unit:"g",pack:225,price:1.50,buy:"Woolworths No Added Salt Black Beans 420 g tin (225 g NIP servings; verify actual drained weight)",url:"https://www.woolworths.com.au/shop/productdetails/663581"},
   {key:"tomatoes-tinned",test:/\b(diced tomatoes|plain diced tomatoes|tomatoes no added salt)\b/i,unit:"g",pack:400,price:2,buy:"SPC Diced Tomatoes 400 g",url:"https://www.woolworths.com.au/shop/productdetails/322960"},
   {key:"quinoa",test:/\bquinoa\b/i,unit:"g",pack:500,price:5.75,buy:"Macro White Quinoa 500 g",url:"https://www.woolworths.com.au/shop/productdetails/335073"},
   {key:"rice",test:/\bbrown rice\b/i,unit:"g",pack:1000,price:3.50,buy:"SunRice Brown Rice 1 kg (dry)",url:"https://www.woolworths.com.au/shop/productdetails/94536"},
@@ -28,10 +28,27 @@
  ];
  const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
  const qty=q=>Number(q.toFixed(2)).toLocaleString("en-AU",{maximumFractionDigits:2});
+ function personalObservation(map){
+   const id=map.url?.match(/productdetails\/(\d+)/)?.[1];
+   if(!id||typeof localStorage==="undefined")return null;
+   try{
+    const records=JSON.parse(localStorage.getItem("good-food-dubbo-product-check-v1")||"{}");
+    const x=records?.[id];
+    const age=Date.now()-Date.parse(x?.observedAt||"");
+    if(x?.store!=="Woolworths Orana Mall, Dubbo NSW"||!Number.isFinite(x.price)||x.price<0||x.price>9999||
+       !Number.isFinite(age)||age<0||age>14*86400000)return null;
+    return {price:x.price,observedAt:x.observedAt,stock:x.stock};
+   }catch{return null;}
+ }
+ function withObservedPrice(map){
+  const rec=personalObservation(map);
+  return rec?{...map,price:rec.price,priceSource:"Your Dubbo observation, "+rec.observedAt.slice(0,10),observedStock:rec.stock}:
+   {...map,priceSource:"Historical estimate (Dubbo checkout not checked)"};
+ }
  function lookup(name,unit){
    for(const map of mappings){if(!map.test.test(name))continue;
-     if(map.key==="chickpeas"||map.key==="blackbeans"){if(unit==="tins"||unit==="tin")return {...map,multiplier:252};}
-     if(unit===map.unit)return {...map,multiplier:1};
+     if(map.key==="chickpeas"||map.key==="blackbeans"){if(unit==="tins"||unit==="tin")return {...withObservedPrice(map),multiplier:map.key==="blackbeans"?225:252};}
+     if(unit===map.unit)return {...withObservedPrice(map),multiplier:1};
    }
    return null;
  }
@@ -94,7 +111,41 @@
    snapshot=data;
    region.innerHTML='<div class="dynamic-shop-head"><span class="section-kicker">YOUR ACTUAL PLANNED MEALS</span><h2>Shopping for this '+mode+'</h2><p>Totals reflect scheduled portions not yet marked done. Enter how much is already in your pantry to calculate the remaining requirement. This remains separate from the fixed V6 20-lunch basket.</p><div class="dynamic-shop-actions"><button type="button" data-shop-range="day" aria-pressed="'+(mode==="day")+'">Selected day</button><button type="button" data-shop-range="week" aria-pressed="'+(mode==="week")+'">Seven-day week</button><button type="button" id="copyPlannedShopping">Copy to clipboard ↗</button></div></div>'+
    '<div class="dynamic-shop-stats"><strong>'+data.itemsLeft+' ingredients left</strong><span>About $'+data.knownPrice.toFixed(2)+' in <em>matched retail packs only</em> · '+data.unknown+' unpriced items · <strong>NOT the complete checkout total</strong></span></div>'+
-   '<div class="dynamic-shop-items">'+data.rows.map(x=>'<div class="dynamic-shop-line"><label class="dynamic-shop-row-check"><input type="checkbox" data-planned-have="'+esc(x.key)+'" '+(x.owned>=x.amount?'checked':'')+' aria-label="Enough at home: '+esc(x.name)+'"><span><strong>'+esc(x.name)+'</strong><small>Required: '+qty(x.amount)+' '+esc(x.unit)+' · Still needed: '+qty(x.toBuy)+' '+esc(x.unit)+(x.map?' · Buy '+x.packsToBuy+' pack'+(x.packsToBuy===1?'':'s')+' (~$'+x.priceToBuy.toFixed(2)+')':' · Retail pack/price unverified')+'</small></span></label><label class="dynamic-shop-pantry">In pantry <input type="number" min="0" max="1000000" step="any" inputmode="decimal" data-pantry-amount="'+esc(x.key)+'" value="'+x.owned+'" aria-label="Quantity already in pantry for '+esc(x.name)+' in '+esc(x.unit)+'"><span>'+esc(x.unit||"items")+'</span></label></div>').join("")+'</div>'+
+   '<div class="dynamic-shop-items">'+data.rows.map(x=>'<div class="dynamic-shop-line"><label class="dynamic-shop-row-check"><input type="checkbox" data-planned-have="'+esc(x.key)+'" '+(x.owned>=x.amount?'checked':'')+' aria-label="Enough at home: '+esc(x.name)+'"><span><strong>'+esc(x.name)+'</strong><small>Required: '+qty(x.amount)+' '+esc(x.unit)+' · Still needed: '+qty(x.toBuy)+' '+esc(x.unit)+(x.map?' · Buy '+x.packsToBuy+' pack'+(x.packsToBuy===1?'':'s')+' (~+'</small></span></label><label class="dynamic-shop-pantry">In pantry <input type="number" min="0" max="1000000" step="any" inputmode="decimal" data-pantry-amount="'+esc(x.key)+'" value="'+x.owned+'" aria-label="Quantity already in pantry for '+esc(x.name)+' in '+esc(x.unit)+'"><span>'+esc(x.unit||"items")+'</span></label></div>').join("")+'</div>'+
+   '<p class="dynamic-shop-warning">Partial pantry quantities reduce what you need to buy. Quantities are manual estimates, not tracked automatically when a meal is cooked. Buy counts round up to full packs; this estimate excludes products without a reliable mapping. All prices are dated planning allowances, not live Dubbo checkout or stock. Check labels, pack sizes and edible yields.</p>';
+ }
+ function copyList(){
+   if(!snapshot)return "";
+   return "PLANNED FOOD SHOP — "+mode.toUpperCase()+"\nIndicative matching-pack prices only; unknown foods also required.\n\n"+
+   snapshot.rows.filter(x=>x.toBuy>0).map(x=>qty(x.toBuy)+" "+x.unit+" "+x.name+(x.map?" — "+x.packsToBuy+" pack(s), approx $"+x.priceToBuy.toFixed(2):" — CHECK RETAIL PACK AND PRICE")).join("\n")+
+   "\n\nNot a complete or live Woolworths Dubbo checkout.";
+ }
+ function handle(e,refresh){
+   const target=e.target;
+   if(e.type==="change"&&target?.matches?.("[data-planned-have]")){
+    const key=target.dataset.plannedHave,row=snapshot?.rows.find(x=>x.key===key);
+    if(!row)return false;
+    have[key]=target.checked?row.amount:0;persist();refresh();return true;
+   }
+   if(e.type==="change"&&target?.matches?.("[data-pantry-amount]")){
+    const key=target.dataset.pantryAmount;
+    if(!snapshot?.rows.some(x=>x.key===key))return false;
+    have[key]=safeAmount(target.value);persist();refresh();return true;
+   }
+   if(e.type!=="click")return false;
+   const button=target.closest?.("[data-shop-range]");
+   if(button){mode=button.dataset.shopRange;refresh();return true;}
+   if(target.closest?.("#copyPlannedShopping")){
+    const content=copyList();
+    if(navigator.clipboard?.writeText)navigator.clipboard.writeText(content);
+    else{const ta=document.createElement("textarea");ta.value=content;document.body.append(ta);ta.select();document.execCommand("copy");ta.remove();}
+    return true;
+   }
+   return false;
+ }
+ return {merge,lookup,reconcile,render,handle,mappings};
+});
++x.priceToBuy.toFixed(2)+') · '+esc(x.map.priceSource):' · Retail pack/price unverified')+'</small></span></label><label class="dynamic-shop-pantry">In pantry <input type="number" min="0" max="1000000" step="any" inputmode="decimal" data-pantry-amount="'+esc(x.key)+'" value="'+x.owned+'" aria-label="Quantity already in pantry for '+esc(x.name)+' in '+esc(x.unit)+'"><span>'+esc(x.unit||"items")+'</span></label></div>').join("")+'</div>'+
    '<p class="dynamic-shop-warning">Partial pantry quantities reduce what you need to buy. Quantities are manual estimates, not tracked automatically when a meal is cooked. Buy counts round up to full packs; this estimate excludes products without a reliable mapping. All prices are dated planning allowances, not live Dubbo checkout or stock. Check labels, pack sizes and edible yields.</p>';
  }
  function copyList(){
