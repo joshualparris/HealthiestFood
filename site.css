@@ -483,3 +483,5 @@ body.podcast-active{padding-bottom:90px}
  body.podcast-active{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 }
 @media(max-width:360px){.podcast-controls{gap:3px}.podcast-controls button{padding:6px}.media-resource-links{grid-template-columns:1fr}.media-resource-links .media-resource-primary{grid-column:1}}
+
+.podcast-inline-help{margin:18px 0;padding:13px 17px;border-radius:13px;background:#e8f0e0;border:1px solid #d3e2c8;color:var(--pine);font-size:13px;line-height:1.65}.podcast-inline-help span{font-size:21px;margin-right:7px;vertical-align:middle}
