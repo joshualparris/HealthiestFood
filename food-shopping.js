@@ -71,9 +71,11 @@
    const remaining=data.rows.filter(x=>!hasHave(x));
    const estimate=remaining.reduce((s,x)=>s+(x.price??0),0);
    const noPrice=remaining.filter(x=>x.price===null).length;
+   const fishMealCount=slots.filter(s=>['a','b','di-salmon'].includes(s.recipeId)).length;
    region.innerHTML='<div class="dynamic-shop-head"><span class="section-kicker">YOUR ACTUAL PLANNED MEALS</span><h2>Shopping for this '+mode+'</h2><p>Aggregated from the scheduled portions. This is separate from the fixed 20-lunch bulk basket. Select <strong>Already have</strong> to exclude pantry items.</p><div class="dynamic-shop-actions"><button type="button" data-shop-range="day" aria-pressed="'+(mode==="day")+'">Selected day</button><button type="button" data-shop-range="week" aria-pressed="'+(mode==="week")+'">Seven-day week</button><button type="button" id="copyPlannedShopping">Copy to clipboard ↗</button></div></div>'+
    '<div class="dynamic-shop-stats"><strong>'+remaining.length+' ingredients left</strong><span>About $'+estimate.toFixed(2)+' in <em>priced matching packs only</em> · '+noPrice+' unpriced items · <strong>NOT your complete checkout total</strong></span></div>'+
    '<div class="dynamic-shop-items">'+data.rows.map(x=>'<label class="dynamic-shop-line"><input type="checkbox" data-planned-have="'+esc(x.key)+'" '+(hasHave(x)?'checked':'')+'><span><strong>'+esc(x.name)+'</strong><small>Need: '+qty(x.amount)+' '+esc(x.unit)+(x.map?' · Buy '+x.packs+' pack'+(x.packs===1?'':'s')+' (~$'+x.price.toFixed(2)+')':' · No validated retail pack/price')+'</small></span><span class="dynamic-shop-have">Already have</span></label>').join("")+'</div>'+
+   '<p class="planner-fish-note">'+fishMealCount+' scheduled fish-containing meal'+(fishMealCount===1?'':'s')+' in this '+mode+'. This counts meal slots, not edible fish grams or portions consumed by one person. Heart-health recommendations concern the whole week, including food outside this plan; more fish is not automatically better.</p>'+ 
    '<p class="dynamic-shop-warning">Price estimates are dated planning values, not live Dubbo stock or checkout. Pack conversions for canned beans use approximately 252 g drained per 420 g tin. Check product labels, use-by dates and equivalent substitutions. Cooking water, spices and fresh produce may be unpriced.</p>';
  }
  function copyList(){
