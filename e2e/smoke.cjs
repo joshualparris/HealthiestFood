@@ -143,7 +143,7 @@ async function main(){
     await check('archived V6 basket checks persist when expanded',async()=>{
       await page.locator('#legacyV6Shop summary').click();
       await page.locator('#shopTotal').waitFor({state:'visible'});
-      assert.match(await page.locator('#shopTotal').innerText(),/256\\.43/);
+      assert.match(await page.locator('#shopTotal').innerText(),/256\.43/);
       await page.locator('[data-filter="all"]').click();
       await page.locator('#shoppingList [data-item="0"]').check();
       await page.reload({waitUntil:'domcontentloaded'});
