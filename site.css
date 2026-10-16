@@ -205,3 +205,6 @@
 #trialForm .btn-primary{background:var(--pine);color:white}
 #trialForm .trial-status{font-size:11px;color:#6b826e}
 @media(max-width:560px){#trialForm{grid-template-columns:1fr}.trial-log{padding:16px}}
+
+/* Native view visibility prevents inactive menus entering Safari's layout width. */
+.view[hidden]{display:none!important}
