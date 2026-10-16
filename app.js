@@ -58,7 +58,7 @@ function setRoute(route){const target=["home","recipes","plan","shop","science",
 function renderView(route){const target=["home","recipes","plan","shop","science","media"].includes(route)?route:"home";
  $$(".view").forEach(v=>{const inactive=v.id!=="view-"+target;v.classList.toggle("hidden",inactive);v.hidden=inactive;v.inert=inactive;});
  $$("[data-route]").forEach(a=>{const active=a.dataset.route===target;a.classList.toggle("active",active);if(active)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
- $$(".mobile-nav button").forEach(b=>b.classList.toggle("active",b.dataset.goto===target));
+ $(".mobile-nav button").forEach(b=>{const active=b.dataset.goto===target;b.classList.toggle("active",active);if(active)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
  if(target==="shop")renderShop();
  if(target==="plan")renderPlan();
  if(target==="recipes")renderDetail();
