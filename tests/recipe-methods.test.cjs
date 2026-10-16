@@ -63,6 +63,14 @@ test("scaled directions preserve cooking temperatures and time ranges",()=>{
  const eggs=get("br-eggs");
  assert.match(methods.describe(eggs,eggs.steps[1],2),/3–4 minutes/);
 });
+test("optional sauce water also scales with recipe portions",()=>{
+ for(const id of ["a","b","d"]){
+  const r=get(id),step=r.steps.find(s=>s.detail.includes("{{water:100}}"));
+  assert.ok(step,id+" missing optional-water measure");
+  assert.match(methods.describe(r,step,1),/up to 20 mL extra water/i,id);
+  assert.match(methods.describe(r,step,5),/up to 100 mL extra water/i,id);
+ }
+});
 test("recipe page loads method metadata before app and renders measured amounts in every guided step",()=>{
  const html=read("index.html"),app=read("app.js"),css=read("site.css");
  assert.ok(html.indexOf('src="whole-day-data.js"')<html.indexOf('src="recipe-methods.js"'));
