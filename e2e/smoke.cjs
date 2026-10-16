@@ -61,7 +61,7 @@ async function main(){
       await page.locator('[data-media-kind="all"]').click();
       assert.equal(await page.locator('#mediaResults .media-resource').count(),23);
     });
-    if(!process.env.SMOKE_URL)await check('ingredient-by-ingredient cooking lab filters and compares without claiming longevity scores',async()=>{
+    await check('ingredient-by-ingredient cooking lab filters and compares without claiming longevity scores',async()=>{
       const lab=await browser.newPage({viewport:{width:390,height:844}});
       const errors=[];lab.on('pageerror',e=>errors.push(e.message));
       await lab.goto(base+'/cooking-methods.html?food=egg',{waitUntil:'domcontentloaded'});
