@@ -60,7 +60,7 @@ test('new meal picker and dated plan screen are wired into HTML and app',()=>{
  assert.ok(planner.includes('type="time"'));
  assert.ok(planner.includes('data-slot-done'));
  assert.ok(planner.includes('data-planner="copy-tomorrow"'));
- assert.ok(planner.includes('Add to '+"'+escape(format(active"));
+ assert.ok(planner.includes('plannerMealType'));
  assert.ok(css.includes('.planner-week'));
  assert.ok(css.includes('max-width:470px'));
 });
