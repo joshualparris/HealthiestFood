@@ -1,3 +1,16 @@
+
+
+## Latest — V6 (16 October 2026): Woolworths-only, four-batch freezer lunches
+
+**V6 is a planned recipe design, not a proven or kitchen-tested longevity optimum.** Built after inspecting **[V5](v5/RECIPES.md)** and the current repository tree. Unlike V5's mixed Coles/Woolworths shop, V6 names Woolworths-listed alternatives for all main proteins.
+
+- **[V6 recipes and full step-by-step cooking methods](v6/RECIPES.md)** — four flavours × five lunches = **20 lunches**, precise drained/raw/dry weights, fish + tofu portions, A/B/C/D four-week rotation, dairy-free and gluten-label checks, cooling/reheating requirements.
+- **[V6 Woolworths Dubbo shopping list](v6/SHOPPING.md)** — 35 combined item rows, pack-size reconciliation, estimated **$256.43 full first shop** including optional 5 L fortified soy and pantry ingredients. **These are not verified Dubbo shelf prices or stock**; cheaper when using available pantry items.
+- **[V6 scientific evidence, nutrient-label maths and ten-metric audit](v6/EVIDENCE.md)** — anchored to Heart Foundation, dietary guidelines, NSW Food Authority and product labels; refuses fake 100/100 longevity claims.
+- **[V6 shopping/recipe arithmetic validation script](v6/verify.py)** — check recipe totals and forecast basket.
+
+**V6 improvements** focus on Woolworths-only practical shopping, repeatability, actual protein sources, calcium set vs quantified calcium, label accuracy and safe four-batch preparation—not more “superfood” additions. Earlier versions are preserved as historical research. No V6 meal is confirmed cooked; ingredients/price calculations are planning estimates until checked in kitchen and the Woolworths Dubbo app.
+
 # HealthiestFood
 
 A source-linked, dairy-free collection of home-cooked and historically planned freezer meals, compiled from recipe documents and cook-up records through **16 October 2026**.
