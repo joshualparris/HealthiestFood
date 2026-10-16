@@ -110,3 +110,9 @@ test('closed cooking modal cannot dereference an absent active cooking step',()=
  assert.match(code,/if\(out && cook\)/);
  assert.match(code,/if\(step\)out\.textContent/);
 });
+
+test('mobile navbar requires querySelectorAll on every routed render',()=>{
+ const code=appJS.slice(appJS.indexOf('function renderView('),appJS.indexOf('function artwork('));
+ assert.match(code,/\$\$\("\.mobile-nav button"\)\.forEach/);
+ assert.doesNotMatch(code,/\$\s*\("\.mobile-nav button"\)\.forEach/);
+});
