@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en-AU">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#143d33"><title>Phone timer reliability test | Good Food, Long Game</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="site.css">
+<style>
+.device-test{max-width:720px;margin:auto;padding:25px 19px 90px}
+.device-test h1{font:500 clamp(36px,8vw,58px)/1.1 Georgia,serif;color:#214b37}
+.device-test h2{font:600 25px Georgia,serif;color:#214b37}
+.device-test p{line-height:1.65}
+.device-panel{background:#fffdf8;border:1px solid #d8e5d2;border-radius:17px;padding:20px;margin:17px 0}
+.device-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.device-count{font:700 33px Georgia,serif;color:#173d33;font-variant-numeric:tabular-nums}
+.device-panel button{min-height:48px;border-radius:99px;border:1px solid #a6c7aa;background:#1d513b;color:white;font-weight:800;padding:12px 18px;margin:4px 4px 4px 0}
+.device-panel button.secondary{background:white;color:#204b36}
+.device-result{color:#194835;font-weight:800}
+.device-test details{border:1px solid #d8e5d2;border-radius:15px;padding:14px}
+.device-test summary{cursor:pointer;font-weight:700}
+.device-test pre{font-size:11px;white-space:pre-wrap;word-break:break-word}
+.device-test label{display:block;margin:12px 0}
+.device-test label input{margin-right:8px}
+@media(max-width:480px){.device-grid{grid-template-columns:1fr}}
+</style>
+<script src="timers.js" defer></script>
+<script src="device-timer-check.js" defer></script>
+</head>
+<body>
+<main class="device-test">
+<p><a href="index.html#recipes">← Back to Good Food</a></p>
+<h1>Does your phone keep the time?</h1>
+<p>This is an optional, <strong>on-device reliability test</strong>, not a background alarm. Most phones suspend browser JavaScript with the screen locked. The countdown uses an absolute clock deadline so that, when you return, the time shown can catch up. Audible notifications while locked are <strong>not guaranteed</strong>.</p>
+<section class="device-panel" aria-label="Two test timers">
+ <h2>Start two overlapping timers</h2>
+ <p>They are short trials only. Run this test when you're <strong>not cooking</strong>.</p>
+ <div class="device-grid">
+  <div><strong>Timer A · 45 seconds</strong><div id="clockA" class="device-count">00:45</div><span id="stateA">Not started</span></div>
+  <div><strong>Timer B · 90 seconds</strong><div id="clockB" class="device-count">01:30</div><span id="stateB">Not started</span></div>
+ </div>
+ <p><button id="beginDeviceTest">Start both tests</button><button id="clearDeviceTest" class="secondary">Reset test only</button></p>
+ <p id="deviceStatus" role="status" aria-live="polite">No active test.</p>
+</section>
+<section class="device-panel">
+<h2>Actual phone check</h2>
+<ol>
+<li>On Android Chrome or iPhone Safari, start both test timers above.</li>
+<li>Switch to another tab. Reopen after the first timer should finish. Record what you observe.</li>
+<li>Repeat by starting again, <strong>locking the phone</strong> for at least 100 seconds, then unlocking and reopening the same page.</li>
+<li>Confirm both timers show finished. Also note whether your phone actually alerted you while locked, not simply when reopened.</li>
+<li>Repeat with the browser closed and reopened; saved deadlines can survive refresh but private browsing or clearing storage may remove them.</li>
+</ol>
+<p><strong>For cooking:</strong> use the phone's Clock app or a physical kitchen timer for cooking, cooling or food-safety deadlines. Keep the device charged. A browser screen-wake request may prevent automatic screen dimming while visible, but is not a background alarm.</p>
+<label><input type="radio" name="backgroundAlert" value="yes"> I heard/felt an alarm while the screen was locked</label>
+<label><input type="radio" name="backgroundAlert" value="no"> No alarm while locked (countdown only updated on return)</label>
+<label><input type="radio" name="backgroundAlert" value="unknown"> Not sure / wasn't watching</label>
+<p id="resultNote" class="device-result" role="status"></p>
+</section>
+<details><summary>Technical record stored on this device</summary><p>These are local browser observations, not remote device telemetry. No data is sent anywhere. You may copy the record when reporting a bug.</p><pre id="deviceLog">Nothing recorded.</pre><button id="copyDeviceLog" type="button">Copy findings</button></details>
+<p><small>Background tabs and inactive pages can be throttled or discarded; only a native alarm is suitable for guaranteed alerts. See <a href="https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API">Page Visibility API</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API">Wake Lock</a>.</small></p>
+</main>
+</body></html>
