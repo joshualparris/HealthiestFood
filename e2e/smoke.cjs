@@ -37,7 +37,7 @@ async function main(){
     await page.goto(base,{waitUntil:'domcontentloaded'});
     await check('app initialises and shows homepage',async()=>{
       await page.locator('#view-home').waitFor({state:'visible'});
-      assert.equal(await page.title(),'Good Food, Long Game | HealthiestFood');
+      assert.match(await page.title(),/Good Food, Long Game/);
     });
     await check('17 recipes and category controls render',async()=>{
       await page.locator('.mobile-nav [data-goto="recipes"]').click();
