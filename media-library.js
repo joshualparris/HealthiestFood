@@ -16,7 +16,7 @@ function card(x){
  '<div class="media-resource-body"><div class="media-resource-topic">'+esc(x.topic)+'</div><h3>'+title+'</h3><div class="media-resource-publisher">'+esc(x.publisher)+'</div>'+
  '<p class="media-resource-claim"><strong>What it explains</strong> '+esc(x.claim)+'</p>'+
  '<p class="media-resource-limits"><strong>What it does not prove</strong> '+esc(x.limitations)+'</p></div>'+
- '<div class="media-resource-links">'+(hasStream?'<button type="button" class="media-resource-watch" data-play-episode="'+esc(x.id)+'" aria-label="Play '+title+' in the HealthiestFood player">▶ Play here</button>':'')+
+ '<div class="media-resource-links">'+(hasStream?'<button type="button" class="media-resource-watch" data-play-episode="'+esc(x.id)+'" aria-label="Play here: '+title+' in the HealthiestFood player">▶ Play here</button>':'')+
  '<a class="media-resource-original" href="'+esc(safeUrl(x.url))+'" target="_blank" rel="noopener noreferrer">'+(x.kind==="podcast"?"Original episode ↗":noun+" on publisher ↗")+'</a>'+
  '<a class="media-resource-primary" href="'+esc(safeUrl(x.primary))+'" target="_blank" rel="noopener noreferrer">Research / guideline ↗</a></div></article>';
 }
