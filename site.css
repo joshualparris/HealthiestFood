@@ -236,3 +236,17 @@
 
 /* Full 17-recipe official AFCD3 modelled nutrient analysis */
 .whole-day-scroll{overflow-x:auto;max-width:100%;margin:18px 0 10px;border:1px solid var(--line);border-radius:13px}.whole-day-table{min-width:740px;width:100%;border-collapse:collapse}.whole-day-table th,.whole-day-table td{font-size:12px;padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}.whole-day-table caption{font-size:13px;color:var(--muted);padding:10px;text-align:left}.whole-day-asterisk,.whole-day-caveats,.whole-day-controls{font-size:13px;line-height:1.55}.whole-day-controls{border:1px solid var(--line);border-radius:14px;padding:16px;margin:22px 0 14px}.whole-day-controls h3{margin:0 0 9px;font-family:var(--serif);font-size:23px}.whole-day-controls label{font-weight:bold;display:block;margin:11px 0}.whole-day-controls input{min-height:44px;border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--pine);background:white}.whole-day-caveats{border:1px solid var(--line);border-radius:13px;padding:13px;margin:13px 0}.whole-day-caveats summary{font-weight:700;cursor:pointer;color:var(--pine)}
+
+/* Source-linked cooking completion checklist; prevents a timer becoming a safety certificate. */
+.cook-safety-gate{max-width:730px;text-align:left;background:#f9f5e9;border:1px solid #d9c9a3;border-radius:18px;padding:18px 20px;margin:24px auto 20px}
+.cook-safety-tag{font-size:10px;font-weight:800;color:#806b40;letter-spacing:1.6px;text-transform:uppercase}
+.cook-safety-gate h3{font:600 27px var(--serif);margin:6px 0 8px}
+.cook-safety-description{font-size:13px;color:#665d47;line-height:1.65}
+.cook-safety-items{display:grid;gap:10px;margin:16px 0}
+.cook-safety-item{display:flex;align-items:flex-start;gap:12px;padding:12px 13px;border:1px solid #dfd4b9;background:#fffefa;border-radius:12px;text-align:left;font-size:13px;line-height:1.6;cursor:pointer}
+.cook-safety-item input{width:20px;height:20px;margin-top:1px;flex-shrink:0;accent-color:#36684c}
+.cook-safety-sources{font-size:11px;line-height:1.7;color:#55775a}
+.cook-safety-sources a{color:#37684a;font-weight:800}
+#cookSafetyRemaining{font-size:12px;font-weight:700;color:#806b40}
+#finishCook:disabled{opacity:.5;cursor:not-allowed;transform:none}
+@media(max-width:520px){.cook-safety-gate{padding:13px;margin:15px auto}.cook-safety-gate h3{font-size:24px}}
