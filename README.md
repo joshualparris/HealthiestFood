@@ -1,5 +1,20 @@
 # HealthiestFood
 
+## 🍃 Live interactive cooking website
+
+**[Open Good Food, Long Game → https://healthiest-food.vercel.app/](https://healthiest-food.vercel.app/)**
+
+The public, mobile-friendly website is automatically deployed from the GitHub **main** branch to Vercel. It includes:
+
+- Guided cooking for all four V6 five-meal recipes, cooking timers, ingredients that scale by serving count, and practical freezer-safe handling.
+- Four-week (20-lunch) planner and a 35-line Woolworths shopping checklist with indicative AUD prices, checkout caveats and checkboxes stored **only on your device** (browser localStorage; no user account/analytics).
+- Transparent science page with a ten-metric **subjective** rubric, expandable claim ledger, links to national/state Australian guidance and actual retailer product labels.
+- [Detailed fact-check and remaining uncertainties](SITE_FACT_CHECK.md) and [automatic dependency-free verification tests](tests/site.test.cjs).
+
+**Important:** The estimated $256.43 V6 basket is not a verified Dubbo Woolworths checkout; local stock, labels and prices can vary. These meal plans have not been kitchen-tested or independently nutrient-analysed, and none is proven "100/100" for health or longevity.
+
+**To preview locally:** open `index.html` via a basic local web server, e.g. `python3 -m http.server 8000`, then visit `http://localhost:8000`. No npm build is required. Run `node --test tests/site.test.cjs` to check data and source structure. Vercel deploys the static site automatically on pushes to `main`.
+
 ## October 2026 whole-repository longevity audit
 
 **[Read the ranked audit and concrete improvements](LONGEVITY_AUDIT_2026-10-16.md)** — covers the archived cook-ups and versions V2–V6, checks V6 fish/tofu/soy options, calcium, four-versus-five workday scheduling, food safety, full-diet nutrient gaps, cost provenance and script limitations. No recipe was shown to increase lifespan; this is an evidence/practicality review, not a medical or kitchen test.
