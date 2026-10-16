@@ -112,7 +112,13 @@ async function main(){
       await check('no horizontal overflow at '+width+'px',async()=>{
         const p=await browser.newPage({viewport:{width,height:850}});
         await p.goto(base,{waitUntil:'domcontentloaded'});
-        const size=await p.evaluate(()=>({scroll:document.documentElement.scrollWidth,viewport:window.innerWidth}));
+        const size=await p.evaluate(()=>({scroll:document.documentElement.scrollWidth,viewport:window.innerWidth,
+          overshooting:[...document.querySelectorAll('body *')].filter(el=>{
+            const st=getComputedStyle(el);if(st.display==='none'||st.visibility==='hidden')return false;
+            const r=el.getBoundingClientRect();return r.right>innerWidth+3||r.left< -3;
+          }).slice(0,15).map(el=>({tag:el.tagName,id:el.id,cls:String(el.className).slice(0,70),
+            left:Math.round(el.getBoundingClientRect().left),right:Math.round(el.getBoundingClientRect().right),
+            scroll:el.scrollWidth,client:el.clientWidth}))}));
         assert.ok(size.scroll <= size.viewport+2,JSON.stringify(size));
         await p.close();
       });
