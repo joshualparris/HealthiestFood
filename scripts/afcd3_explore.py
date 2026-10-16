@@ -31,7 +31,7 @@ def main():
   total+=1
   name=row.get('D','').lower()
   for term in terms:
-   if term in name and len(found[term])<28: found[term].append((row['A'],row.get('D','')))
+   if term.lower() in name and len(found[term])<28: found[term].append((row['A'],row.get('D','')))
  print('TOTAL',total)
  for term,v in found.items():print('MATCH',term,json.dumps(v))
 if __name__=='__main__':main()
