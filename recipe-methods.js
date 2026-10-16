@@ -100,7 +100,7 @@
    "Preheat a fan oven to 190°C. Wash, trim and cut {{5}} into ~1 cm pieces, and {{6}} plus {{7}} into ~2 cm pieces. Keep ready-to-eat fruit and nuts separate from other prep.",
    "Toss the prepared carrots, capsicum and zucchini with {{10@0.6}}, {{13@0.5}} and {{14@0.5}}. Spread in a single layer across roomy trays; roast about 25–35 minutes, turning halfway, until tender.",
    "Rinse {{2}}, cook using the quinoa packet's water ratio, then stand covered for 5 minutes and fluff.",
-   "Soften {{8}} in {{10@0.4}} for 6–8 minutes. Add {{11}}, {{13@0.5}}, {{14@0.5}}, {{15}} and {{16}} and stir 30 seconds. Add {{3}} and drained/rinsed {{1}}; add up to 100 mL extra water only if the sauce is too thick. Simmer 8–10 minutes.",
+   "Soften {{8}} in {{10@0.4}} for 6–8 minutes. Add {{11}}, {{13@0.5}}, {{14@0.5}}, {{15}} and {{16}} and stir 30 seconds. Add {{3}} and drained/rinsed {{1}}; add up to {{water:100}} extra water only if the sauce is too thick. Simmer 8–10 minutes.",
    "Cook {{4}} thoroughly to its packet directions. Wilt {{9}} into the hot vegetables, then fold in roasted vegetables, cooked quinoa and {{12}}.",
    "Drain {{0}} and weigh the edible sardines. Divide the cooked vegetable/grain base equally into your selected portions, then divide the drained fish equally by weight. Fractional tin counts require weighing the edible fish, not guessing a fraction of a can.",
    "Cool the meals promptly in shallow containers and refrigerate/freeze within 2 hours. Reheat once until steaming hot throughout. At serving, add {{17}} and {{18}}, divided evenly between portions."
@@ -109,7 +109,7 @@
    "Keep {{0}} covered in the fridge below 4°C until thawed, following the fish pack's use-within-24-hours advice. Separate only the required raw portion(s); keep unused still-frozen salmon frozen. Do not thaw on the benchtop.",
    "Rinse {{2}} and cook to brown rice packet directions, usually 30–40 minutes. If waiting to pack, spread rice thinly and chill promptly.",
    "Preheat the fan oven to 180°C. Coat the thawed salmon with {{8@0.4}}, {{11}} and {{12}}. Bake 12–20 minutes depending on thickness, checking the thickest centre reaches 63°C or the stricter packet instruction.",
-   "Sauté {{7}} and {{4}} in {{8@0.6}} for about 8 minutes; add {{9}} for 30 seconds. Stir in rinsed/drained {{1}}, {{3}}, {{5}} and about 100 mL extra water if needed. Simmer until frozen vegetables are fully cooked; add {{6}} and cook until tender.",
+   "Sauté {{7}} and {{4}} in {{8@0.6}} for about 8 minutes; add {{9}} for 30 seconds. Stir in rinsed/drained {{1}}, {{3}}, {{5}} and up to {{water:100}} extra water if needed. Simmer until frozen vegetables are fully cooked; add {{6}} and cook until tender.",
    "Add {{10}} to the vegetables. Divide the cooked rice and vegetable/bean mixture evenly into your selected portions, and add the cooked salmon in equal weighed portions.",
    "Cool shallow portions promptly and refrigerate/freeze within 2 hours. Reheat the meal once until steaming hot. At serving, add {{13}} and {{14}}, divided evenly between portions."
   ],
@@ -125,7 +125,7 @@
    "Rinse {{2}} and cook using the quinoa pack's water ratio; rest covered 5 minutes after cooking and fluff.",
    "Cook {{8}} in {{9@0.6}} over medium heat for about 5 minutes. Add {{4}} and sauté for 6–8 minutes until much of the moisture evaporates.",
    "Add {{5}} and {{6}}, cooking about 5 minutes. Stir in {{10}}, {{11}}, {{12}}, {{13}} and {{14}} for 30 seconds.",
-   "Add {{3}}, drained/rinsed {{1}} and diced {{0}}. If too thick, add up to 100 mL extra water (not a shopping item); simmer gently 10–12 minutes until hot throughout.",
+   "Add {{3}}, drained/rinsed {{1}} and diced {{0}}. If too thick, add up to {{water:100}} extra water (not a shopping item); simmer gently 10–12 minutes until hot throughout.",
    "Fold in {{7}} and simmer 4–6 minutes until tender. Stir through {{15}} and {{9@0.4}}. Divide cooked quinoa and tofu/bean mixture evenly among your selected portions.",
    "Chill shallow portions promptly and freeze if keeping longer. Reheat once until steaming hot. At serving, add {{16}}, {{17}} and {{18}}, divided equally."
   ]
@@ -148,7 +148,7 @@
   return String(step.detail).replace(/\{\{(\d+)(?:@(\d+(?:\.\d+)?))?\}\}/g,(all,index,part)=>{
    const found=allocation(recipe,Number(index),part===undefined?1:Number(part),portions);
    return found.label;
-  });
+  }).replace(/\{\{water:(\d+(?:\.\d+)?)\}\}/g,(all,mL)=>fmt(Number(mL)*amount)+" mL");
  }
  function validate(recipe){
   const stages=uses[recipe.id],texts=method[recipe.id];
