@@ -95,6 +95,9 @@
  }
  function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(have));return true}catch{return false;}}
  function render(root,days,getSlots,recipes){
+   // The custom recipe shop and dated planner use the same pantry record.
+   // Re-read it so edits made on the other screen are reflected immediately.
+   try{const current=JSON.parse(localStorage.getItem(STORAGE)||"{}");have=current&&typeof current==="object"&&!Array.isArray(current)?current:{};}catch{have={};}
    const region=root.querySelector("#dynamicShop") || document.createElement("section");
    region.id="dynamicShop";region.className="dynamic-shop";
    if(!region.parentNode)root.append(region);
