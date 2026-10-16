@@ -51,3 +51,11 @@ test('Browser script order and science mount expose credible non-complete nutrie
  assert.match(read('whole-day-report.js'),/Unknown is not zero/);
  assert.match(read('whole-day-report.js'),/per adult portion/);
 });
+
+test('The generated science report JavaScript parses and documents unanswered micronutrient gaps',()=>{
+ const src=read('whole-day-report.js');
+ assert.doesNotThrow(()=>new vm.Script(src));
+ assert.ok(src.includes('calcium'));
+ assert.ok(src.includes('iodine'));
+ assert.ok(src.includes('Unknown is not zero'));
+});
