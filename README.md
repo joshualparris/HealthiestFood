@@ -34,3 +34,14 @@ Prioritise vegetables, legumes, high-fibre grains, oily fish or tofu, extra-virg
 Personal clinical records, wearable metrics, family information and private photos are deliberately **not** copied into this public repository. Drive source URLs are references and may require the owner's access permission.
 
 _Last compiled: 16 October 2026._
+
+
+## 16 October 2026 — updated 20-lunch plan and research
+
+The [original October 20-lunch concept](LATEST_20_LUNCH_CONCEPT.md) is retained unchanged as an historical proposal. The newer, **not yet cooked** revision corrects fish drained weights, the gluten-containing soy product, questionable shelled-edamame availability, portion/protein allocations and rice cooling.
+
+- **[Optimised 20 freezer lunches — full recipes](OPTIMISED_20_LUNCHES_2026-10-16.md)** (10 Mediterranean fish bowls + 10 lentil/pea/tofu bowls, alternating across four weeks).
+- **[Consolidated Woolworths 36-line shopping list](WOOLWORTHS_20_LUNCH_SHOPPING_2026-10-16.md)** — buy/usage quantities, estimated ~$204.25 first shop including optional soy milk and pantry staples, pantry-photo adjustment guidance; *not a verified Dubbo checkout*.
+- **[Nutrition science audit and 10-metric /100 scorecard](NUTRITION_AUDIT_2026-10-16.md)** — original 89/86, revised 92/89 subjective rubric, primary sources and caveats.
+
+**A “100/100” nutritional/longevity claim is unsupported.** The revised recipe has a **100% specification checklist** only; the 10-category nutrition rubric is openly subjective and does not predict lifespan.
