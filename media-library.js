@@ -32,6 +32,7 @@ function render(){
 function init(){
  const node=el();if(!node||!D||node.dataset.mediaReady)return;
  node.dataset.mediaReady="true";
+ document.addEventListener("click",e=>{const play=e.target.closest(".recipe-media-links [data-play-episode]");if(play)window.FoodPodcastPlayer?.playEpisode(play.dataset.playEpisode);});
  // A contextual URL such as index.html?topic=Fish%20%26%20omega-3#media selects its matching topic.
  try{const chosen=new URLSearchParams(location.search).get("topic");if(chosen&&D.topics.includes(chosen))state.topic=chosen;}catch{}
  node.innerHTML='<div class="media-library-toolbar"><div class="media-kind-filters" role="group" aria-label="Media format">'+
@@ -44,7 +45,6 @@ function init(){
  node.addEventListener("input",e=>{if(e.target.id==="mediaSearch"){state.query=e.target.value;render();}});
  render();
 }
- document.addEventListener("click",e=>{const play=e.target.closest(".recipe-media-links [data-play-episode]");if(play){window.FoodPodcastPlayer?.playEpisode(play.dataset.playEpisode);}});
 function relatedMarkup(r){
  if(!D)return "";
  const links=D.relatedForRecipe(r,3);
