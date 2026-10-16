@@ -1,5 +1,12 @@
 # HealthiestFood
 
+## Repository acceptance audit — 231 items (17 October 2026)
+
+**[Read the full source-and-test acceptance audit](docs/REPOSITORY_ACCEPTANCE_AUDIT_2026-10-17.md)** · [231-item auditable CSV](docs/REPOSITORY_ACCEPTANCE_AUDIT_2026-10-17.csv) · [Current tracker](docs/IMPLEMENTATION_TRACKER_2026-10-17.csv).
+
+The audit reviewed every backlog ID against source, automated tests and evidence limits: **14 code/test evidenced, 140 partially implemented, 72 not demonstrated by the inspected evidence and 5 requiring real-world verification**. These are *not* percentages of features completed. Post-audit changes improve canned bean product-yield consistency and add a pre-cook cooling-capacity acknowledgement for five-or-more hot portions. Store labels, physical kitchen safety, Android lock-screen alerts and full WCAG conformance remain unverified. Render and GitHub Pages are independently deployable backups; Vercel may lag when its quota is reached.
+
+
 ## New: Cooking Methods Lab (17 October 2026)
 
 **[Open the interactive Cooking Methods Lab on GitHub Pages](https://joshualparris.github.io/HealthiestFood/cooking-methods.html)** · [Research, safety and original scientific sources](COOKING_METHODS_EVIDENCE_2026-10-17.md) · [Source data](cooking-methods-data.js) · [Coverage tests](tests/cooking-methods.test.cjs).
