@@ -54,8 +54,8 @@ async function toggleWakeLock(){
  }catch{wakeRequested=false;wakeLock=null;updateWakeButton();toast("Screen stay-awake request was declined");}
 }
 function toast(message){const t=$("#toast"); t.textContent=message;t.classList.add("show");clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove("show"),3400);}
-function setRoute(route){const target=["home","recipes","plan","shop","science","media"].includes(route)?route:"home"; if(location.hash!== "#"+target){location.hash=target;return}renderView(target);}
-function renderView(route){const target=["home","recipes","plan","shop","science","media"].includes(route)?route:"home";
+function setRoute(route){const target=["home","recipes","plan","shop","science","media","lab","guide","page"].includes(route)?route:"home"; if(location.hash!== "#"+target){location.hash=target;return}renderView(target);}
+function renderView(route){const target=["home","recipes","plan","shop","science","media","lab","guide","page"].includes(route)?route:"home";
  $$(".view").forEach(v=>{const inactive=v.id!=="view-"+target;v.classList.toggle("hidden",inactive);v.hidden=inactive;v.inert=inactive;});
  $$("[data-route]").forEach(a=>{const active=a.dataset.route===target;a.classList.toggle("active",active);if(active)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
  $$(".mobile-nav button").forEach(b=>{const active=b.dataset.goto===target;b.classList.toggle("active",active);if(active)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
