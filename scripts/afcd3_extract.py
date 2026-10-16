@@ -14,10 +14,10 @@ IDS=[
 "F004213","F004726","F006277","F004816","F000262","F001289","F008951",
 "F003729","F003721","F002806","F007827","F008720","F006579","F003320",
 "F003539","F009190","F009222","F005174","F006081","F000095","F006543",
-"F007973","F007853","F006106"
+"F007973","F007853"
 ]
 # Mandatory columns known from the workbook, per 100g as sold/analysed.
-COLUMNS={"kj":"E","protein":"H","fat":"J","fibre":"L","calcium":"BD","iodine":"BJ","iron":"BK","magnesium":"BM","potassium":"BS","selenium":"BT","sodium":"BU","zinc":"BX"}
+COLUMNS={"kj":"E","protein":"H","fat":"J","fibre":"L","calcium":"BD","iodine":"BJ","iron":"BK","magnesium":"BM","potassium":"BS","selenium":"BT","sodium":"BU","zinc":"BX","b12":"CP","vitaminD":"CZ","folate":"CS","vitaminC":"CU"}
 def cells(row,strings):
  out={}
  for c in row.findall('m:c',NS):
