@@ -1144,10 +1144,16 @@
  }
  function allergensFor(recipe){
   if(!recipe?.ingredients)return {contains:[],labelCheck:[],unknown:false};
-  const records=recipe.ingredientRecords||apply([recipe])[0].ingredientRecords;
+  // Synthetic or imported recipes may contain unknown food names. Do not
+  // throw or pronounce them allergen-safe; strict apply() is only for the
+  // validated 17 shipped recipes, and the unknown flag remains true.
+  const records=recipe.ingredientRecords||recipe.ingredients.map(x=>{
+   const match=byIngredient(x);
+   return {allergens:match?.allergens||[],mayContain:match?.mayContain||[],sku:match?.sku||null,unmapped:!match};
+  });
   return {contains:[...new Set(records.flatMap(r=>r.allergens))].sort(),
     labelCheck:[...new Set(records.flatMap(r=>r.mayContain))].sort(),
-    unknown:records.some(r=>!r.sku || r.mayContain.length>0)};
+    unknown:records.some(r=>r.unmapped||!r.sku || r.mayContain.length>0)};
  }
  function verify(recipes){
   const arr=apply(recipes);return {version:VERSION,recipes:arr.length,
