@@ -6,6 +6,10 @@ A source-linked, dairy-free collection of home-cooked and historically planned f
 
 ## Start here
 
+- **[V2 recipes: 20 practical Dubbo freezer lunches](RECIPES_V2.md)** — revised protein portions, two full cooking methods and safe cooling.
+- **[V2 consolidated shopping and prices](SHOPPING_V2_DUBBO.md)** — exact pack quantities, estimated budget, product links and price confidence.
+- **[V2 evidence and corrections](V2_EVIDENCE.md)** — source checks and what remains unverified.
+
 - [Documented cook-ups](COOKED_BATCHES.md) — which batches were made, approximate dates and actual versus planned yields.
 - [Recipe archive](RECIPES_ARCHIVE.md) — complete recovered recipes from the frozen-lunch audit, including alternatives not confirmed as cooked.
 - [5 September 2026 actual 18-portion batch](RECIPES_2026_SEPTEMBER.md) — distinguishes the 10-portion recipe design from the actual 18-portion cook-up.
