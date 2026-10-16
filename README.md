@@ -1,5 +1,17 @@
 # HealthiestFood
 
+
+## NEW — Complete daily meals and real-date scheduling (17 October 2026)
+
+**[Open the live daily planner](https://healthiest-food.vercel.app/#plan)** · [Browse every recipe](https://healthiest-food.vercel.app/#recipes) · [Drive source coverage, limitations and exact example meal times](WHOLE_DAY_MEAL_SOURCES.md)
+
+The app now has **17 adult recipe suggestions**: **4 breakfasts, 4 V6 freezer lunches, 5 dinners and 4 snacks**. Unlike the old static four-week weekday checklist, **Plan** starts on the actual local date in **Australia/Sydney** (including Saturday 17 October 2026), displays a seven-day week, supports any calendar date, allows adding/removing/editing breakfast, lunch, dinner and snack slots with precise times, and marks meals completed. **Today**, previous/next day, date picker and **copy to tomorrow** are available.
+
+Initial times are **07:30 breakfast, 10:00 snack, 12:30 lunch, 15:30 snack, 18:00 dinner**; these are **editable convenience defaults**, not proven longevity-optimal timings or medical fasting advice. Your plan is stored only in this browser/device; it is **not** automatically synced to Google Calendar and **does not send notifications**. The old $256.43 estimated Woolworths basket still represents **V6 lunches only**; breakfasts, dinners and snacks have new ingredient lists and steps but no local-checkout-verified costs or unified shopping basket. The extra recipes are adult suggestions **adapted from historical household Drive plans**, not verified recent cook-ups; see source notes.
+
+Automated tests: `node --test tests/*.test.cjs` including timezone/DST, recipe data, legacy timers and site checks. Other historical recipes and V2–V6 audit files remain preserved.
+
+
 ## 🍃 Live interactive cooking website
 
 **[Open Good Food, Long Game → https://healthiest-food.vercel.app/](https://healthiest-food.vercel.app/)**
