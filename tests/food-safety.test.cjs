@@ -10,7 +10,7 @@ const safety=require('../food-safety.js');
 const r=(id,ingredients,step="Bake thoroughly then freeze")=>({id,ingredients:ingredients.map(x=>[100,"g",x]),steps:[{title:"Prepare",detail:step}]});
 test('Poultry/fish get safe handling and doneness reminders',()=>{
  const chicken=safety.checklist(r("di-chicken",["boneless skinless chicken thigh","brown rice"]));
- assert.ok(chicken.some(x=>x.label.includes("74°C")));
+ assert.ok(chicken.some(x=>x.label.includes("75°C")));
  assert.ok(chicken.some(x=>x.label.includes("shallow")));
  assert.ok(chicken.some(x=>x.label.includes("two days")));
  const fish=safety.checklist(r("b",["raw salmon fillet"]));
