@@ -1,0 +1,37 @@
+name: Multi-state accessibility evidence
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'site.css'
+      - 'app.js'
+      - 'cooking-methods.html'
+      - 'longevity.html'
+      - 'e2e/a11y-audit.cjs'
+      - '.github/workflows/accessibility-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  axe-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install accessibility audit dependencies
+        run: npm install --no-save --no-package-lock playwright axe-core
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Scan multiple app states with WCAG-tagged axe rules
+        run: node e2e/a11y-audit.cjs
+      - name: Upload evidence and detected accessibility issues
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-axe-evidence
+          path: a11y-audit-report.json
+          if-no-files-found: warn
