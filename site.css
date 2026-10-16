@@ -233,3 +233,6 @@
 .cook-wake-control button[aria-pressed="true"]{background:#204b37;color:#fff;border-color:#204b37}
 .cook-wake-control small{flex:1 1 195px;color:#456451;line-height:1.5}
 .cook-wake-control a{color:#255943;font-weight:700}
+
+/* Full 17-recipe official AFCD3 modelled nutrient analysis */
+.whole-day-scroll{overflow-x:auto;max-width:100%;margin:18px 0 10px;border:1px solid var(--line);border-radius:13px}.whole-day-table{min-width:740px;width:100%;border-collapse:collapse}.whole-day-table th,.whole-day-table td{font-size:12px;padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}.whole-day-table caption{font-size:13px;color:var(--muted);padding:10px;text-align:left}.whole-day-asterisk,.whole-day-caveats,.whole-day-controls{font-size:13px;line-height:1.55}.whole-day-controls{border:1px solid var(--line);border-radius:14px;padding:16px;margin:22px 0 14px}.whole-day-controls h3{margin:0 0 9px;font-family:var(--serif);font-size:23px}.whole-day-controls label{font-weight:bold;display:block;margin:11px 0}.whole-day-controls input{min-height:44px;border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--pine);background:white}.whole-day-caveats{border:1px solid var(--line);border-radius:13px;padding:13px;margin:13px 0}.whole-day-caveats summary{font-weight:700;cursor:pointer;color:var(--pine)}
