@@ -21,7 +21,7 @@ The owners' personal and family Drive accounts contain meal-planning information
 - Every date suggests editable example slots: **07:30 breakfast, 10:00 morning snack, 12:30 lunch, 15:30 afternoon snack and 18:00 dinner**. **18:00 is a flexible ordinary-family default**, not a contradiction of the older document's 17:00–17:30 example. Users can set any valid local time, add/delete meals, mark completion, or copy a day to tomorrow.
 - If the browser stays open across midnight in Dubbo and the user was on the prior day's Today view, the planner advances automatically; manually selected historical/future dates are not forcibly changed.
 - Plans persist **only on that browser/device**. This does **not** create Google Calendar events, send reminders/push notifications, upload personal meals to GitHub or automatically synchronise phones and computers.
-- The **Shopping list continues to represent the four original V6 freezer-lunch batches only** at their historical estimated basket. Breakfast/dinner/snack prices, pack quantities and local Dubbo availability are **not checkout-verified** and are not automatically added to the lunch-shopping estimate.
+- The **Shopping list continues to represent the four original V6 freezer-lunch batches only** at their historical estimated basket. The dated planner additionally lets you set **portions per slot** and **Copy day ingredients** or **Copy week ingredients**; these lists sum the corresponding ingredient quantities proportionally to recipe base yields but are **unpriced, unverified at local checkout, and do not round up to retail packs**. Breakfast/dinner/snack foods are not automatically merged into the V6-priced basket.
 
 ## Nutrition safety and evidence
 
