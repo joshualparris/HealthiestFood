@@ -84,3 +84,8 @@
 .planner-note{color:var(--muted);font-size:13px;max-width:930px;margin:10px 0 0;line-height:1.65}
 @media(max-width:800px){.planner-slots{grid-template-columns:1fr}.planner-add-fields{grid-template-columns:1fr 1fr}.planner-add-fields label:nth-child(2){grid-column:span 2}.planner-add-fields button{grid-column:span 2}.planner-toolbar{padding:16px}.planner-nav{width:100%}.planner-day-summary{gap:7px}.planner-day-summary>div{padding:11px}.planner-day-summary strong{font-size:16px}}
 @media(max-width:470px){.planner-week{gap:4px}.planner-weekday{border-radius:11px;min-height:72px}.planner-weekday strong{font-size:18px}.planner-weekday span{font-size:10px}.planner-weekday small{font-size:10px}.planner-slot{padding:13px}.planner-slot-fields{grid-template-columns:92px minmax(0,1fr)}.planner-nav input{width:148px}.planner-day-summary span{font-size:10px}.meal-filters{gap:6px}.meal-filters button{padding:8px 10px;font-size:12px}}
+
+/* Portion-aware scheduled shopping; preserve small-phone space. */
+.planner-slot-fields{grid-template-columns:100px 88px minmax(0,1fr)}.planner-add-fields{grid-template-columns:115px minmax(0,1fr) 115px 95px auto}.planner-slot input[type=number],.planner-add input[type=number]{width:100%;max-width:100%;min-width:0;background:#fff;border:1px solid #d5dbca;border-radius:10px;padding:10px 7px;min-height:45px;color:var(--pine);font-size:14px}
+@media(max-width:800px){.planner-add-fields{grid-template-columns:1fr 1fr}.planner-slot-fields{grid-template-columns:100px 90px minmax(0,1fr)}}
+@media(max-width:470px){.planner-slot-fields{grid-template-columns:1fr 1fr}.planner-slot-fields label:nth-child(3){grid-column:span 2}.planner-bottom button{flex:1 1 42%}}
