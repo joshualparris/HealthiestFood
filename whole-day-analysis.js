@@ -98,7 +98,7 @@ function row(ing){
   let value=null,src=null;
   if(fromLabel){value=label[key];src="Retail label";}
   else if(generic.length===ids.length&&ids.length&&!(branded&&/tofu/i.test(branded.product.id)&&key==="calcium")){
-   const weighted=generic.reduce((acc,x)=>{const v=F()[x.id].per100[key];return Number.isFinite(v)?acc+v*x.portion:null;},0);
+   const weighted=generic.every(x=>Number.isFinite(F()[x.id].per100[key]))?generic.reduce((sum,x)=>sum+F()[x.id].per100[key]*x.portion,0):null;
    if(weighted!==null&&Number.isFinite(weighted)){value=weighted;src="AFCD3 generic proxy";}
   }
   // Absent nutrient data must remain null; a blank is NOT zero.
