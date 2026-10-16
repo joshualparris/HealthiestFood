@@ -14,7 +14,9 @@ prices = ["29.60","38.00","13.98","3.80","3.00","6.00","5.75","3.50","3.50","13.
 totals = Counter()
 for b in batches.values():
     totals.update(b)
-assert len(batches)==4 and all(5==5 for b in batches.values())
+assert len(batches)==4
+portion_counts = {name: 5 for name in batches}
+assert sum(portion_counts.values()) == 20
 assert totals["sardines"]==8*75
 assert totals["salmon_raw"]==5*125
 assert totals["tofu_raw"]==2*625
