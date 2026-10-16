@@ -40,12 +40,12 @@ test('DST boundaries and month/year rollovers use civil dates without UTC date s
  assert.equal(core.validTime('18:00'),true);
  assert.equal(core.validTime('25:88'),false);
 });
-test('each date has sensible editable meal slots and linked recipes',()=>{
+test('new dates default to three core meals; users can still add snacks and saved plans are untouched',()=>{
  for(const date of ['2026-10-17','2026-10-18','2026-10-19']){
  const slots=core.makeDefaults(date);
- assert.equal(slots.length,5);
- assert.deepEqual(Array.from(slots,s=>s.type),['breakfast','snack','lunch','snack','dinner']);
- assert.deepEqual(Array.from(slots,s=>s.time),['07:30','10:00','12:30','15:30','18:00']);
+ assert.equal(slots.length,3);
+ assert.deepEqual(Array.from(slots,s=>s.type),['breakfast','lunch','dinner']);
+ assert.deepEqual(Array.from(slots,s=>s.time),['07:30','12:30','18:00']);
  for(const s of slots){assert.ok(data.recipes.some(r=>r.id===s.recipeId&&r.category===s.type));assert.equal(s.done,false);assert.ok(Number.isInteger(s.portions)&&s.portions>=1);}
  }
 });
@@ -60,6 +60,7 @@ test('new meal picker and dated plan screen are wired into HTML and app',()=>{
  assert.ok(planner.includes('type="time"'));
  assert.ok(planner.includes('data-slot-done'));
  assert.ok(planner.includes('data-planner="copy-tomorrow"'));
+ assert.ok(planner.includes('Add to '+"'+escape(format(active"));
  assert.ok(css.includes('.planner-week'));
  assert.ok(css.includes('max-width:470px'));
 });
