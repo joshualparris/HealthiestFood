@@ -66,7 +66,7 @@ function renderView(route){const target=["home","recipes","plan","shop","science
  window.scrollTo({top:0,behavior:"instant"});
  document.title=(target==="home"?"Good Food, Long Game":target.charAt(0).toUpperCase()+target.slice(1)+" | Good Food, Long Game");
 }
-const RECIPE_PHOTOS=Object.freeze({"br-oats":"br-oats.webp","br-eggs":"br-eggs.webp","br-smoothie":"br-smoothie.webp","br-toast":"br-toast.webp","di-lentil":"di-lentil.webp","di-chicken":"di-chicken.webp","di-chilli":"di-chilli.webp","di-stirfry":"di-stirfry.webp","di-salmon":"di-salmon.webp","sn-hummus":"sn-hummus.webp"});
+const RECIPE_PHOTOS=Object.freeze({"br-oats":"br-oats.webp","br-eggs":"br-eggs.webp","br-smoothie":"br-smoothie.webp","br-toast":"br-toast.webp","di-lentil":"di-lentil.webp","di-chicken":"di-chicken.webp","di-chilli":"di-chilli.webp","di-stirfry":"di-stirfry.webp","di-salmon":"di-salmon.webp","sn-hummus":"sn-hummus.webp","a":"a.webp","b":"b.webp","c":"c.webp","d":"d.webp","sn-apple":"sn-apple.webp","sn-eggs":"sn-eggs.webp","sn-berries":"sn-berries.webp"});
 function recipePhoto(r,large=false){
  const file=RECIPE_PHOTOS[r.id];
  if(!file)return '';
