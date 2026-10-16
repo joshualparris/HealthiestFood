@@ -10,6 +10,8 @@ const makeState = () => ({checked:[],days:[],finished:[],selected:"a"});
 let state;
 try { state = {...makeState(),...JSON.parse(localStorage.getItem(KEY)||"{}")}; } catch {state=makeState();}
 if(!Array.isArray(state.checked))state.checked=[];if(!Array.isArray(state.days))state.days=[];if(!Array.isArray(state.finished))state.finished=[];
+if(!state.prepped || typeof state.prepped!=="object" || Array.isArray(state.prepped))state.prepped={};
+if(!state.cookPortions || typeof state.cookPortions!=="object" || Array.isArray(state.cookPortions))state.cookPortions={};
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}};
 const recipe=id=>R.find(r=>r.id===id)||R[0];
 let selected=recipe(state.selected).id,servings=5,search="",shopFilter="remaining";
@@ -128,10 +130,14 @@ function timerTick(){
 function openCook(id,stepIndex=0){
  lastFocus=document.activeElement;lastCookRecipe=id;
  const r=recipe(id);
- cook={id,index:Math.min(Math.max(0,stepIndex),r.steps.length-1)};
+ const requested=id===selected?servings:state.cookPortions[id];
+ const portions=Number.isInteger(requested)&&requested>=1&&requested<=20?requested:r.yield;
+ state.cookPortions[id]=portions;save();
+ cook={id,index:Math.min(Math.max(0,stepIndex),r.steps.length-1),portions};
  $("#cookOverlay").classList.remove("hidden");
  document.body.classList.add("modal-open");
  renderCook();
+ $("#closeCook")?.focus();
 }
 function closeCook(){
  cook=null;
@@ -151,7 +157,10 @@ function renderCook(){
   $("#cookContent").innerHTML=h+p+board+'<div class="cook-complete"><div class="big-check">✓</div><h3>Something good is cooking.</h3><p>Chill safely, label your containers and enjoy the week ahead.</p><button id="finishCook" class="btn btn-primary">Finish and close ↗</button></div>';
   renderTimerBoard();return;
  }
- $("#cookContent").innerHTML=h+p+board+'<div class="cook-body"><div class="cook-stepcount">STEP '+(cook.index+1)+' OF '+r.steps.length+'</div><h3>'+escapeHTML(step.title)+'</h3><p>'+escapeHTML(step.detail)+'</p><div class="cook-tip"><strong>✳</strong><span>'+escapeHTML(step.tip)+'</span></div>'+(step.minutes?'<div class="cook-timer"><div class="timer-display" id="timerClock" aria-live="off">'+T.format(step.minutes*60)+'</div><button class="timer-button" id="timerToggle">Start timer</button><button class="timer-button" id="timerReset">Reset</button><span class="timer-safety">Timers continue independently when you press Next. Check doneness and packet instructions.</span></div>':'<p class="evidence-chip" style="margin-top:20px">No countdown for this safety/finishing step.</p>')+'</div><footer class="cook-footer"><button class="btn btn-outline" id="prevStep" '+(cook.index===0?'disabled':'')+'>← Previous</button><button class="btn btn-primary" id="nextStep">'+(last?'Finish this batch ✓':'Next step →')+'</button></footer>';
+ const ready=Array.isArray(state.prepped[r.id])?state.prepped[r.id].filter(n=>Number.isInteger(n)&&n>=0&&n<r.ingredients.length):[];
+ const readySet=new Set(ready);
+ const prep='<details class="cook-prep"><summary>Ingredient checklist · '+cook.portions+' '+(cook.portions===1?'portion':'portions')+' <span id="prepProgress">'+readySet.size+'/'+r.ingredients.length+' ready</span></summary><p>Check ingredients as you measure them. Quantities below are scaled; the cooking-step wording retains the original '+r.yield+'-portion batch amounts. Use these scaled measurements instead and adjust equipment or cooking time where needed.</p><div class="cook-prep-list">'+r.ingredients.map(([amt,unit,name],i)=>'<label><input type="checkbox" data-prep-index="'+i+'"'+(readySet.has(i)?' checked':'')+'><span><strong>'+formatNum(amt*cook.portions/r.yield)+' '+escapeHTML(unit)+'</strong> '+escapeHTML(name)+'</span></label>').join('')+'</div><button type="button" id="resetPrep" class="timer-button">Clear ingredient checks</button></details>';
+ $("#cookContent").innerHTML=h+p+board+'<div class="cook-body">'+prep+'<div class="cook-stepcount">STEP '+(cook.index+1)+' OF '+r.steps.length+'</div><h3 tabindex="-1" id="cookStepHeading">'+escapeHTML(step.title)+'</h3><p>'+escapeHTML(step.detail)+'</p><div class="cook-tip"><strong>✳</strong><span>'+escapeHTML(step.tip)+'</span></div>'+(step.minutes?'<div class="cook-timer"><div class="timer-display" id="timerClock" aria-live="off">'+T.format(step.minutes*60)+'</div><button class="timer-button" id="timerToggle">Start timer</button><button class="timer-button" id="timerReset">Reset</button><span class="timer-safety">Timers continue independently when you press Next. Check doneness and packet instructions.</span></div>':'<p class="evidence-chip" style="margin-top:20px">No countdown for this safety/finishing step.</p>')+'</div><footer class="cook-footer"><button class="btn btn-outline" id="prevStep" '+(cook.index===0?'disabled':'')+'>← Previous</button><button class="btn btn-primary" id="nextStep">'+(last?'Finish this batch ✓':'Next step →')+'</button></footer>';
  renderTimerBoard();
 }
 function stepChange(by){
@@ -161,6 +170,7 @@ function stepChange(by){
  cook.index=n;
  // Moving between steps does not modify other timers.
  renderCook();
+ $("#cookStepHeading")?.focus();
 }
 setInterval(timerTick,700);
 document.addEventListener("visibilitychange",timerTick);
@@ -176,12 +186,13 @@ document.addEventListener("click",e=>{
  const nav=e.target.closest("[data-goto]");if(nav){setRoute(nav.dataset.goto);return}
  const typeBtn=e.target.closest("[data-recipe-type]");if(typeBtn){recipeType=typeBtn.dataset.recipeType;renderCards();return;}
  const choice=e.target.closest("[data-select]");if(choice){selected=choice.dataset.select;state.selected=selected;servings=recipe(selected).yield;save();setRoute("recipes");renderDetail();setTimeout(()=>$("#selected-recipe")?.scrollIntoView({behavior:"smooth",block:"start"}),40);return}
- const scaled=e.target.closest("[data-servings]");if(scaled){servings=Math.max(1,Math.min(20,servings+Number(scaled.dataset.servings)));renderDetail();return}
+ const scaled=e.target.closest("[data-servings]");if(scaled){servings=Math.max(1,Math.min(20,servings+Number(scaled.dataset.servings)));state.cookPortions[selected]=servings;save();renderDetail();return}
  const start=e.target.closest("[data-start]");if(start){openCook(start.dataset.start);return}
  if(e.target.closest("#jumpToShop")){setRoute("shop");return}
  if(e.target.closest("#closeCook")){closeCook();return}
  if(e.target.closest("#nextStep")){stepChange(1);return}
  if(e.target.closest("#prevStep")){stepChange(-1);return}
+ if(e.target.closest("#resetPrep") && cook){delete state.prepped[cook.id];save();renderCook();return}
  if(e.target.closest("#timerToggle")){const id=currentTimerId(),t=timers[id];if(id)handleTimerAction(t?.status==="running"?"pause":"start",id);return}
  if(e.target.closest("#timerReset")){const id=currentTimerId();if(id)handleTimerAction("reset",id);return}
  const timerButton=e.target.closest("[data-timer-action]");if(timerButton){handleTimerAction(timerButton.dataset.timerAction,timerButton.dataset.timerId);return}
@@ -193,11 +204,20 @@ document.addEventListener("click",e=>{
  const filter=e.target.closest("[data-filter]");if(filter){shopFilter=filter.dataset.filter;renderShop();}
 });
 document.addEventListener("change",e=>{
+ if(e.target.matches("[data-prep-index]") && cook){
+  const n=Number(e.target.dataset.prepIndex),r=recipe(cook.id);
+  if(!Number.isInteger(n)||n<0||n>=r.ingredients.length)return;
+  const ready=new Set(Array.isArray(state.prepped[cook.id])?state.prepped[cook.id]:[]);
+  if(e.target.checked)ready.add(n);else ready.delete(n);
+  state.prepped[cook.id]=[...ready].filter(i=>Number.isInteger(i)&&i>=0&&i<r.ingredients.length);save();
+  const progress=$("#prepProgress");if(progress)progress.textContent=state.prepped[cook.id].length+"/"+r.ingredients.length+" ready";
+  return;
+ }
  if(e.target.matches("[data-item]")){const n=Number(e.target.dataset.item);state.checked=e.target.checked?Array.from(new Set([...state.checked,n])):state.checked.filter(x=>x!==n);save();renderShop();}
  if(e.target.matches("[data-day]")){const n=Number(e.target.dataset.day);state.days=e.target.checked?Array.from(new Set([...state.days,n])):state.days.filter(x=>x!==n);save();renderPlan();}
 });
 $("#shopSearch").addEventListener("input",e=>{search=e.target.value.toLowerCase().trim();renderShop();});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&cook){closeCook();return}if(e.key==="Tab"&&cook){const list=$$("button:not(:disabled)",$("#cookOverlay"));if(list.length){const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){last.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===last){first.focus();e.preventDefault();}}}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&cook){closeCook();return}if(e.key==="Tab"&&cook){const list=$("button:not(:disabled),input:not(:disabled),a[href],select:not(:disabled)",$("#cookOverlay")).filter(el=>el.getClientRects().length);if(list.length){const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){last.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===last){first.focus();e.preventDefault();}}}});
 window.addEventListener("hashchange",()=>renderView(location.hash.slice(1)));
 servings=recipe(selected).yield;renderCards();renderDetail();renderPlan();renderShop();renderSources();renderView(location.hash.slice(1));
 })();
