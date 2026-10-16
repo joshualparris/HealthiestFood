@@ -1,5 +1,14 @@
 # HealthiestFood
 
+## Podcasts & videos backed by source science (17 October 2026)
+
+**[Open the searchable audio/video library](https://joshualparris.github.io/HealthiestFood/#media)** · [Source-to-claim editorial evidence map](MEDIA_EVIDENCE_MAP_2026-10-17.md) · [Official video safety guidance](https://www.foodstandards.gov.au/consumer/prevention-of-foodborne-illness/food-safety-basics).
+
+The latest website includes **16 original ABC Health Report / What's That Rash? podcast episodes plus 7 Australian video resources** (5 official Food Standards Australia New Zealand video links and 2 Australian Heart Foundation webpages containing embedded video demonstrations). Each episode card spells out **the claim it can help explain**, **what it cannot prove**, and a separate **original study or government/Heart Foundation reference**. Filters select Podcasts or Videos, topics, and free-text search; recipe details provide up to three directly relevant resources. The main science section and all seven sections of the longevity guide link back to relevant media topics. Clicking a resource opens its original publisher; **no autoplay, account, embed tracking, personalisation surveillance, paid affiliate placement or copied audio/video content**.
+
+**Media explain science but do not verify grocery checkout, individual branded nutrients, cooked-food laboratory values, exact lifespan benefit, personal medical advice or food-safety compliance.** For those claims the app relies on current product labels, official FSANZ and NSW Food Authority rules, and the incomplete AFCD3 labelled calculations. The evidence map explicitly flags gaps such as iodine bread fortification with no verified audio match.
+
+
 ## Official AFCD3 model: all 17 recipes + seven dated days (17 Oct 2026)
 
 **[Read the 17-recipe and seven-day source-traced nutrient report](FULL_DAY_NUTRIENT_MODEL_2026-10-17.md)** · [Open the interactive website nutrition view](https://healthiest-food.vercel.app/#science) · [Open independent GitHub Pages backup](https://joshualparris.github.io/HealthiestFood/)
