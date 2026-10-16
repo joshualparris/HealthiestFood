@@ -145,36 +145,3 @@
  }
  return {merge,lookup,reconcile,render,handle,mappings};
 });
-   '<p class="dynamic-shop-warning">Partial pantry quantities reduce what you need to buy. Quantities are manual estimates, not tracked automatically when a meal is cooked. Buy counts round up to full packs; this estimate excludes products without a reliable mapping. All prices are dated planning allowances, not live Dubbo checkout or stock. Check labels, pack sizes and edible yields.</p>';
- }
- function copyList(){
-   if(!snapshot)return "";
-   return "PLANNED FOOD SHOP — "+mode.toUpperCase()+"\nIndicative matching-pack prices only; unknown foods also required.\n\n"+
-   snapshot.rows.filter(x=>x.toBuy>0).map(x=>qty(x.toBuy)+" "+x.unit+" "+x.name+(x.map?" — "+x.packsToBuy+" pack(s), approx $"+x.priceToBuy.toFixed(2):" — CHECK RETAIL PACK AND PRICE")).join("\n")+
-   "\n\nNot a complete or live Woolworths Dubbo checkout.";
- }
- function handle(e,refresh){
-   const target=e.target;
-   if(e.type==="change"&&target?.matches?.("[data-planned-have]")){
-    const key=target.dataset.plannedHave,row=snapshot?.rows.find(x=>x.key===key);
-    if(!row)return false;
-    have[key]=target.checked?row.amount:0;persist();refresh();return true;
-   }
-   if(e.type==="change"&&target?.matches?.("[data-pantry-amount]")){
-    const key=target.dataset.pantryAmount;
-    if(!snapshot?.rows.some(x=>x.key===key))return false;
-    have[key]=safeAmount(target.value);persist();refresh();return true;
-   }
-   if(e.type!=="click")return false;
-   const button=target.closest?.("[data-shop-range]");
-   if(button){mode=button.dataset.shopRange;refresh();return true;}
-   if(target.closest?.("#copyPlannedShopping")){
-    const content=copyList();
-    if(navigator.clipboard?.writeText)navigator.clipboard.writeText(content);
-    else{const ta=document.createElement("textarea");ta.value=content;document.body.append(ta);ta.select();document.execCommand("copy");ta.remove();}
-    return true;
-   }
-   return false;
- }
- return {merge,lookup,reconcile,render,handle,mappings};
-});
