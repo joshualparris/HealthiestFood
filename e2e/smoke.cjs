@@ -129,20 +129,26 @@ async function main(){
       await p.close();
     });
     await check('on-device test deadlines catch up after simulated time-away and reload',async()=>{
-      const p=await browser.newPage({viewport:{width:390,height:844}});
+      const context=await browser.newContext({viewport:{width:390,height:844}});
+      const p=await context.newPage();
       await p.goto(base+'/device-timer-check.html',{waitUntil:'domcontentloaded'});
       await p.locator('#beginDeviceTest').click();
-      await p.evaluate(()=>{
+      await p.close(); // pagehide saves the original state first
+      const updater=await context.newPage();
+      await updater.goto(base+'/product-check.html',{waitUntil:'domcontentloaded'});
+      await updater.evaluate(()=>{
         const k='good-food-phone-timer-test-v1';
         const data=JSON.parse(localStorage.getItem(k));
         for(const t of Object.values(data.timers))t.deadline=Date.now()-150000;
         localStorage.setItem(k,JSON.stringify(data));
       });
-      await p.reload({waitUntil:'domcontentloaded'});
-      assert.equal((await p.locator('#stateA').innerText()).startsWith('Finished'),true);
-      assert.equal((await p.locator('#stateB').innerText()).startsWith('Finished'),true);
-      assert.match(await p.locator('#deviceStatus').innerText(),/does NOT prove an alarm/);
-      await p.close();
+      await updater.close();
+      const again=await context.newPage();
+      await again.goto(base+'/device-timer-check.html',{waitUntil:'domcontentloaded'});
+      assert.match(await again.locator('#stateA').innerText(),/^Finished/);
+      assert.match(await again.locator('#stateB').innerText(),/^Finished/);
+      assert.match(await again.locator('#deviceStatus').innerText(),/does NOT prove an alarm/);
+      await context.close();
     });
     for(const width of [360,390,430,768,1280]){
       await check('no horizontal overflow at '+width+'px',async()=>{
