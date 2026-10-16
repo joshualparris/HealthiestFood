@@ -9,8 +9,8 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const sandbox = {window:{}};
 vm.runInNewContext(read('site-data.js'), sandbox);
 const data = sandbox.window.FOOD_DATA;
-const appJS = read('app.js'), html = read('index.html'), css = read('site.css');
-test('browser JavaScript parses',()=>{assert.doesNotThrow(()=>new vm.Script(appJS));assert.doesNotThrow(()=>new vm.Script(read('site-data.js')));});
+const appJS = read('app.js'), auditJS = read('site-audit.js'), html = read('index.html'), css = read('site.css');
+test('browser JavaScript parses',()=>{assert.doesNotThrow(()=>new vm.Script(appJS));assert.doesNotThrow(()=>new vm.Script(auditJS));assert.doesNotThrow(()=>new vm.Script(read('site-data.js')));});
 test('four distinct recipes, 5 portions each, have complete guided steps',()=>{
  assert.equal(data.recipes.length,4);
  assert.deepEqual(Array.from(data.recipes, r=>r.id), ['a','b','c','d']);
@@ -28,6 +28,7 @@ test('all required views, data/assets and accessibility landmarks exist',()=>{
  for(const asset of ['site.css','site-data.js','app.js']) assert.ok(html.includes('"'+asset+'"'),asset);
  assert.ok(html.includes('role="dialog"') && html.includes('aria-modal="true"'));
  assert.ok(html.includes('Skip to content'));
+ assert.ok(html.includes('id="auditScores"') && html.includes('id="auditClaims"'));
  assert.ok(css.includes('.recipe-card .recipe-click{display:block'));
 });
 test('nutrition sources and cooling advice are transparently available',()=>{
@@ -41,4 +42,11 @@ test('nutrition sources and cooling advice are transparently available',()=>{
 });
 test('shopping and plan persistence, recipe scaling and timer implementation exist',()=>{
  for(const keyword of ['localStorage','data-servings','data-day','data-item','timerDeadline','timerPause','copyShop','window.print']) assert.ok(appJS.includes(keyword),keyword);
+});
+
+test('science ledger distinguishes evidence from unsupported perfect-health claims',()=>{
+ assert.match(auditJS,/Not supported/);
+ assert.match(auditJS,/calcium remains unquantified/i);
+ assert.match(auditJS,/Prices unverified|prices unverified|price/i);
+ assert.match(html,/SITE_FACT_CHECK\.md/);
 });
