@@ -6,6 +6,10 @@ A source-linked, dairy-free collection of home-cooked and historically planned f
 
 ## Start here
 
+- **[V5: four five-portion recipes](v5/RECIPES.md)** — twenty varied adult lunches, exact ingredients and methods, with salmon cost/energy trade-offs.
+- **[V5: Dubbo shopping and prices](v5/SHOPPING.md)** — estimated $229.40 core full-pack basket, or $193.40 using canned salmon; local stock/checkout unverified.
+- **[V5: evidence and nutrition estimates](v5/EVIDENCE.md)** — transparent assumptions and [reproducible calculation](v5/calculate.py); not a perfect-health score.
+
 - **[V2 recipes: 20 practical Dubbo freezer lunches](RECIPES_V2.md)** — revised protein portions, two full cooking methods and safe cooling.
 - **[V2 consolidated shopping and prices](SHOPPING_V2_DUBBO.md)** — exact pack quantities, estimated budget, product links and price confidence.
 - **[V2 evidence and corrections](V2_EVIDENCE.md)** — source checks and what remains unverified.
