@@ -80,3 +80,24 @@ test("selection bounds and unknown saved recipe IDs are discarded",()=>{
  assert.equal(saved.checked.other,undefined);
  assert.equal(custom.slots(saved.portions,recipes).length,2);
 });
+
+test("HF-001/HF-061: canned beans use the SAME declared edible grams in label nutrition and all shopping paths",()=>{
+ const N=require("../nutrient-ledger.js");
+ for(const [key,productId,name] of [
+  ["chickpeas","259399","Woolworths no-added-salt chickpeas, 420 g"],
+  ["blackbeans","663581","Woolworths black beans no added salt, 420 g"]
+ ]){
+  const expected=N.items.find(x=>x.productId===productId).ediblePerTinG;
+  assert.equal(shop.mappings.find(x=>x.key===key).pack,expected,key);
+  const tin=shop.lookup(name,"tins");
+  assert.equal(tin.multiplier,expected,key+" lookup");
+  assert.equal(N.matchIngredient([2,"tins",name]).grams,2*expected,key+" nutrition");
+  const sample=custom.build({[key==="blackbeans"?"d":"a"]:5},recipes,shop);
+  const row=sample.rows.find(x=>x.key===key);
+  assert.ok(row,"Shopping must contain "+key);
+  assert.equal(row.map.pack,expected);
+  assert.equal(row.map.multiplier,expected);
+ }
+ assert.equal(shop.lookup("Woolworths black beans no added salt, 420 g","tins").multiplier,225);
+ assert.equal(shop.lookup("Woolworths no-added-salt chickpeas, 420 g","tins").multiplier,252);
+});
