@@ -39,3 +39,8 @@ There is no evidence of a single perfect recipe that maximises lifespan for ever
 ## Developer verification
 
 Run `node --test tests/*.test.cjs`. New modules must stay loaded in the following order: `site-data.js`, `whole-day-data.js`, `recipe-scale.js`, `nutrition-coverage.js`, `app.js`, `food-shopping.js` before `food-planner.js` (exact relative position before `app.js` or `food-planner.js` matters). Ensure no new unit converter merges a 420 g **gross can** directly with 420 g **drained legumes**. Existing 20-lunch basket remains fixed at $256.43 **historical estimate**, not a guaranteed live checkout.
+
+
+## Deployment blocker — 16 Oct 2026 UTC
+
+After the follow-up edits and additional Chromium regression test, the latest public Vercel deployment did **not** automatically advance to GitHub main. A manual attempt to deploy the newest commit was rejected with **Vercel API HTTP 402**: `api-deployments-free-per-day`, with retry-after **86,400 seconds (24 hours)**. The source code is committed but any files introduced after the last published deployment must be treated as **not confirmed live**. No paid upgrade or billing change was made. Check the deployed commit SHA against the GitHub main SHA when Vercel's quota resets before claiming the website is fully updated. GitHub unit/browser tests are independent of production deployment.
