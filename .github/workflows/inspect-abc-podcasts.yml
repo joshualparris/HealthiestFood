@@ -1,0 +1,16 @@
+name: Inspect podcast stream availability
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/inspect_abc_feeds.py','.github/workflows/inspect-abc-podcasts.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check official RSS enclosure URLs and older episodes
+        run: python scripts/inspect_abc_feeds.py
