@@ -65,19 +65,31 @@ function totals(rows,now=today()){
  }
  return totals;
 }
+function dinnerNeeds(lots,recipes,shop,now=today()){
+ if(!shop||!Array.isArray(recipes))return [];
+ const inventory=Object.fromEntries(Object.entries(totals(lots,now)).map(([k,v])=>[k,v.amount]));
+ return recipes.filter(r=>r.category==="dinner").map(recipe=>{
+   const rows=shop.reconcile(shop.merge([{recipeId:recipe.id,portions:1}],recipes),inventory).rows;
+   const missing=rows.filter(x=>Number(x.toBuy)>0);
+   return {id:recipe.id,name:recipe.name,missing:missing.length,unknown:missing.filter(x=>!x.map).length,items:missing.map(x=>x.name),estimate:missing.every(x=>x.map)?missing.reduce((total,x)=>total+(Number(x.priceToBuy)||0),0):null};
+ }).sort((a,b)=>a.missing-b.missing||a.unknown-b.unknown||a.name.localeCompare(b.name));
+}
 function storage(){try{return w?.localStorage||null}catch{return null}}
 const elem=()=>typeof document==="undefined"?null:document.getElementById("pantryLotManager");
 function mappings(){return w?.FoodShopping?.mappings||[]}
 function present(message=""){
  const node=elem();if(!node)return;
  const rows=load(storage()),map=mappings();
+ const ideas=dinnerNeeds(rows,w?.FOOD_DATA?.recipes||[],w?.FoodShopping);
+ const soon=ordered(rows).filter(l=>l.amount>0&&l.useBy&&status(l).id!=="past-use-by").slice(0,3);
+ const ideasHtml='<section class="pantry-dinner-ideas"><h3>Dinner ideas: fewest missing ingredients</h3><p>Based only on the amounts you recorded in dated lots, for one adult portion. This does not confirm food safety, allergies, or live shop availability. Any unrecorded pantry items are counted as missing.</p><div>'+ideas.map(d=>'<article><strong>'+escape(d.name)+'</strong><span>'+d.missing+' purchase lines to check'+(d.unknown?' · '+d.unknown+' product matches unknown':'')+'</span><small>'+escape(d.items.slice(0,4).join("; ")||"No recorded purchases needed")+(d.items.length>4?" …":"")+'</small><button type="button" data-select="'+escape(d.id)+'">View recipe ↗</button></article>').join("")+'</div></section><p class="pantry-next-dates">Next recorded use-by dates to check: '+(soon.length?soon.map(l=>escape(l.name)+" ("+l.useBy+")").join(" · "):"None recorded")+'. Check cold-chain history before using anything.</p>';
  const options=map.map(m=>'<option value="'+escape(m.key)+'">'+escape(m.buy)+' ('+escape(m.unit||"each")+')</option>').join("");
  const first=map[0];
  node.innerHTML='<div class="pantry-lot-head"><span class="section-kicker">LOCAL · MANUAL INVENTORY</span><h2>What’s already in the pantry?</h2><p>Record individual opened/unopened packs and dates instead of one misleading combined quantity. All records stay on this device; the dates are reminders, <strong>never proof of food safety</strong>. Refrigerated food needs correct temperatures and handling regardless of the printed date.</p></div>'+
  '<form id="pantryAddForm" class="pantry-lot-form"><label>Product / pack<select name="key" id="pantryNewKey" required>'+options+'</select></label><label>Quantity<input type="number" name="amount" min="0.01" max="100000" step="any" inputmode="decimal" required></label><label>Pack state<select name="condition"><option value="unopened">Unopened</option><option value="opened">Opened</option></select></label>'+
  '<label>Stored in<select name="location"><option value="pantry">Pantry</option><option value="fridge">Fridge</option><option value="freezer">Freezer</option></select></label><label>Use-by (if applicable)<input type="date" name="useBy"></label><label>Best-before (if applicable)<input type="date" name="bestBefore"></label>'+
  '<label>Optional barcode (typed, unverified)<input type="text" name="barcode" maxlength="40" inputmode="numeric" placeholder="Read from pack"></label><button type="submit" class="btn btn-primary">Add this pack</button></form>'+
- '<div class="pantry-lot-meta"><span>'+rows.length+' separate lots · '+Object.keys(totals(rows)).length+' recognised product types</span><button type="button" data-pantry-sync>Copy counted quantities to shopping checklist ↗</button></div>'+
+ ideasHtml+'<div class="pantry-lot-meta"><span>'+rows.length+' separate lots · '+Object.keys(totals(rows)).length+' recognised product types</span><button type="button" data-pantry-sync>Copy counted quantities to shopping checklist ↗</button></div>'+
  '<p id="pantryFeedback" role="status" class="pantry-feedback">'+escape(message)+'</p>'+
  '<div class="pantry-lot-items">'+(rows.length?ordered(rows).map(l=>{const st=status(l),date=l.useBy?"Use-by "+l.useBy:l.bestBefore?"Best-before "+l.bestBefore:"No printed date";
  return '<article class="pantry-lot" data-lot="'+escape(l.id)+'"><div class="pantry-lot-title"><strong>'+escape(l.name)+'</strong><span class="pantry-lot-state" data-state="'+escape(st.id)+'">'+escape(st.label)+'</span></div><p>'+escape(String(l.amount))+' '+escape(l.unit)+' · '+escape(l.condition)+' · '+escape(l.location)+' · '+escape(date)+(l.barcode?' · Barcode (unverified): '+escape(l.barcode):'')+'</p><div class="pantry-lot-controls"><label>Amount to use / add <input type="number" min="0.01" step="any" max="100000" inputmode="decimal" data-qty></label><button type="button" data-lot-use="'+escape(l.id)+'">Used this amount</button><button type="button" data-lot-add="'+escape(l.id)+'">Added amount</button><button type="button" data-lot-undo="'+escape(l.id)+'"'+(l.history.length?"":" disabled")+'>Undo last change</button><button type="button" data-lot-remove="'+escape(l.id)+'">Remove record</button></div></article>'
@@ -112,5 +124,5 @@ function init(){
  });
 }
 if(w&&typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init()}
-return {KEY,PANTRY,clean,load,save,add,change,undo,status,ordered,totals,init};
+return {KEY,PANTRY,clean,load,save,add,change,undo,status,ordered,totals,dinnerNeeds,init};
 });
