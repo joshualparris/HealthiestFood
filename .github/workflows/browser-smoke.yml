@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'app.js'
+      - 'media-data.js'
+      - 'media-library.js'
       - 'index.html'
       - 'site.css'
       - 'local-backup.js'
