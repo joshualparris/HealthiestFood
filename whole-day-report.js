@@ -15,8 +15,8 @@ function render(){
  const detail=A.week(dates,P.getSlots||P.makeDefaults,D.recipes);
  const rows=D.recipes.map(r=>({recipe:r,calc:A.analyze(r,1)}));
  const tr=(s,ns)=>'<tr><th scope="row">'+esc(s)+'</th>'+ns.map(n=>'<td>'+n+'</td>').join("")+'</tr>';
- const fmt=(o,k,dec=0)=>o.subtotal[k]===null?"Unknown":nf(o.subtotal[k],dec)+(o.unknown[k]>0?'*':'');
- const dayFmt=(d,k,dec=0)=>d.subtotal[k]===null?"Unknown":nf(d.subtotal[k],dec)+(d.incomplete[k]?'*':'');
+ const fmt=(o,k,dec=0)=>o.subtotal[k]===null||(o.unknown[k]>0&&["calcium","iodine"].includes(k)&&o.subtotal[k]===0)?"Unknown":nf(o.subtotal[k],dec)+(o.unknown[k]>0?'*':'');
+ const dayFmt=(d,k,dec=0)=>d.subtotal[k]===null||(d.incomplete[k]&&["calcium","iodine"].includes(k)&&d.subtotal[k]===0)?"Unknown":nf(d.subtotal[k],dec)+(d.incomplete[k]?'*':'');
  root.innerHTML=
  '<div class="page-head"><span class="section-kicker">OFFICIAL AUSTRALIAN FOOD DATA · PARTIAL MODEL</span><h2>All 17 meals, <em>measured against evidence.</em></h2><p>Ingredient models from <a href="https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/data-files" target="_blank" rel="noopener noreferrer">FSANZ AFCD Release 3</a> and labelled Woolworths products. Values below are <strong>raw/dry/drained-ingredient subtotals per adult portion</strong>, not tested finished-food totals. Missing inputs and preparation losses prevent a certified nutrient-adequacy conclusion.</p></div>'+
  '<div class="whole-day-scroll"><table class="audit-table whole-day-table"><caption>17 recipes · sources and unknowns visible</caption><thead><tr><th>Meal</th><th>kJ*</th><th>Protein g*</th><th>Fibre g*</th><th>Calcium mg*</th><th>Iron mg*</th><th>Iodine µg*</th><th>Mapped ingredients</th></tr></thead><tbody>'+
