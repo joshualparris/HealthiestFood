@@ -1,5 +1,10 @@
 # HealthiestFood
 
+## Master improvement backlog (17 October 2026)
+
+**[231 prioritised improvements — detailed, with acceptance criteria](docs/IMPROVEMENT_BACKLOG_2026-10-17.md)** · **[CSV for issue/agent tracking](docs/IMPROVEMENT_BACKLOG_2026-10-17.csv)**. Includes nutrition/AFCD, food safety, recipe precision, Dubbo Woolworths shopping, pantry carryover, cooking and timers, accessibility, privacy, backups, deployment validation and QA. **23 P0, 151 P1, 56 P2, 1 P3.** Labels distinguish observed repo limitations, unverified physical/device questions and new feature proposals. **Backlog documentation only:** not a claim that these changes have been implemented or personally kitchen-tested.
+
+
 
 ## Latest evidence-led website improvements — 17 October 2026
 
