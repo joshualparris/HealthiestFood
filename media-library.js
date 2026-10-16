@@ -11,7 +11,7 @@ function filtered(){
  return D.items.filter(x=>(state.kind==="all"||state.kind===x.kind)&&(state.topic==="all"||state.topic===x.topic)&&(!q||[x.title,x.publisher,x.topic,x.claim,x.limitations].join(" ").toLocaleLowerCase("en-AU").includes(q)));
 }
 function card(x){
- const icon=x.kind==="video"?"▶":"♫",noun=x.kind==="video"?"Watch":"Listen",title=esc(x.title),hasStream=x.kind==="podcast"&&!!window.FoodPodcastStreams?.episodes?.[x.id]?.url;
+ const icon=x.kind==="video"?"▶":"♫",noun=x.kind==="video"?"Watch":"Listen",title=esc(x.title),hasStream=x.kind==="podcast"&&!!w?.FoodPodcastStreams?.episodes?.[x.id]?.url;
  return '<article class="media-resource" data-media-id="'+esc(x.id)+'"><div class="media-resource-top"><span class="media-resource-kind" aria-label="'+esc(x.kind)+'">'+icon+" "+esc(x.kind)+"</span><span class=\"media-resource-date\">"+esc(x.duration)+"</span></div>"+
  '<div class="media-resource-body"><div class="media-resource-topic">'+esc(x.topic)+'</div><h3>'+title+'</h3><div class="media-resource-publisher">'+esc(x.publisher)+'</div>'+
  '<p class="media-resource-claim"><strong>What it explains</strong> '+esc(x.claim)+'</p>'+
@@ -32,7 +32,7 @@ function render(){
 function init(){
  const node=el();if(!node||!D||node.dataset.mediaReady)return;
  node.dataset.mediaReady="true";
- document.addEventListener("click",e=>{const play=e.target.closest(".recipe-media-links [data-play-episode]");if(play)window.FoodPodcastPlayer?.playEpisode(play.dataset.playEpisode);});
+ document.addEventListener("click",e=>{const play=e.target.closest(".recipe-media-links [data-play-episode]");if(play)w?.FoodPodcastPlayer?.playEpisode(play.dataset.playEpisode);});
  // A contextual URL such as index.html?topic=Fish%20%26%20omega-3#media selects its matching topic.
  try{const chosen=new URLSearchParams(location.search).get("topic");if(chosen&&D.topics.includes(chosen))state.topic=chosen;}catch{}
  node.innerHTML='<div class="media-library-toolbar"><div class="media-kind-filters" role="group" aria-label="Media format">'+
@@ -40,7 +40,7 @@ function init(){
  '</div><label class="media-topic-filter" for="mediaTopic">Topic<select id="mediaTopic"><option value="all">All health topics</option>'+D.topics.map(t=>'<option value="'+esc(t)+'">'+esc(t)+'</option>').join("")+'</select></label>'+
  '<label class="media-search-filter" for="mediaSearch">Search episodes<input id="mediaSearch" type="search" autocomplete="off" placeholder="e.g. omega-3, calcium, food safety"></label>'+
  '<div class="media-results-count" id="mediaCount" role="status" aria-live="polite"></div></div><div id="mediaResults" class="media-grid"></div>';
- node.addEventListener("click",e=>{const play=e.target.closest("[data-play-episode]");if(play){window.FoodPodcastPlayer?.playEpisode(play.dataset.playEpisode);return;}const b=e.target.closest("[data-media-kind]");if(!b)return;state.kind=b.dataset.mediaKind;render();});
+ node.addEventListener("click",e=>{const play=e.target.closest("[data-play-episode]");if(play){w?.FoodPodcastPlayer?.playEpisode(play.dataset.playEpisode);return;}const b=e.target.closest("[data-media-kind]");if(!b)return;state.kind=b.dataset.mediaKind;render();});
  node.addEventListener("change",e=>{if(e.target.id==="mediaTopic"){state.topic=e.target.value;render();}});
  node.addEventListener("input",e=>{if(e.target.id==="mediaSearch"){state.query=e.target.value;render();}});
  render();
@@ -49,7 +49,7 @@ function relatedMarkup(r){
  if(!D)return "";
  const links=D.relatedForRecipe(r,3);
  if(!links.length)return "";
- return '<aside class="recipe-media-links" aria-label="Further listening and watching for this recipe"><h3>Why these ingredients?</h3><p>Learn the science behind the choices, not a claim this recipe extends lifespan.</p><div>'+links.map(x=>x.kind==="podcast"&&window.FoodPodcastStreams?.episodes?.[x.id]?.url?'<button class="recipe-media-play" type="button" data-play-episode="'+esc(x.id)+'">▶ Play here: '+esc(x.title)+'</button>':'<a href="'+esc(safeUrl(x.url))+'" target="_blank" rel="noopener noreferrer">'+(x.kind==="video"?"▶ Watch":"♫ Listen")+": "+esc(x.title)+" ↗</a>").join("")+'</div><a class="recipe-media-browse" href="#media">Browse all podcasts & videos ↗</a></aside>';
+ return '<aside class="recipe-media-links" aria-label="Further listening and watching for this recipe"><h3>Why these ingredients?</h3><p>Learn the science behind the choices, not a claim this recipe extends lifespan.</p><div>'+links.map(x=>x.kind==="podcast"&&w?.FoodPodcastStreams?.episodes?.[x.id]?.url?'<button class="recipe-media-play" type="button" data-play-episode="'+esc(x.id)+'">▶ Play here: '+esc(x.title)+'</button>':'<a href="'+esc(safeUrl(x.url))+'" target="_blank" rel="noopener noreferrer">'+(x.kind==="video"?"▶ Watch":"♫ Listen")+": "+esc(x.title)+" ↗</a>").join("")+'</div><a class="recipe-media-browse" href="#media">Browse all podcasts & videos ↗</a></aside>';
 }
 function injectRecipe(r,target){
  if(!target)return;
