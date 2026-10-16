@@ -22,8 +22,8 @@ const server = http.createServer(async(req,res)=>{
   } catch {res.writeHead(404); res.end('Not found');}
 });
 async function main(){
-  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-  const base='http://127.0.0.1:'+server.address().port;
+  if(!process.env.SMOKE_URL)await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+  const base=process.env.SMOKE_URL?.replace(/\/$/,'')||'http://127.0.0.1:'+server.address().port;
   const browserName=process.env.BROWSER_ENGINE||'chromium';
   const engine={chromium,webkit,firefox}[browserName];
   if(!engine)throw Error('Unsupported browser engine '+browserName);
@@ -126,4 +126,4 @@ async function main(){
     process.stdout.write('Passed '+assertions+' browser checks.\n');
   }finally{await browser.close();}
 }
-main().catch(err=>{process.stderr.write(String(err.stack||err)+'\n');process.exitCode=1;}).finally(()=>server.close());
+main().catch(err=>{process.stderr.write(String(err.stack||err)+'\n');process.exitCode=1;}).finally(()=>{if(server.listening)server.close();});
