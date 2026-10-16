@@ -518,3 +518,31 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
 
 /* Explicit local-only 5–60°C handling-time log. Temperatures must be verified by the cook. */
 .handling-mount{margin:15px 0 20px}.handling-details{border:1px solid #cfd8b7;background:#f2f5e9;border-radius:15px;overflow:hidden}.handling-details>summary{cursor:pointer;font-weight:800;color:var(--pine);padding:14px 16px;line-height:1.45;min-height:44px}.handling-log{padding:6px 16px 17px}.handling-log h3{font-size:19px;margin:5px 0}.handling-log p{font-size:12px;line-height:1.65}.handling-total{display:flex;flex-wrap:wrap;gap:9px;align-items:center}.handling-total>strong{font-size:23px;color:var(--pine)}#handlingStatus{border-radius:9px;background:#e0eee2;padding:5px 9px;font-size:12px;font-weight:800}#handlingStatus[data-state="use-now"]{background:#f5e0b5;color:#614612}#handlingStatus[data-state="discard"]{background:#f7d1c8;color:#752f25}#handlingStatus[data-state="unknown"]{background:#e9e8de;color:#504d42}.handling-advice{padding:9px 12px;background:white;border-left:4px solid #a8b992;color:#48584b}.handling-actions{display:flex;gap:8px;flex-wrap:wrap}.handling-actions button,.handling-backfill button{border:1px solid #c7d4be;background:white;border-radius:10px;color:var(--pine);padding:9px 10px;min-height:44px;font-weight:700;font-size:12px}.handling-backfill{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:11px 0}.handling-backfill label{font-size:12px}.handling-backfill input{width:100px;border-radius:9px;border:1px solid #bdc9b2;min-height:44px;padding:6px}.handling-log small{display:block;font-size:11px;line-height:1.6;color:#596b5f}.handling-log small a{color:var(--pine)}
+
+
+/* Local-only dated food pack inventory, no guessed freshness or barcode verification. */
+.pantry-lot-manager{margin:35px 0 28px;padding:24px;border:1px solid var(--line);background:var(--paper);border-radius:22px}
+.pantry-lot-head h2{font:600 clamp(27px,3vw,34px)/1.2 var(--serif);color:var(--pine);margin:10px 0}
+.pantry-lot-head p,.pantry-lot-caveat{font-size:13px;line-height:1.75;color:#5c6d60}
+.pantry-lot-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end;background:#eef3e7;padding:15px;border-radius:15px;border:1px solid #d9e2d4;margin:18px 0}
+.pantry-lot-form label,.pantry-lot-controls label{display:flex;flex-direction:column;gap:5px;min-width:0;color:var(--pine);font-weight:800;font-size:11px}
+.pantry-lot-form input,.pantry-lot-form select,.pantry-lot-controls input{height:44px;border:1px solid #bbcbb6;border-radius:10px;background:white;padding:9px;min-width:0;width:100%;font-size:13px;color:var(--pine)}
+.pantry-lot-form label:first-child{grid-column:span 2}.pantry-lot-form button{min-height:44px}
+.pantry-lot-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;font-size:12px;color:#587361;font-weight:750;margin-top:15px}
+.pantry-lot-meta button{border:1px solid #b7cbb6;border-radius:10px;background:#e8f0df;min-height:44px;padding:8px 12px;color:var(--pine);font-weight:750;font-size:12px}
+.pantry-feedback{font-size:12px;line-height:1.6;color:#547159;min-height:16px}
+.pantry-lot-items{display:grid;gap:10px;max-height:800px;overflow-y:auto;overscroll-behavior:contain;padding:3px}
+.pantry-lot{padding:15px;border:1px solid #e0e8d8;border-radius:14px;background:#fff}
+.pantry-lot-title{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.pantry-lot-title strong{font-size:14px;color:var(--pine)}
+.pantry-lot-state{padding:5px 8px;border-radius:9px;background:#edf3e5;color:#566d50;font-size:11px;font-weight:750}
+.pantry-lot-state[data-state="past-use-by"]{background:#fbe0d9;color:#852c1b}
+.pantry-lot-state[data-state="use-by-today"],.pantry-lot-state[data-state="past-best-before"]{background:#f8edcd;color:#765418}
+.pantry-lot p{font-size:12px;line-height:1.6;color:#587061}
+.pantry-lot-controls{display:flex;flex-wrap:wrap;align-items:end;gap:6px}
+.pantry-lot-controls label{width:125px;flex:0 1 125px}
+.pantry-lot-controls button{border:1px solid #d0dbc8;background:#f1f5ec;color:var(--pine);font-size:11px;border-radius:9px;min-height:44px;padding:7px 9px;font-weight:750}
+.pantry-lot-controls button:disabled{opacity:.55;cursor:not-allowed}
+.pantry-lot-caveat{border-top:1px solid var(--line);padding:12px 0 0;margin:18px 0 0}
+@media(max-width:900px){.pantry-lot-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.pantry-lot-manager{padding:15px;border-radius:17px;margin:24px 0}.pantry-lot-form{grid-template-columns:1fr;gap:10px;padding:12px}.pantry-lot-form label:first-child{grid-column:span 1}.pantry-lot-controls{display:grid;grid-template-columns:1fr 1fr}.pantry-lot-controls label{width:100%;grid-column:1/-1}.pantry-lot-controls button{width:100%}}
