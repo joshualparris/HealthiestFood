@@ -15,7 +15,7 @@
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
     const out = {};
     for (const [id, t] of Object.entries(raw).slice(0, 80)) {
-      if (!/^[a-z]:\d{1,2}$/.test(id) || !t || !VALID.has(t.status)) continue;
+      if (!/^[a-z][a-z0-9-]{0,48}:\d{1,2}$/.test(id) || !t || !VALID.has(t.status)) continue;
       const durationSec = Number(t.durationSec);
       if (!Number.isFinite(durationSec) || durationSec <= 0 || durationSec > 24*60*60) continue;
       const stepIndex = Number(t.stepIndex), recipeId = String(t.recipeId || "");
