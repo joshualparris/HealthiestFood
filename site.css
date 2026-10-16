@@ -485,3 +485,21 @@ body.podcast-active{padding-bottom:90px}
 @media(max-width:360px){.podcast-controls{gap:3px}.podcast-controls button{padding:6px}.media-resource-links{grid-template-columns:1fr}.media-resource-links .media-resource-primary{grid-column:1}}
 
 .podcast-inline-help{margin:18px 0;padding:13px 17px;border-radius:13px;background:#e8f0e0;border:1px solid #d3e2c8;color:var(--pine);font-size:13px;line-height:1.65}.podcast-inline-help span{font-size:21px;margin-right:7px;vertical-align:middle}
+
+
+/* Framed research pages share the main shell, rather than drawing an app inside an app. */
+html.embedded-site .site-header,
+html.embedded-site .site-footer,
+html.embedded-site .mobile-nav,
+html.embedded-site .skip-link {display:none!important}
+html.embedded-site body {margin:0!important;padding:0!important;overflow-x:clip!important}
+html.embedded-site .cm-hero{border-radius:0 0 24px 24px;width:100%}
+html.embedded-site .cm-page{overflow:visible;max-width:100%}
+.inapp-subpage.inapp-immersive{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;min-height:0!important}
+.inapp-subpage.inapp-immersive .inapp-page-head{display:none!important}
+.inapp-subpage.inapp-immersive iframe{display:block;width:100%;height:1200px;min-height:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent;overflow:hidden}
+.inapp-subpage.inapp-immersive iframe:focus-visible{outline:2px solid #376e4b;outline-offset:-2px}
+@media(max-width:800px){
+ html.embedded-site .cm-hero{border-radius:0 0 22px 22px}
+ .inapp-subpage.inapp-immersive iframe{min-height:0!important;height:1200px}
+}
