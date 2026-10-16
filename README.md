@@ -1,5 +1,9 @@
 # HealthiestFood
 
+## October 2026 whole-repository longevity audit
+
+**[Read the ranked audit and concrete improvements](LONGEVITY_AUDIT_2026-10-16.md)** — covers the archived cook-ups and versions V2–V6, checks V6 fish/tofu/soy options, calcium, four-versus-five workday scheduling, food safety, full-diet nutrient gaps, cost provenance and script limitations. No recipe was shown to increase lifespan; this is an evidence/practicality review, not a medical or kitchen test.
+
 ## Latest — V6 (16 October 2026): Woolworths-only, four-batch freezer lunches
 
 **V6 is a planned recipe design, not a proven or kitchen-tested longevity optimum.** Built after inspecting **[V5](v5/RECIPES.md)** and the current repository tree. Unlike V5's mixed Coles/Woolworths shop, V6 names Woolworths-listed alternatives for all main proteins.
