@@ -64,10 +64,11 @@ def main():
   out[item["id"]]={"url":match["url"],"title":match["title"],"publisherUrl":item["url"],"feed":match["feed"],"published":published,"source":"ABC public podcast RSS enclosure"}
   print("MATCHED",item["id"],match["title"],urllib.parse.urlsplit(match["url"]).netloc,flush=True)
  if notfound:raise ValueError("Unmatched official podcast episodes: "+repr(notfound))
- print("VERIFY_AUDIO_FIRST_4",flush=True)
- for item in m[:4]:
+ print("VERIFY_ALL_16_ABC_AUDIO_STREAMS",flush=True)
+ for item in m:
   ok=verify_head(out[item["id"]]["url"],item["id"])
   out[item["id"]]["headVerified"]=ok
+ print("HEAD_VALIDATED",sum(x.get("headVerified") for x in out.values()),"of",len(out),flush=True)
  # Source URLs remain official public podcast enclosures, never mirrored.
  bundle={"source":"Official ABC public podcast RSS enclosure links, no audio hosted or mirrored by HealthiestFood","generated":datetime.datetime.now(datetime.timezone.utc).isoformat(),"count":len(out),"episodes":out}
  js=('/* First-party ABC RSS audio URLs ONLY. No podcast audio is downloaded/hosted. Regenerate from scripts/generate_podcast_sources.py; audio can expire. */\n' +
