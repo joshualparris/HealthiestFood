@@ -3,7 +3,7 @@
  * No analytics, account, external pricing requests or data writes.
  */
 'use strict';
-const { chromium } = require('playwright');
+const { chromium, webkit, firefox } = require('playwright');
 const http = require('node:http');
 const fs = require('node:fs/promises');
 const path = require('node:path');
@@ -24,7 +24,11 @@ const server = http.createServer(async(req,res)=>{
 async function main(){
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const base='http://127.0.0.1:'+server.address().port;
-  const browser=await chromium.launch({headless:true});
+  const browserName=process.env.BROWSER_ENGINE||'chromium';
+  const engine={chromium,webkit,firefox}[browserName];
+  if(!engine)throw Error('Unsupported browser engine '+browserName);
+  const browser=await engine.launch({headless:true});
+  process.stdout.write('Browser engine: '+browserName+'\\n'.replace('\\n','\n'));
   let assertions=0;
   async function check(name,fn){
     try{await fn();assertions++;process.stdout.write('PASS '+name+'\n');}
