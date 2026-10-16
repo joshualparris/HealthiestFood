@@ -25,8 +25,8 @@
  }
  function caution(recipe,portions){
    return portions===recipe.yield?
-     "Use the measured ingredients listed above and check packet directions and food temperatures.":
-     "Scaled-batch caution: gram, millilitre and spoon quantities in these steps are adjusted where unambiguous. Some words and per-piece amounts may still describe the original batch. Check the scaled ingredient checklist, divide into "+portions+" portions, and adjust pan space, cooking time and cooling capacity. For best reliability, cook separate original-size batches.";
+     "Amounts shown in each step are measured for this recipe. Times are guides, not proof of doneness; check packet directions and food temperatures.":
+     "Amounts in these steps have been recalculated for "+portions+" portions. Timings and temperatures do not scale automatically. Check pan capacity, doneness and cooling time. When an ingredient requires a fraction of an egg, tin or other whole item, weigh the edible portion or prepare a full original-size batch.";
  }
  return {scaleDetail,caution};
 });
