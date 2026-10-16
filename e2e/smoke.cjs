@@ -54,7 +54,7 @@ async function main(){
       await page.locator('#mediaSearch').fill('leftovers');
       assert.equal(await page.locator('#mediaResults .media-resource').count(),1);
       const media=page.locator('#mediaResults .media-resource').first();
-      assert.match(await media.innerText(),/What it does not prove/);
+      assert.match(await media.innerText(),/What it does not prove/i);
       assert.equal(await media.locator('a[target="_blank"]').count(),2);
       await page.locator('#mediaSearch').fill('');
       await page.locator('#mediaTopic').selectOption('all');
