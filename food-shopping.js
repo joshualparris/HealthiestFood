@@ -145,7 +145,6 @@
  }
  return {merge,lookup,reconcile,render,handle,mappings};
 });
-+x.priceToBuy.toFixed(2)+') · '+esc(x.map.priceSource):' · Retail pack/price unverified')+'</small></span></label><label class="dynamic-shop-pantry">In pantry <input type="number" min="0" max="1000000" step="any" inputmode="decimal" data-pantry-amount="'+esc(x.key)+'" value="'+x.owned+'" aria-label="Quantity already in pantry for '+esc(x.name)+' in '+esc(x.unit)+'"><span>'+esc(x.unit||"items")+'</span></label></div>').join("")+'</div>'+
    '<p class="dynamic-shop-warning">Partial pantry quantities reduce what you need to buy. Quantities are manual estimates, not tracked automatically when a meal is cooked. Buy counts round up to full packs; this estimate excludes products without a reliable mapping. All prices are dated planning allowances, not live Dubbo checkout or stock. Check labels, pack sizes and edible yields.</p>';
  }
  function copyList(){
