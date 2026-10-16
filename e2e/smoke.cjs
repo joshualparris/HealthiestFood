@@ -50,6 +50,28 @@ async function main(){
       assert.equal(await page.locator('#recipeCards .recipe-card').count(),4);
       await page.locator('[data-recipe-type="all"]').click();
     });
+    await check('meal filters never leave an unrelated expanded recipe underneath',async()=>{
+      const cases=[
+        ['breakfast',4,/Berry, chia & walnut overnight oats/],
+        ['lunch',4,/Lemon.paprika sardine bowls/],
+        ['dinner',5,/Tomato lentil/],
+        ['snack',4,/Crunchy vegetables/]
+      ];
+      for(const [category,count,expected] of cases){
+        await page.locator('[data-recipe-type="'+category+'"]').click();
+        assert.equal(await page.locator('#recipeCards .recipe-card').count(),count);
+        assert.match(await page.locator('#recipeDetail h2').innerText(),expected);
+        assert.equal(await page.locator('[data-recipe-type="'+category+'"]').getAttribute('aria-pressed'),'true');
+      }
+      await page.locator('[data-recipe-type="breakfast"]').click();
+      await page.locator('#recipeCards [data-select="br-eggs"]').click();
+      assert.match(await page.locator('#recipeDetail h2').innerText(),/Spinach, mushroom & egg scramble/);
+      await page.locator('.mobile-nav [data-goto="home"]').click();
+      await page.locator('#featuredCards [data-select="a"]').click();
+      assert.equal(await page.locator('[data-recipe-type="lunch"]').getAttribute('aria-pressed'),'true');
+      assert.match(await page.locator('#recipeDetail h2').innerText(),/Lemon.paprika sardine bowls/);
+      await page.locator('[data-recipe-type="all"]').click();
+    });
     await check('recipe scales and guided ingredient prep persists',async()=>{
       await page.locator('#recipeCards .recipe-click').first().click();
       assert.equal((await page.locator('.stepper output').innerText()).trim(),'5');
