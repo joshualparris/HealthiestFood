@@ -166,6 +166,7 @@
     render();
    }
   });
+  root.addEventListener("goodfood:pantry-updated",()=>{feedback="Dated lot quantities imported; recheck each product label.";render();});
   root.document.addEventListener("click",e=>{
    const btn=e.target.closest("[data-add-to-shop]");
    if(btn){add(btn.dataset.addToShop,Number(btn.dataset.shopPortions));}
