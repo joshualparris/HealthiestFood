@@ -14,6 +14,7 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}};
 const recipe=id=>R.find(r=>r.id===id)||R[0];
 let selected=recipe(state.selected).id,servings=5,search="",shopFilter="remaining";
 let cook=null;
+let recipeType="all";
 const T = window.FoodTimers;
 const TIMER_KEY="good-food-cook-timers-v1";
 let timers={};
@@ -39,16 +40,21 @@ function renderView(route){const target=["home","recipes","plan","shop","science
 }
 function artwork(r){return '<div class="recipe-card-visual '+escapeHTML(r.accent)+'"><span class="card-number">RECIPE '+escapeHTML(r.id.toUpperCase())+'</span><div class="mini-plate"><span aria-hidden="true">'+escapeHTML(r.icon)+'</span></div></div>';}
 function card(r){return '<article class="recipe-card">'+artwork(r)+'<div class="card-content"><span class="card-overline">'+escapeHTML(r.label)+'</span><h3>'+escapeHTML(r.name)+'</h3><p>'+escapeHTML(r.description)+'</p><div class="card-meta"><span>◷ '+r.time+' min</span><span>◉ '+r.yield+' meals</span></div><div class="card-footer">Cook this recipe <span class="round-arrow" aria-hidden="true">↗</span></div></div><button class="recipe-click" data-select="'+r.id+'" aria-label="View recipe '+escapeHTML(r.name)+'"></button></article>'}
-function renderCards(){$("#featuredCards").innerHTML=R.map(card).join("");$("#recipeCards").innerHTML=R.map(card).join("");}
+function renderCards(){
+ $("#featuredCards").innerHTML=R.filter(r=>r.category==="lunch").map(card).join("");
+ $("#recipeCards").innerHTML=R.filter(r=>recipeType==="all"||r.category===recipeType).map(card).join("");
+ $("[data-recipe-type]").forEach(b=>{const on=b.dataset.recipeType===recipeType;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",on?"true":"false");});
+}
 function formatNum(n){return Number(n.toFixed(2)).toLocaleString("en-AU",{maximumFractionDigits:2});}
 function renderDetail(){
  const r=recipe(selected),multiplier=servings/r.yield;
  const ing=r.ingredients.map(([amt,unit,name])=>'<li><span class="ingredient-amount">'+formatNum(amt*multiplier)+' '+escapeHTML(unit)+'</span><span>'+escapeHTML(name)+'</span></li>').join("");
  const steps=r.steps.map(s=>'<li>'+escapeHTML(s.title)+'</li>').join("");
- $("#recipeDetail").innerHTML='<div class="detail-layout" id="selected-recipe"><div class="detail-left"><div class="detail-eyebrow">✳ &nbsp; RECIPE '+r.id.toUpperCase()+' · '+escapeHTML(r.label)+'</div><h2>'+escapeHTML(r.name)+'</h2><p>'+escapeHTML(r.description)+'</p><div class="detail-pills">'+r.tags.map(t=>'<span class="pill">'+escapeHTML(t)+'</span>').join("")+'</div><div class="detail-highlight"><strong>Nutrition note:</strong> '+escapeHTML(r.nutrition)+'</div><div class="detail-actions"><button class="btn btn-primary" data-start="'+r.id+'">Start guided cooking →</button><button class="btn btn-outline" id="jumpToShop">See shopping list ↗</button></div><div class="evidence-chip">Ingredient quantities transcribed from V6; some nutritional totals are partial estimates.</div></div><div class="detail-right"><div class="servings-box"><span>SCALE THE RECIPE<br><small>Base yield: 5 lunches</small></span><div class="stepper"><button data-servings="-1" aria-label="Decrease servings">−</button><output aria-live="polite">'+servings+'</output><button data-servings="1" aria-label="Increase servings">+</button></div></div><h3>What you’ll need</h3><p>All quantities shown for '+servings+' '+(servings===1?'portion':'portions')+'. Changing this scales the recipe ingredients, not the separate 20-lunch shopping list. Times and oven capacity may also need adjustment.</p><ul class="ingredients-list">'+ing+'</ul><h3 style="margin-top:29px">The simple steps</h3><ol class="method-preview">'+steps+'</ol></div></div>';
+ $("#recipeDetail").innerHTML='<div class="detail-layout" id="selected-recipe"><div class="detail-left"><div class="detail-eyebrow">✳ &nbsp; RECIPE '+r.id.toUpperCase()+' · '+escapeHTML(r.label)+'</div><h2>'+escapeHTML(r.name)+'</h2><p>'+escapeHTML(r.description)+'</p><div class="detail-pills">'+r.tags.map(t=>'<span class="pill">'+escapeHTML(t)+'</span>').join("")+'</div><div class="detail-highlight"><strong>Nutrition note:</strong> '+escapeHTML(r.nutrition)+'</div><div class="detail-actions"><button class="btn btn-primary" data-start="'+r.id+'">Start guided cooking →</button><button class="btn btn-outline" id="jumpToShop">See shopping list ↗</button></div><div class="evidence-chip">'+(r.category==="lunch"?"Original V6 lunch quantities; nutrition totals are partial estimates.":"New adult recipe suggestions adapted from historical family plans; not kitchen or lab tested.")+'</div></div><div class="detail-right"><div class="servings-box"><span>SCALE THE RECIPE<br><small>Base yield: '+r.yield+' '+(r.yield===1?"portion":"portions")+'</small></span><div class="stepper"><button data-servings="-1" aria-label="Decrease servings">−</button><output aria-live="polite">'+servings+'</output><button data-servings="1" aria-label="Increase servings">+</button></div></div><h3>What you’ll need</h3><p>All quantities shown for '+servings+' '+(servings===1?'portion':'portions')+'. Changing this scales the recipe ingredients, not the separate 20-lunch shopping list. Times and oven capacity may also need adjustment.</p><ul class="ingredients-list">'+ing+'</ul><h3 style="margin-top:29px">The simple steps</h3><ol class="method-preview">'+steps+'</ol></div></div>';
 }
 const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday"];const WEEKS=[["a","c","b","d","a"],["c","b","d","a","c"],["b","d","a","c","b"],["d","a","c","b","d"]];
 function renderPlan(){
+ if(window.FoodPlanner){window.FoodPlanner.render();return;}
  $("#planGrid").innerHTML=WEEKS.map((w,wi)=>'<section class="week-card"><span>THE LONG GAME</span><h3>Week '+(wi+1)+'</h3>'+w.map((id,di)=>{let r=recipe(id),idx=wi*5+di,checked=state.days.includes(idx);return '<label class="plan-day '+(checked?'done':'')+'"><input type="checkbox" data-day="'+idx+'" '+(checked?'checked':'')+' aria-label="Mark '+DAYS[di]+' week '+(wi+1)+' lunch prepared"><div><span>'+DAYS[di]+' · Recipe '+id.toUpperCase()+'</span><strong>'+escapeHTML(r.name)+'</strong></div></label>';}).join("")+'</section>').join("");
 }
 function renderShop(){
@@ -168,7 +174,8 @@ function fallbackCopy(content){const t=document.createElement("textarea");t.valu
 function resetAll(){if(!confirm("Clear all saved shopping ticks and 20-day planning progress on this device?"))return;state=makeState();save();renderShop();renderPlan();toast("Progress reset");}
 document.addEventListener("click",e=>{
  const nav=e.target.closest("[data-goto]");if(nav){setRoute(nav.dataset.goto);return}
- const choice=e.target.closest("[data-select]");if(choice){selected=choice.dataset.select;state.selected=selected;servings=5;save();setRoute("recipes");renderDetail();setTimeout(()=>$("#selected-recipe")?.scrollIntoView({behavior:"smooth",block:"start"}),40);return}
+ const typeBtn=e.target.closest("[data-recipe-type]");if(typeBtn){recipeType=typeBtn.dataset.recipeType;renderCards();return;}
+ const choice=e.target.closest("[data-select]");if(choice){selected=choice.dataset.select;state.selected=selected;servings=recipe(selected).yield;save();setRoute("recipes");renderDetail();setTimeout(()=>$("#selected-recipe")?.scrollIntoView({behavior:"smooth",block:"start"}),40);return}
  const scaled=e.target.closest("[data-servings]");if(scaled){servings=Math.max(1,Math.min(20,servings+Number(scaled.dataset.servings)));renderDetail();return}
  const start=e.target.closest("[data-start]");if(start){openCook(start.dataset.start);return}
  if(e.target.closest("#jumpToShop")){setRoute("shop");return}
@@ -192,5 +199,5 @@ document.addEventListener("change",e=>{
 $("#shopSearch").addEventListener("input",e=>{search=e.target.value.toLowerCase().trim();renderShop();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&cook){closeCook();return}if(e.key==="Tab"&&cook){const list=$$("button:not(:disabled)",$("#cookOverlay"));if(list.length){const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){last.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===last){first.focus();e.preventDefault();}}}});
 window.addEventListener("hashchange",()=>renderView(location.hash.slice(1)));
-renderCards();renderDetail();renderPlan();renderShop();renderSources();renderView(location.hash.slice(1));
+servings=recipe(selected).yield;renderCards();renderDetail();renderPlan();renderShop();renderSources();renderView(location.hash.slice(1));
 })();
