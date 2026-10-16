@@ -355,3 +355,15 @@
 @media (max-width:900px){.media-library-toolbar{grid-template-columns:1fr 1fr}.media-kind-filters{grid-column:1/-1}.media-results-count{grid-column:1/-1}}
 @media (max-width:650px){.media-guide-intro{grid-template-columns:1fr;gap:8px}.media-guide-intro>div{padding:13px 16px}.media-guide-intro p{margin:4px 0 0}.media-grid{grid-template-columns:1fr}.media-library-toolbar{grid-template-columns:1fr}.media-topic-filter,.media-search-filter,.media-kind-filters,.media-results-count{grid-column:1/-1}.media-resource h3{font-size:22px}.media-resource-body{padding:17px}.media-resource-links{grid-template-columns:1fr 1fr}.media-resource-links a{font-size:11px;padding:11px 7px}.media-kind-filters button{flex:1 1 auto;padding:11px 7px}.mobile-nav button{min-width:0;font-size:10px;padding-left:0;padding-right:0}.mobile-nav{gap:0}}
 @media (max-width:360px){.media-resource-links{grid-template-columns:1fr}.media-guide-intro>div{padding:13px}}
+
+
+/* Precise, scalable methods: visible in the recipe preview and each guided step. */
+.method-preview-detail{display:block;margin:7px 0 5px;font-size:12px;font-weight:400;line-height:1.75;color:#587060;overflow-wrap:anywhere}
+.method-preview strong{font-size:14px;color:#214833}
+.step-measures{margin:16px 0 18px;background:#edf4e8;border:1px solid #d3e5c9;border-radius:16px;padding:17px 19px;color:#254d39}
+.step-measures h4{font-size:12px;letter-spacing:.7px;text-transform:uppercase;font-weight:800;margin:0 0 10px;color:#335b42}
+.step-measures ul{padding-left:21px;margin:0;display:grid;gap:6px}
+.step-measures li{font-size:14px;line-height:1.6;padding-left:2px;overflow-wrap:anywhere}
+.step-measures strong{font-variant-numeric:tabular-nums;color:#1b4531}
+.step-measures p{font-size:12px;color:#56725c;margin:0}
+@media(max-width:540px){.step-measures{padding:14px 15px}.step-measures li{font-size:13px}.method-preview-detail{font-size:12px;line-height:1.65}}
