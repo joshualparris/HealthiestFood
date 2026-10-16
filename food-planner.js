@@ -3,7 +3,7 @@
  */
 (function(){
 "use strict";
-const ZONE="Australia/Sydney",KEY="good-food-dated-schedule-v1",D=window.FOOD_DATA;
+const ZONE="Australia/Sydney",KEY="good-food-dated-schedule-v1",SHOP_KEY="good-food-plan-shopping-v1",D=window.FOOD_DATA;
 const TYPES={breakfast:"Breakfast",snack:"Snack",lunch:"Lunch",dinner:"Dinner"};
 const LABELS={breakfast:"🌅",snack:"🍓",lunch:"🥗",dinner:"🍲"};
 const weekdays=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -38,18 +38,31 @@ function save(data){try{localStorage.setItem(KEY,JSON.stringify(data));return tr
 function escape(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function recipesOf(type){return D.recipes.filter(r=>r.category===type);}
 function options(type,chosen){return recipesOf(type).map(r=>'<option value="'+escape(r.id)+'"'+(r.id===chosen?' selected':'')+'>'+escape(r.name)+'</option>').join("");}
-let active=today(),data=load(),lastAutoToday=today(),message="";
+function loadShopChecks(){try{const val=JSON.parse(localStorage.getItem(SHOP_KEY)||"{}");return val&&typeof val==="object"&&!Array.isArray(val)?val:{}}catch{return {}}}
+let active=today(),data=load(),lastAutoToday=today(),message="",shopChecks=loadShopChecks();
+function saveShopChecks(){try{localStorage.setItem(SHOP_KEY,JSON.stringify(shopChecks));return true}catch{return false}}
 function slotsFor(day){return (Object.hasOwn(data,day)?data[day]:makeDefaults(day)).map(s=>({...s}));}
 function change(day,fn){const slots=slotsFor(day);fn(slots);data[day]=slots;const ok=save(data);message=ok?"Saved on this device":"Unable to save on this device (storage unavailable)";render();}
-function shoppingText(days){
- const all=new Map();const label=[];
- for(const day of days){label.push(format(day));for(const slot of slotsFor(day)){const r=D.recipes.find(x=>x.id===slot.recipeId);if(!r)continue;
+function shoppingRows(days){
+ const all=new Map();
+ for(const day of days){for(const slot of slotsFor(day)){
+  if(slot.done)continue; // already eaten meals are not new shopping requirements
+  const r=D.recipes.find(x=>x.id===slot.recipeId);if(!r)continue;
   const multiplier=slot.portions/r.yield;
-  for(const [amount,unit,name] of r.ingredients){const key=unit+"|"+name;const v=all.get(key)||{name,unit,amount:0};v.amount+=amount*multiplier;all.set(key,v);}
+  for(const [amount,unit,name] of r.ingredients){
+   const key=unit+"|"+name;
+   const row=all.get(key)||{key,name,unit,amount:0};
+   row.amount+=amount*multiplier;all.set(key,row);
+  }
  }}
- const lines=[days.length===1?"INGREDIENTS FOR "+label[0]:"INGREDIENTS · WEEK "+label[0]+" TO "+label[label.length-1],"Amounts are for scheduled adult portions, not whole batch quantities. Round up to retail pack sizes; items are unpriced and stock is unverified.",""];
- for(const v of [...all.values()].sort((a,b)=>a.name.localeCompare(b.name)))lines.push((Math.round(v.amount*100)/100).toLocaleString("en-AU",{maximumFractionDigits:2})+" "+v.unit+" "+v.name);
- return lines.join("\n");
+ return [...all.values()].sort((a,b)=>a.name.localeCompare(b.name));
+}
+function shoppingText(days){
+ const rows=shoppingRows(days);
+ const label=days.map(day=>format(day));
+ const lines=[days.length===1?"INGREDIENTS FOR "+label[0]:"INGREDIENTS · WEEK "+label[0]+" TO "+label[label.length-1],"Amounts are for scheduled adult portions not yet marked done, not whole batch quantities. Round up to retail pack sizes; items are unpriced and stock is unverified.",""];
+ for(const v of rows)lines.push((Math.round(v.amount*100)/100).toLocaleString("en-AU",{maximumFractionDigits:2})+" "+v.unit+" "+v.name);
+ return lines.join("\\n").replace(/\\n/g,"\n");
 }
 function copyText(s){
  if(navigator.clipboard?.writeText){navigator.clipboard.writeText(s).then(()=>{message="Ingredient list copied to clipboard";render();}).catch(()=>fallbackCopy(s));}
@@ -64,6 +77,8 @@ function render(){
  const now=today(),isToday=active===now,clock=timeInSydney();
  const weekStart=monday(active),week=Array.from({length:7},(_,i)=>shift(weekStart,i));
  const slots=slotsFor(active).sort((a,b)=>a.time.localeCompare(b.time)||a.id.localeCompare(b.id));
+ const required=shoppingRows(week),checked=new Set(Array.isArray(shopChecks[weekStart])?shopChecks[weekStart]:[]);
+ const checkedCount=required.filter(r=>checked.has(r.key)).length;
  const next=slots.find(s=>!s.done&&(isToday?s.time>=clock:true));
  const recipeById=id=>D.recipes.find(r=>r.id===id);
  root.classList.add("daily-planner");
@@ -74,6 +89,7 @@ function render(){
  '<div class="planner-day-summary"><div><strong>'+slots.filter(s=>s.done).length+' of '+slots.length+'</strong><span>meals marked done</span></div><div><strong>'+(next?escape(next.time):"—")+'</strong><span>'+(next?"next planned meal":"no upcoming meals")+'</span></div><div><strong>'+escape(format(active,{day:"numeric",month:"short"}))+'</strong><span>selected calendar day</span></div></div>'+
  '<div class="planner-slots">'+(slots.length?slots.map(s=>{const r=recipeById(s.recipeId);return '<article class="planner-slot'+(s.done?" is-done":"")+'" data-slot-id="'+escape(s.id)+'"><div class="planner-slot-head"><span class="planner-slot-icon" aria-hidden="true">'+LABELS[s.type]+'</span><strong>'+TYPES[s.type]+'</strong><span class="planner-slot-status">'+badgeText(s,isToday,clock)+'</span></div><div class="planner-slot-fields"><label>Time<input type="time" data-slot-time="'+escape(s.id)+'" value="'+escape(s.time)+'"></label><label>Portions<input type="number" min="1" max="20" step="1" data-slot-portions="'+escape(s.id)+'" value="'+escape(s.portions)+'"></label><label>Meal<select data-slot-recipe="'+escape(s.id)+'">'+options(s.type,s.recipeId)+'</select></label></div><div class="planner-slot-actions"><button type="button" data-select="'+escape(s.recipeId)+'" class="planner-open">View recipe ↗</button><label class="planner-check"><input type="checkbox" data-slot-done="'+escape(s.id)+'"'+(s.done?" checked":"")+'> Done</label><button type="button" data-slot-remove="'+escape(s.id)+'" aria-label="Remove '+escape(TYPES[s.type])+' at '+escape(s.time)+'">Remove</button></div></article>';}).join(""):'<p>No meals scheduled. Add one below.</p>')+'</div>'+
  '<form class="planner-add" id="plannerAddForm"><h3>+ Schedule another meal</h3><div class="planner-add-fields"><label>Type<select id="plannerMealType">'+Object.entries(TYPES).map(([id,label])=>'<option value="'+id+'">'+label+'</option>').join("")+'</select></label><label>Meal<select id="plannerRecipe">'+options("breakfast","")+'</select></label><label>Time<input id="plannerTime" type="time" required value="08:00"></label><label>Portions<input type="number" min="1" max="20" step="1" id="plannerPortions" value="1" required></label><button class="btn btn-primary" type="submit">Add to '+escape(format(active,{weekday:"short",day:"numeric",month:"short"}))+'</button></div></form>'+
+ '<details class="planner-week-shopping"><summary>Weekly shopping checklist · <span id="planShoppingProgress">'+checkedCount+'/'+required.length+' ticked</span></summary><p>Combined ingredient amounts for this week’s meals not marked done. This is <strong>not a priced Woolworths basket</strong>; identical ingredient names are merged, but differing product descriptions still need checking. Tick what you already have or buy. Quantities update when your meal plan changes.</p><div class="planner-shopping-items">'+required.map(row=>'<label><input type="checkbox" data-plan-shop="'+escape(row.key)+'"'+(checked.has(row.key)?' checked':'')+'><span><strong>'+escape((Math.round(row.amount*100)/100).toLocaleString("en-AU",{maximumFractionDigits:2})+' '+row.unit)+'</strong> '+escape(row.name)+'</span></label>').join("")+'</div></details>'+
  '<div class="planner-bottom"><button type="button" class="btn btn-outline" data-planner="copy-tomorrow">Copy this day to tomorrow →</button><button type="button" data-planner="copy-day-shopping">Copy day ingredients</button><button type="button" data-planner="copy-week-shopping">Copy week ingredients</button><button type="button" data-planner="restore">Restore suggested day</button></div>'+
  '<p class="planner-message" role="status">'+escape(message||"Changes to dates, meals and times are saved in this browser on this device. No calendar account is connected.")+'</p>'+
  '<p class="planner-note">Start with these editable times: 7:30 breakfast, 10:00 snack, 12:30 lunch, 15:30 snack and 18:00 dinner. Eat according to your appetite, family and work routines; there is no proven single longevity-optimal meal clock. The Woolworths basket currently covers only the four V6 freezer lunches, not these added meals.</p>';
@@ -94,6 +110,16 @@ function init(){
  const remove=e.target.closest("[data-slot-remove]");if(remove){change(active,s=>{const i=s.findIndex(x=>x.id===remove.dataset.slotRemove);if(i>=0)s.splice(i,1);});return;}
  });
  root.addEventListener("change",e=>{
+ if(e.target.hasAttribute("data-plan-shop")){
+  const week=monday(active),key=e.target.getAttribute("data-plan-shop");
+  const required=shoppingRows(Array.from({length:7},(_,i)=>shift(week,i)));
+  if(!required.some(r=>r.key===key))return;
+  const check=new Set(Array.isArray(shopChecks[week])?shopChecks[week]:[]);
+  if(e.target.checked)check.add(key);else check.delete(key);
+  shopChecks[week]=[...check].slice(0,300);saveShopChecks();
+  const el=root.querySelector("#planShoppingProgress");if(el)el.textContent=required.filter(r=>check.has(r.key)).length+"/"+required.length+" ticked";
+  return;
+ }
  if(e.target.id==="plannerDate"){changeDate(e.target.value);return;}
  if(e.target.id==="plannerMealType"){const type=e.target.value;root.querySelector("#plannerRecipe").innerHTML=options(type,"");const selected=recipesOf(type)[0];root.querySelector("#plannerPortions").value=type==="dinner"?(selected?.yield||1):1;return;}
  if(e.target.id==="plannerRecipe"){const r=D.recipes.find(x=>x.id===e.target.value);root.querySelector("#plannerPortions").value=r?.category==="dinner"?r.yield:1;return;}
