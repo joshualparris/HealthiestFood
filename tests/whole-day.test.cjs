@@ -73,3 +73,25 @@ test('scheduled serving counts make an unpriced date/week shopping ingredient li
  assert.match(list,/boneless skinless chicken thigh|green beans|avocado flesh/);
  assert.match(core.shoppingText(['2026-10-17','2026-10-18']),/INGREDIENTS · WEEK/);
 });
+
+test('timers for breakfast and dinner IDs survive refresh and remain independent',()=>{
+ const timers=require('../timers.js'),now=1_000_000;
+ const breakfast='br-oats:0',dinner='di-lentil:1';
+ let state=timers.start({},breakfast,{recipeId:'br-oats',stepIndex:0,title:'Mix oats',durationSec:120},now);
+ state=timers.start(state,dinner,{recipeId:'di-lentil',stepIndex:1,title:'Simmer soup',durationSec:1500},now+10_000);
+ const restored=timers.clean(JSON.parse(JSON.stringify(state)));
+ assert.equal(Object.keys(restored).length,2);
+ assert.equal(timers.remaining(restored[breakfast],now+60_000),60);
+ assert.equal(timers.remaining(restored[dinner],now+60_000),1450);
+ const after=timers.pause(restored,dinner,now+90_000);
+ assert.equal(after[dinner].status,'paused');
+ assert.equal(after[breakfast].status,'running');
+ assert.equal(timers.advance(after,now+140_000).timers[breakfast].status,'done');
+ assert.equal(timers.advance(after,now+140_000).timers[dinner].status,'paused');
+});
+test('timer storage rejects fabricated and unsafe recipe IDs',()=>{
+ const timers=require('../timers.js');
+ const entry=(id,recipeId)=>({id,recipeId,stepIndex:0,title:'Fake',durationSec:20,remainingSec:20,status:'paused',deadline:null});
+ assert.equal(Object.keys(timers.clean({'<img>:0':entry('<img>:0','<img>')})).length,0);
+ assert.equal(Object.keys(timers.clean({'br-oats:0':entry('br-oats:0','br-oats')})).length,1);
+});
