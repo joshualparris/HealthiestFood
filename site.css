@@ -192,3 +192,16 @@
   max-width:calc(100vw - 48px);
   min-width:0;
 }
+
+/* Optional real-world cook-up record — private on-device, not nutrition evidence */
+.trial-log{margin-top:19px;background:#fffdf6;border:1px solid #d8e5d3;border-radius:20px;padding:20px}
+.trial-log summary{cursor:pointer;font:600 24px var(--serif);color:var(--pine)}
+.trial-log>p{font-size:12px;color:#687b69;line-height:1.6}
+#trialForm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#trialForm label{display:flex;flex-direction:column;gap:5px;color:#375944;font-weight:750;font-size:12px;min-width:0}
+#trialForm input,#trialForm select,#trialForm textarea{width:100%;min-width:0;border:1px solid #cbdac5;border-radius:9px;padding:10px;background:white;color:var(--ink);font-size:13px}
+#trialForm .trial-notes,#trialForm .trial-buttons,#trialForm .trial-status{grid-column:1/-1}
+#trialForm .trial-buttons{display:flex;flex-wrap:wrap;gap:8px}
+#trialForm .btn-primary{background:var(--pine);color:white}
+#trialForm .trial-status{font-size:11px;color:#6b826e}
+@media(max-width:560px){#trialForm{grid-template-columns:1fr}.trial-log{padding:16px}}
