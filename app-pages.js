@@ -28,6 +28,15 @@ document.addEventListener("click",e=>{
  e.preventDefault();open(a.href);
 },true);
 window.addEventListener("message",e=>{
+ if(e.origin!==location.origin||!e.data||e.data.type!=="healthiestfood-frame-size")return;
+ const frame=[document.getElementById("foodGuideFrame"),document.getElementById("foodLabFrame"),document.getElementById("foodOtherFrame")].find(f=>f?.contentWindow===e.source);
+ if(!frame)return;
+ const height=Number(e.data.height);
+ if(!Number.isFinite(height)||height<350||height>30000)return;
+ const target=Math.ceil(height);
+ if(Math.abs(frame.getBoundingClientRect().height-target)>3)frame.style.height=target+"px";
+});
+window.addEventListener("message",e=>{
  if(e.origin!==location.origin||!e.data||e.data.type!=="healthiestfood-page-navigation")return;
  const guide=document.getElementById("foodGuideFrame"),lab=document.getElementById("foodLabFrame"),extra=document.getElementById("foodOtherFrame");
  if(![guide?.contentWindow,lab?.contentWindow,extra?.contentWindow].includes(e.source))return;
