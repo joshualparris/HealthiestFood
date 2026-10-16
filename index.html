@@ -18,12 +18,15 @@
   <script src="timers.js" defer></script>
   <script src="recipe-scale.js" defer></script>
   <script src="afcd3-selected.js" defer></script>
+  <script src="afcd3-foods.js" defer></script>
   <script src="nutrient-ledger.js" defer></script>
   <script src="nutrition-coverage.js" defer></script>
+  <script src="whole-day-analysis.js" defer></script>
   <script src="cook-trial.js" defer></script>
   <script src="app.js" defer></script>
   <script src="food-shopping.js" defer></script>
   <script src="food-planner.js" defer></script>
+  <script src="whole-day-report.js" defer></script>
   <script src="site-audit.js" defer></script>
 </head>
 <body>
@@ -137,6 +140,7 @@
       </div>
       <section class="research-details" aria-label="Nutrition fact checks"><div class="section-heading"><div><span class="section-kicker">WHAT EACH LUNCH CONTRIBUTES</span><h2>Evidence-led <em>comparison.</em></h2></div></div><p class="audit-note">The original V6 versions used subjective /100 ratings. We no longer display them as a leaderboard because they cannot measure lifespan or show which meal is scientifically best. Compare ingredients, known label data and unresolved nutrient gaps instead.</p><details class="historical-scorecard"><summary>See historical subjective scores (not a health or longevity ranking)</summary><div id="auditScores" class="audit-scores"></div></details><div class="section-heading evidence-heading"><div><span class="section-kicker">CHECK THE CLAIMS</span><h2>What we <em>know.</em></h2></div></div><div id="auditClaims" class="audit-claims"></div><p class="audit-note">We have not verified a Dubbo Woolworths checkout, local shelf availability, whole-meal nutritional laboratory values, personal nutrient needs or any lifespan prediction. <a href="https://github.com/joshualparris/HealthiestFood/blob/main/SITE_FACT_CHECK.md" target="_blank" rel="noopener noreferrer">Read the full fact-check ledger ↗</a></p></section><div class="section-heading evidence-heading"><div><span class="section-kicker">TRACE EVERY CLAIM</span><h2>The source <em>library.</em></h2></div></div>
       <section id="nutritionCoverage" aria-label="Verified nutrient coverage and uncertainties"></section>
+      <section id="wholeDayReport" aria-label="Australian nutrient analysis of 17 recipes and 7-day menu"></section>
       <div id="sourceList" class="source-list"></div>
       <div class="disclaimer">This site is general food information, not individual medical nutrition advice. Recipes are planned, not kitchen-tested or independently nutrient-analysed. Gluten-free suitability depends on current labels and cross-contact requirements. Price figures are not live retail quotes.</div>
     </section>
