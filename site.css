@@ -250,3 +250,13 @@
 #cookSafetyRemaining{font-size:12px;font-weight:700;color:#806b40}
 #finishCook:disabled{opacity:.5;cursor:not-allowed;transform:none}
 @media(max-width:520px){.cook-safety-gate{padding:13px;margin:15px auto}.cook-safety-gate h3{font-size:24px}}
+
+/* Private on-device export/import for plans, pantry, timers and batch records. */
+.data-portability{display:grid;grid-template-columns:1.45fr 1fr;gap:20px;align-items:center;background:#f4f5e8;border:1px solid #dce4d0;border-radius:20px;margin-top:30px;padding:25px;min-width:0}
+.data-portability h2{font:600 28px var(--serif);color:var(--pine);margin:7px 0}
+.data-portability p{color:#687866;font-size:12px;line-height:1.6}
+.data-portability-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:9px}
+.data-portability-actions .btn{cursor:pointer;white-space:nowrap}
+.data-portability-actions input[type=file]{position:absolute;left:-10000px;width:1px;height:1px}
+.data-portability #dataBackupStatus{grid-column:1/-1;margin:0;color:#477053;font-size:12px}
+@media(max-width:780px){.data-portability{grid-template-columns:1fr;padding:18px}.data-portability-actions{justify-content:flex-start}}
