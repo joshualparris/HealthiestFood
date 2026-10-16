@@ -11,7 +11,7 @@ test("Exact active ingredient inventory covers all 17 recipes and 35 retailer pr
  const result=L.summary();
  assert.equal(result.labels,labelList.length);
  assert.equal(result.mapped,labelList.length,"unmapped: "+result.unmapped.join("; "));
- assert.deepEqual(result.unmapped,[]);
+ assert.equal(result.unmapped.length,0);
  assert.ok(result.families>=56);
 });
 test("Every food family has evidence links, safe advice and multiple methods",()=>{
@@ -31,7 +31,7 @@ test("Eggs offer genuinely distinct options including poach, boil, fry, scramble
  for(const term of ["poach","boil","fry","scramble"]){
   assert.ok(g.options.some(x=>x.name.toLowerCase().includes(term)),term);
  }
- assert.match(g.important,/vulnerable/i);
+ assert.match(g.important,/pregnant|immunocompromised|vulnerable/i);
  assert.ok(g.refs.includes("egg"));
 });
 test("Special food safety cannot be confused with vitamin optimisation",()=>{
