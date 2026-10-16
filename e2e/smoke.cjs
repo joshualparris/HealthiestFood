@@ -43,6 +43,26 @@ async function main(){
       await page.locator('#view-home').waitFor({state:'visible'});
       assert.match(await page.title(),/Good Food, Long Game/);
     });
+    await check('canonical ingredient IDs connect all 17 meals without changing recipes',async()=>{
+      const stats=await page.evaluate(()=>{
+        const c=window.FoodIngredients,recipes=window.FOOD_DATA.recipes;
+        if(!c)return null;
+        return {summary:c.verify(recipes), ids:recipes.flatMap(r=>r.ingredientRecords.map(x=>x.id)),
+         check:c.resolve("dry white quinoa","g")?.id,
+         tofuBrand:window.FoodShopping.lookup("Evergreen hard tofu, raw","g")?.productSku,
+         tofuGeneric:window.FoodShopping.lookup("firm tofu, soy allergen","g"),
+         allergen:c.allergensFor(recipes.find(r=>r.id==="a")).contains};
+      });
+      assert.ok(stats,'Ingredient registry must load on published host');
+      assert.equal(stats.summary.recipes,17);
+      assert.equal(stats.summary.lines,151);
+      assert.equal(stats.summary.variants,99);
+      assert.equal(stats.summary.identities,62);
+      assert.equal(stats.check,'grain-quinoa-dry');
+      assert.equal(stats.tofuBrand,'595465');
+      assert.equal(stats.tofuGeneric,null);
+      assert.ok(stats.allergen.includes('fish'));
+    });
     if(!process.env.SMOKE_URL)await check('mobile podcast/video navigation and source-linked topic search',async()=>{
       await page.locator('.mobile-nav [data-goto="media"]').click();
       await page.locator('#view-media').waitFor({state:'visible'});
