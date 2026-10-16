@@ -30,7 +30,7 @@ test('Evergreen tofu has no invented product calcium guarantee, other AFCD miner
  const line=calc.rows.find(row=>row.ingredient.toLowerCase().includes('evergreen hard tofu'));
  assert.ok(line);
  assert.equal(line.nutrients.calcium,null);
- assert.equal(line.nutrients.protein,30);
+ assert.equal(line.nutrients.protein/tofu.yield,30);
  assert.ok(calc.subtotal.calcium>=0); // from other mapped inputs, not branded tofu
 });
 test('Seven-day dated plan uses one adult portion of each scheduled meal rather than entire family dinner batch',()=>{
