@@ -5,6 +5,7 @@ on:
     paths:
       - 'index.html'
       - 'longevity.html'
+      - 'cooking-methods.html'
       - 'site.css'
       - '*.js'
       - '.github/workflows/github-pages-backup.yml'
