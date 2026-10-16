@@ -19,6 +19,8 @@
    throw Error("Missing explicitly declared edible tin yield for Woolworths product "+productId);
   return product.ediblePerTinG;
  }
+ const catalog=()=>typeof window!=="undefined"&&window.FoodIngredients?window.FoodIngredients:
+  typeof module==="object"&&module.exports?require("./ingredient-catalogue.js"):null;
  const mappings=[
   {key:"sardines",test:/john west.*sardine/i,unit:"tins",pack:1,price:3.70,buy:"John West Sardines 110 g tin (75 g edible)",url:"https://www.woolworths.com.au/shop/productdetails/98523"},
   {key:"salmon",test:/salmon/i,unit:"g",pack:500,price:19,buy:"Ocean Chef Coho Salmon 500 g (raw equivalent; confirm substitution)",url:"https://www.woolworths.com.au/shop/productdetails/6050076"},
@@ -57,9 +59,21 @@
    {...map,priceSource:"Historical estimate (Dubbo checkout not checked)"};
  }
  function lookup(name,unit){
+   const identity=catalog()?.resolve(name,unit);
+   if(identity){
+    if(!identity.shop)return null; // Do not silently price generic salmon/tofu as a specific brand.
+    const map=mappings.find(x=>x.key===identity.shop);
+    if(!map)return null;
+    if((unit==="tins"||unit==="tin")&&(map.key==="chickpeas"||map.key==="blackbeans"))
+      return {...withObservedPrice(map),multiplier:map.pack,ingredientId:identity.id,productSku:identity.sku||null};
+    if(unit===map.unit)return {...withObservedPrice(map),multiplier:1,ingredientId:identity.id,productSku:identity.sku||null};
+    return null; // Wrong physical basis must not become another unit by accident.
+   }
+   // Backwards-compatible fallback for outside-recipe user inputs; all 151
+   // shipped recipe lines are catalogued and NEVER enter this regex branch.
    for(const map of mappings){if(!map.test.test(name))continue;
-     if(map.key==="chickpeas"||map.key==="blackbeans"){if(unit==="tins"||unit==="tin")return {...withObservedPrice(map),multiplier:map.pack};}
-     if(unit===map.unit)return {...withObservedPrice(map),multiplier:1};
+     if(map.key==="chickpeas"||map.key==="blackbeans"){if(unit==="tins"||unit==="tin")return {...withObservedPrice(map),multiplier:map.pack,identityFallback:true};}
+     if(unit===map.unit)return {...withObservedPrice(map),multiplier:1,identityFallback:true};
    }
    return null;
  }
@@ -71,15 +85,23 @@
      const n=Number(slot.portions)||r.yield,mult=n/r.yield;
      for(const [value,unit,name] of r.ingredients){
        if(!Number.isFinite(value)||value<=0)continue;
+       const identity=catalog()?.resolve(name,unit);
        const match=lookup(name,unit);
        const amount=value*mult*(match?match.multiplier:1);
-       const key=match?match.key:unit+"|"+name.trim().toLowerCase();
-       if(!combined.has(key))combined.set(key,{key,name:match?match.buy:name,unit:match?match.unit:unit,amount:0,map:match,detail:new Set()});
-       const entry=combined.get(key);entry.amount+=amount;entry.detail.add(r.name);
+       // Keep established SKU pantry keys unchanged; new unpriced canonical
+       // ingredients can share a stable unit-aware key across recipe variants.
+       const key=match?match.key:identity?"ing:"+identity.id+":"+unit:unit+"|"+name.trim().toLowerCase();
+       const legacyKey=unit+"|"+name.trim().toLowerCase();
+       if(!combined.has(key))combined.set(key,{key,ingredientId:identity?.id||null,
+         productSku:identity?.sku||null,legacyKeys:new Set(),
+         name:match?match.buy:name,unit:match?match.unit:unit,amount:0,map:match,detail:new Set()});
+       const entry=combined.get(key);
+       entry.legacyKeys.add(legacyKey);
+       entry.amount+=amount;entry.detail.add(r.name);
      }
    }
    const rows=[...combined.values()].map(x=>({
-     ...x,detail:[...x.detail],packs:x.map?Math.ceil((x.amount-1e-8)/x.map.pack):null,
+     ...x,detail:[...x.detail],legacyKeys:[...x.legacyKeys],packs:x.map?Math.ceil((x.amount-1e-8)/x.map.pack):null,
      price:x.map?Math.ceil((x.amount-1e-8)/x.map.pack)*x.map.price:null
    })).sort((a,b)=>a.name.localeCompare(b.name));
    return {rows,knownPrice:rows.reduce((s,x)=>s+(x.price??0),0),unknown:rows.filter(x=>x.price===null).length,priced:rows.filter(x=>x.price!==null).length};
@@ -93,7 +115,11 @@
  }
  function reconcile(data,inventory={}){
   const rows=data.rows.map(x=>{
-   const raw=inventory[x.key];
+   // No automatic destructive migration: read legacy pantry records safely,
+   // favour the greatest observed quantity to avoid double-counting aliases.
+   const fallback=x.legacyKeys?.map(k=>inventory[k]).filter(v=>v!==undefined)||[];
+   const raw=Object.hasOwn(inventory,x.key)?inventory[x.key]:
+    fallback.length?fallback.reduce((a,b)=>Math.max(a===true?x.amount:safeAmount(a),b===true?x.amount:safeAmount(b)),0):undefined;
    const owned=raw===true?x.amount:safeAmount(raw);
    const toBuy=Math.max(0,Number((x.amount-owned).toFixed(4)));
    const packsToBuy=x.map?Math.ceil((toBuy-1e-8)/x.map.pack):null;
