@@ -8,12 +8,23 @@
  if(root)root.FoodShopping=api;
 })(typeof window!=="undefined"?window:null,function(){
  "use strict";
+ // One source of truth for *declared* edible tin yield across nutrition and shopping.
+ // These are label-serving proxies; they are NOT kitchen-verified drained weights.
+ // The labelled black-bean 225 g conflicts with the 60% ingredient declaration.
+ const nutrientLabels=(typeof module==="object"&&module.exports)?
+  require("./nutrient-ledger.js"):(typeof window!=="undefined"?window.FoodNutrients:null);
+ function declaredEdibleTin(productId){
+  const product=nutrientLabels?.items.find(p=>p.productId===productId);
+  if(!product||!Number.isFinite(product.ediblePerTinG)||product.ediblePerTinG<=0)
+   throw Error("Missing explicitly declared edible tin yield for Woolworths product "+productId);
+  return product.ediblePerTinG;
+ }
  const mappings=[
   {key:"sardines",test:/john west.*sardine/i,unit:"tins",pack:1,price:3.70,buy:"John West Sardines 110 g tin (75 g edible)",url:"https://www.woolworths.com.au/shop/productdetails/98523"},
   {key:"salmon",test:/salmon/i,unit:"g",pack:500,price:19,buy:"Ocean Chef Coho Salmon 500 g (raw equivalent; confirm substitution)",url:"https://www.woolworths.com.au/shop/productdetails/6050076"},
   {key:"tofu",test:/\btofu\b/i,unit:"g",pack:650,price:6.99,buy:"Evergreen Hard Tofu 650 g (check product and protein label)",url:"https://www.woolworths.com.au/shop/productdetails/595465"},
-  {key:"chickpeas",test:/chickpeas/i,unit:"g",pack:252,price:0.95,buy:"Woolworths No Added Salt Chickpeas 420 g tin (~252 g drained)",url:"https://www.woolworths.com.au/shop/productdetails/259399"},
-  {key:"blackbeans",test:/black beans/i,unit:"g",pack:225,price:1.50,buy:"Woolworths No Added Salt Black Beans 420 g tin (225 g NIP servings; verify actual drained weight)",url:"https://www.woolworths.com.au/shop/productdetails/663581"},
+  {key:"chickpeas",test:/chickpeas/i,unit:"g",pack:declaredEdibleTin("259399"),price:0.95,buy:"Woolworths No Added Salt Chickpeas 420 g tin (~252 g drained)",url:"https://www.woolworths.com.au/shop/productdetails/259399"},
+  {key:"blackbeans",test:/black beans/i,unit:"g",pack:declaredEdibleTin("663581"),price:1.50,buy:"Woolworths No Added Salt Black Beans 420 g tin (225 g NIP servings; verify actual drained weight)",url:"https://www.woolworths.com.au/shop/productdetails/663581"},
   {key:"tomatoes-tinned",test:/\b(diced tomatoes|plain diced tomatoes|tomatoes no added salt)\b/i,unit:"g",pack:400,price:2,buy:"SPC Diced Tomatoes 400 g",url:"https://www.woolworths.com.au/shop/productdetails/322960"},
   {key:"quinoa",test:/\bquinoa\b/i,unit:"g",pack:500,price:5.75,buy:"Macro White Quinoa 500 g",url:"https://www.woolworths.com.au/shop/productdetails/335073"},
   {key:"rice",test:/\bbrown rice\b/i,unit:"g",pack:1000,price:3.50,buy:"SunRice Brown Rice 1 kg (dry)",url:"https://www.woolworths.com.au/shop/productdetails/94536"},
@@ -47,7 +58,7 @@
  }
  function lookup(name,unit){
    for(const map of mappings){if(!map.test.test(name))continue;
-     if(map.key==="chickpeas"||map.key==="blackbeans"){if(unit==="tins"||unit==="tin")return {...withObservedPrice(map),multiplier:map.key==="blackbeans"?225:252};}
+     if(map.key==="chickpeas"||map.key==="blackbeans"){if(unit==="tins"||unit==="tin")return {...withObservedPrice(map),multiplier:map.pack};}
      if(unit===map.unit)return {...withObservedPrice(map),multiplier:1};
    }
    return null;
