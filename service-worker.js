@@ -6,7 +6,7 @@
 const CACHE_NAME="healthiestfood-shell-20261017-iconnav-v5";
 const ASSETS=[
  "./","./index.html","./longevity.html","./cooking-methods.html","./site.css","./site-data.js",
- "./whole-day-data.js","./recipe-methods.js","./timers.js","./recipe-scale.js","./food-safety.js",
+ "./whole-day-data.js","./ingredient-catalogue.js","./recipe-methods.js","./timers.js","./recipe-scale.js","./food-safety.js",
  "./local-backup.js","./offline-ready.js","./cook-trial.js","./app.js","./food-shopping.js",
  "./media-data.js","./media-library.js","./cooking-methods-data.js","./cooking-methods.js","./custom-shopping.js",
  "./food-planner.js","./nutrition-coverage.js","./nutrient-ledger.js",
