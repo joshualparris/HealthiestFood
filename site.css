@@ -91,3 +91,17 @@
 @media(max-width:470px){.planner-slot-fields{grid-template-columns:1fr 1fr}.planner-slot-fields label:nth-child(3){grid-column:span 2}.planner-bottom button{flex:1 1 42%}}
 
 .inline-plan-link{border:0;background:transparent;color:var(--pine);font-weight:800;text-decoration:underline;text-underline-offset:3px;padding:0;font:inherit;cursor:pointer}.recipe-card-visual.berry{background:#f6dbe5}.recipe-card-visual.leaf{background:#d9e9d6}
+
+/* Cooking checklist: easy to reach and fully usable without horizontal scrolling. */
+.cook-prep{border:1px solid #c9dac3;background:#fffdf7;border-radius:15px;padding:12px 15px;margin:0 0 22px}
+.cook-prep>summary{cursor:pointer;color:#244e3b;font-size:14px;font-weight:800;line-height:1.5}
+.cook-prep>summary span{font-weight:600;color:#57745e;font-size:12px;margin-left:8px}
+.cook-prep>p{font-size:12px;line-height:1.65;color:#526e5b;margin:13px 0}
+.cook-prep-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 17px;margin:10px 0 15px}
+.cook-prep-list label{display:flex;align-items:flex-start;gap:11px;padding:7px 3px;color:#2e523f;font-size:12px;line-height:1.5}
+.cook-prep-list input{width:21px;height:21px;flex:0 0 21px;accent-color:#386b47}
+.cook-prep-list input:checked+span{text-decoration:line-through;color:#728576}
+.cook-prep-list strong{white-space:nowrap}
+.cook-prep button{min-height:40px}
+.timer-tile-actions button{min-width:40px;min-height:40px;width:40px;height:40px}
+@media(max-width:540px){.cook-prep-list{grid-template-columns:1fr}.cook-prep{padding:12px}.cook-prep-list label{padding:9px 3px}}
