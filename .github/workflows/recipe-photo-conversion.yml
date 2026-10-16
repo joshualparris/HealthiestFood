@@ -30,15 +30,7 @@ jobs:
           from PIL import Image
           from pathlib import Path
           import json
-          photos=json.loads(r'''{
-  "a": "file_00000000a1f881faaedb673c5fc19b4d.png",
-  "b": "file_00000000f71081fabf66c89ea0725c7b.png",
-  "c": "file_0000000068fc81fa8113aca9fc6913da.png",
-  "d": "file_000000002bf881fa8a89e5679d065eec.png",
-  "sn-apple": "file_00000000ba8081fa93bc577873d68e5b.png",
-  "sn-eggs": "file_00000000346081faad624b0be2f06b50.png",
-  "sn-berries": "file_00000000f8e081faa47d69d898246e34.png"
-}''')
+          photos=json.loads(r'''{"a":"file_00000000a1f881faaedb673c5fc19b4d.png","b":"file_00000000f71081fabf66c89ea0725c7b.png","c":"file_0000000068fc81fa8113aca9fc6913da.png","d":"file_000000002bf881fa8a89e5679d065eec.png","sn-apple":"file_00000000ba8081fa93bc577873d68e5b.png","sn-eggs":"file_00000000346081faad624b0be2f06b50.png","sn-berries":"file_00000000f8e081faa47d69d898246e34.png"}''')
           for recipe_id, source in photos.items():
               source_file=Path(source)
               assert source_file.is_file(), f"Missing uploaded image: {source}"
