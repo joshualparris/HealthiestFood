@@ -1,6 +1,6 @@
 # Implementation progress against the 231-item HealthiestFood backlog
 
-> **Superseded tracker notice (17 Oct 2026):** This document records an **earlier implementation pass**. Its statement that 220 items remain 'not independently assessed' is historical. The newer [all-231 acceptance audit](REPOSITORY_ACCEPTANCE_AUDIT_2026-10-17.md), [row-by-row source evidence CSV](REPOSITORY_ACCEPTANCE_AUDIT_2026-10-17.csv), and [updated implementation tracker](IMPLEMENTATION_TRACKER_2026-10-17.csv) are authoritative for current assessments. The audit classifies 14 code/test evidenced, 140 partial, 72 not demonstrated, and 5 requiring real-world evidence. This is NOT a percentage of 231 features completed.
+> **Superseded tracker notice (17 Oct 2026):** This document records an **earlier implementation pass**. Its statement that 220 items remain 'not independently assessed' is historical. The newer [all-231 acceptance audit](REPOSITORY_ACCEPTANCE_AUDIT_2026-10-17.md), [row-by-row source evidence CSV](REPOSITORY_ACCEPTANCE_AUDIT_2026-10-17.csv), and [updated implementation tracker](IMPLEMENTATION_TRACKER_2026-10-17.csv) are authoritative for current assessments. The updated audit classifies 15 code/test evidenced, 140 partial, 71 not demonstrated, and 5 requiring real-world evidence. This is NOT a percentage of 231 features completed.
 
 **Pass:** 16–17 October 2026 · **Current status:** ongoing, **NOT 231/231 complete**.
 
