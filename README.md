@@ -1,5 +1,14 @@
 # HealthiestFood
 
+## Further implementation of the 231-item backlog (17 October 2026)
+
+**[Open the new evidence-based implementation report](docs/IMPLEMENTATION_PASS_2026-10-17.md)** · [Full 231-item acceptance audit](docs/REPOSITORY_ACCEPTANCE_AUDIT_2026-10-17.md) · [Original acceptance criteria](docs/IMPROVEMENT_BACKLOG_2026-10-17.csv).
+
+This pass added an optional **cumulative 5–60°C food handling log** in guided cooking (with prior-time correction, same-batch persistence, 2/4-hour safety status and storage-completion blocking), an **individual dated pantry pack manager** (opened/unopened, location, use-by/best-before, reversible consumption, user-confirmed shared shopping quantities), **dinner ideas ranked by fewest missing recorded ingredients**, and a repeatable **axe-core multi-view accessibility audit with automatic evidence uploads**. Accessible labels, table keyboard scrolling and contrast have been strengthened, with targeted regressions and live browser checks.
+
+These changes address **specific portions of several acceptance rows**, not all 231. The original counts are a snapshot, not a current certified completion percentage. Photographed exact labels, weighed edible/cooked yields, real Dubbo checkout, food temperature trials, hardware/mobile behaviour and comprehensive research validation are still required.
+
+
 ## Listen to every ABC podcast without leaving HealthiestFood
 
 **[Start in-app podcast playback on GitHub Pages](https://joshualparris.github.io/HealthiestFood/#media)** · [Live Render alternative](https://healthiest-food-backup.onrender.com/#media) · [Audio-player methods, limitations and Android testing](PODCAST_PLAYER_IMPLEMENTATION_2026-10-17.md).
