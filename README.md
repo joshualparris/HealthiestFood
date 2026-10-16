@@ -1,5 +1,15 @@
 # HealthiestFood
 
+
+## Latest evidence-led website improvements — 17 October 2026
+
+**[Open the live cooking website](https://healthiest-food.vercel.app/)** · **[Implementation audit and scientific gaps](HEALTH_IMPROVEMENTS_AND_REMAINING_GAPS_2026-10-17.md)**
+
+The live site now has a dated planner and **day/week shopping reconciliation** for chosen portions, with approximate pack prices only where a specific product has known pack data; unmatched products remain **unpriced**. Guided cooking scales measured ingredient quantities where unambiguous and warns when equipment, piece counts and cook times require checking. The Science page explains **verified label-only nutrient subtotals**, compares fortified soy drinks, and demotes subjective /100 ratings. There is an optional **private cook-up record** for genuine taste, yield, freezer texture and cost results.
+
+**Important:** full AFCD3 micronutrient calculations, live Dubbo Woolworths checkout verification and physical kitchen tests remain outstanding. These are not guaranteed or silently replaced by estimates. [See detailed status](HEALTH_IMPROVEMENTS_AND_REMAINING_GAPS_2026-10-17.md).
+
+
 ## October 17, 2026: full-day health, safety and timing re-audit
 
 **[Read the full evidence-linked audit, 17 recipe improvements and prioritised roadmap](WHOLE_SITE_EVIDENCE_REVIEW_2026-10-17.md).** Includes Australian vegetable, fruit, fibre, calcium, iodine, fish, sodium and nut guidance; current time-restricted-eating trials; food-safety changes for frozen berries and chilled hummus for higher-risk eaters; weekly plan fish/lunch-stock reality checks; and explicit evidence limits. Latest app: [Daily planner](https://healthiest-food.vercel.app/#plan) · [Longevity and meal-timing guide](https://healthiest-food.vercel.app/longevity.html#timing).
