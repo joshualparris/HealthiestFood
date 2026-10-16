@@ -160,3 +160,13 @@
 .planner-fish-note{font-size:12px;line-height:1.6;background:#f4f3df;color:#646b46;border-radius:11px;padding:10px 13px;margin:10px 0}
 @media(max-width:850px){.nutrition-ref{grid-template-columns:repeat(2,minmax(0,1fr))}.dynamic-shop-items{grid-template-columns:1fr}}
 @media(max-width:520px){.dynamic-shop{padding:17px}.dynamic-shop-line{padding:10px}.dynamic-shop-have{font-size:9px}.drink-stats{grid-template-columns:repeat(2,1fr)}}
+
+/* Partially stocked pantry: amount entry stays readable and usable by touch. */
+.dynamic-shop-line{align-items:flex-start;flex-wrap:wrap;cursor:default}
+.dynamic-shop-row-check{display:flex;align-items:flex-start;gap:10px;flex:1 1 190px;min-width:0;cursor:pointer}
+.dynamic-shop-row-check>span{flex:1;min-width:0}
+.dynamic-shop-row-check input{width:21px;height:21px;flex:0 0 21px}
+.dynamic-shop-pantry{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11px;color:#506d59;min-width:120px}
+.dynamic-shop-pantry input{width:100px;height:44px;flex:0 1 100px;border:1px solid #b6c8ae;border-radius:9px;padding:6px 8px;background:#fff;color:#234c37;font-weight:700}
+.dynamic-shop-line:has(input:checked){opacity:1}
+@media(max-width:520px){.dynamic-shop-row-check{flex-basis:100%}.dynamic-shop-pantry{margin-left:31px}}
