@@ -63,3 +63,29 @@ test('UI and end-to-end automation reference audited nutrition data',()=>{
  assert.match(fs.readFileSync(require('node:path').join(__dirname,'..','nutrition-coverage.js'),'utf8'),/window\.FoodNutrients/);
  assert.match(fs.readFileSync(require('node:path').join(__dirname,'..','site.css'),'utf8'),/\.nutrient-scroll/);
 });
+
+test('FSANZ AFCD3 profiles add source-backed minerals without replacing branded tofu',()=>{
+ const afcd=require('../afcd3-selected.js');
+ assert.equal(afcd.release,'AFCD Release 3');
+ assert.equal(Object.keys(afcd.foods).length,12);
+ for(const [id,p] of Object.entries(afcd.foods)){
+  assert.match(id,/^F[0-9]{6}$/);
+  for(const key of ['kj','protein','fibre','calcium','iron','magnesium','potassium','iodine','folate']){
+    assert.ok(p.per100[key]===null||Number.isFinite(p.per100[key]));
+  }
+ }
+ const c=N.calculateExpanded(r('c'),5,afcd),a=N.calculateExpanded(r('a'),5,afcd);
+ assert.ok(c.matchedLines>N.calculate(r('c')).matchedLines);
+ assert.ok(a.matchedLines>N.calculate(r('a')).matchedLines);
+ assert.ok(c.metricCoverage.iron>0);
+ assert.ok(c.metricCoverage.calcium>0);
+ assert.ok(c.metricCoverage.calcium<c.totalLines,'Not all calcium panels are published');
+ assert.ok(c.unmatched.some(x=>/pumpkin/i.test(x)),'No implicit pumpkin variety substitution');
+ assert.ok(a.sources.some(x=>x.sourceId==='F002276'),'Raw carrots mapped to correct AFCD ID');
+ assert.ok(c.sources.some(x=>x.sourceId==='F005184'),'Dry red lentils match dry profile');
+ assert.ok(c.sources.some(x=>x.sourceId==='595465'),'Branded Evergreen tofu label retained');
+ const two=N.calculateExpanded(r('a'),2,afcd);
+ near(two.totals.iron/a.totals.iron,0.4,0.0001);
+ const noAFCD=N.calculateExpanded(r('c'),5,null);
+ assert.equal(noAFCD.matchedLines,N.calculate(r('c')).matchedLines);
+});
