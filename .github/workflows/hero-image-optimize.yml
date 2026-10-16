@@ -1,0 +1,52 @@
+name: Optimize uploaded homepage hero image
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hero-image-optimize.yml'
+      - 'file_000000007f3881faa559570172f8e7d1.png'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  generate-hero:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image optimizer
+        run: python -m pip install --disable-pip-version-check Pillow==11.3.0
+      - name: Crop static text while preserving original photo and callouts
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          source=Path("file_000000007f3881faa559570172f8e7d1.png")
+          assert source.is_file(), "The uploaded original hero image is missing"
+          with Image.open(source) as photo:
+              photo.load()
+              assert photo.size==(1122,1402), f"Unexpected source image size: {photo.size}"
+              # The upper CTA and three statistics are deliberately supplied as
+              # accessible live HTML, not baked into the picture twice.
+              bowl=photo.convert("RGB").crop((35,415,1075,1340))
+              bowl.save("homepage-bowl.webp","WEBP",quality=85,method=6)
+          assert Path("homepage-bowl.webp").stat().st_size>25000
+          print(f"Homepage bowl WebP: {Path('homepage-bowl.webp').stat().st_size} bytes")
+          PY
+      - name: Commit optimized image
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add homepage-bowl.webp
+          if git diff --cached --quiet; then
+            echo "Homepage image already optimized"
+          else
+            git commit -m "Add uploaded homepage food-bowl image optimized for mobile"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
