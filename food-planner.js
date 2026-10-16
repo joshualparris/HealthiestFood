@@ -23,9 +23,7 @@ function makeDefaults(day){
  const dow=weekday(day),lunchIds=["d","a","c","b","d","a","c"];
  return [
   {id:"breakfast-0",type:"breakfast",time:"07:30",recipeId:["br-oats","br-eggs","br-toast","br-smoothie"][dow%4],done:false},
-  {id:"snack-0",type:"snack",time:"10:00",recipeId:"sn-hummus",done:false},
   {id:"lunch-0",type:"lunch",time:"12:30",recipeId:lunchIds[dow],done:false},
-  {id:"snack-1",type:"snack",time:"15:30",recipeId:"sn-apple",done:false},
   {id:"dinner-0",type:"dinner",time:"18:00",recipeId:["di-lentil","di-chicken","di-chilli","di-stirfry","di-lentil","di-salmon","di-chicken"][dow],done:false}
  ].map(s=>({...s,portions:s.type==="dinner"?(D.recipes.find(r=>r.id===s.recipeId)?.yield||1):1}));
 }
@@ -104,7 +102,7 @@ function render(){
  '<details class="planner-week-shopping"><summary>Weekly shopping checklist · <span id="planShoppingProgress">'+checkedCount+'/'+required.length+' ticked</span></summary><p>Combined ingredient amounts for this week’s meals not marked done. This is <strong>not a priced Woolworths basket</strong>; identical ingredient names are merged, but differing product descriptions still need checking. Tick what you already have or buy. Quantities update when your meal plan changes.</p><div class="planner-shopping-items">'+required.map(row=>'<label><input type="checkbox" data-plan-shop="'+escape(row.key)+'"'+(checked.has(row.key)?' checked':'')+'><span><strong>'+escape((Math.round(row.amount*100)/100).toLocaleString("en-AU",{maximumFractionDigits:2})+' '+row.unit)+'</strong> '+escape(row.name)+'</span></label>').join("")+'</div></details>'+
  '<div class="planner-bottom"><button type="button" data-planner="remove-snacks">Remove optional snacks from this day</button><button type="button" class="btn btn-outline" data-planner="copy-tomorrow">Copy this day to tomorrow →</button><button type="button" data-planner="copy-day-shopping">Copy day ingredients</button><button type="button" data-planner="copy-week-shopping">Copy week ingredients</button><button type="button" data-planner="restore">Restore suggested day</button></div>'+
  '<p class="planner-message" role="status">'+escape(message||"Changes to dates, meals and times are saved in this browser on this device. No calendar account is connected.")+'</p>'+
- '<p class="planner-note">Start with these editable times: 7:30 breakfast, 10:00 snack, 12:30 lunch, 15:30 snack and 18:00 dinner. Eat according to your appetite, family and work routines; there is no proven single longevity-optimal meal clock. The Woolworths basket currently covers only the four V6 freezer lunches, not these added meals.</p>';
+ '<p class="planner-note">Start with three editable core meals: 7:30 breakfast, 12:30 lunch and 18:00 dinner. Add snacks when useful for hunger and energy needs. Eat according to your appetite, family and work routines; there is no proven single longevity-optimal meal clock. The Woolworths basket currently covers only the four V6 freezer lunches, not these added meals.</p>';
  if(window.FoodShopping){const scope=[active,...week.filter(day=>day!==active)];window.FoodShopping.render(root,scope,slotsFor,D.recipes);}
 
 }
