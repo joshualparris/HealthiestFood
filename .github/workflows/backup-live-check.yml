@@ -1,0 +1,44 @@
+name: Verify live backup websites
+on:
+  workflow_run:
+    workflows: ['Independent GitHub Pages backup']
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backup-live-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-backups:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        backup:
+          - name: Render
+            url: https://healthiest-food-backup.onrender.com
+          - name: GitHub-Pages
+            url: https://joshualparris.github.io/HealthiestFood
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install real browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Browser smoke test ${{ matrix.backup.name }}
+        env:
+          BROWSER_ENGINE: chromium
+          SMOKE_URL: ${{ matrix.backup.url }}
+        run: node e2e/smoke.cjs
+      - name: Report verified backup
+        if: success()
+        run: echo "PASS ${{ matrix.backup.name }} — ${{ matrix.backup.url }}"
