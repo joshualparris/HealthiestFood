@@ -6,6 +6,9 @@ on:
     paths:
       - 'index.html'
       - 'site.css'
+      - 'offline-ready.js'
+      - 'service-worker.js'
+      - 'manifest.webmanifest'
       - 'site-data.js'
       - 'app.js'
       - 'local-backup.js'
@@ -29,6 +32,9 @@ on:
     paths:
       - 'index.html'
       - 'site.css'
+      - 'offline-ready.js'
+      - 'service-worker.js'
+      - 'manifest.webmanifest'
       - 'site-data.js'
       - 'app.js'
       - 'local-backup.js'
