@@ -184,3 +184,11 @@
   .philosophy-grid h3,.philosophy-grid p{min-width:0;overflow-wrap:break-word}
   .footer-inner>div{min-width:0}
 }
+
+/* WebKit can include intrinsic native select width from a hidden planner in
+   root scrollWidth. Bound native menus to the visual viewport as well as their grid. */
+#view-plan .planner-slot-fields select,
+#view-plan .planner-add-fields select{
+  max-width:calc(100vw - 48px);
+  min-width:0;
+}
