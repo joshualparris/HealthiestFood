@@ -1,5 +1,10 @@
 # HealthiestFood
 
+## October 17, 2026: full-day health, safety and timing re-audit
+
+**[Read the full evidence-linked audit, 17 recipe improvements and prioritised roadmap](WHOLE_SITE_EVIDENCE_REVIEW_2026-10-17.md).** Includes Australian vegetable, fruit, fibre, calcium, iodine, fish, sodium and nut guidance; current time-restricted-eating trials; food-safety changes for frozen berries and chilled hummus for higher-risk eaters; weekly plan fish/lunch-stock reality checks; and explicit evidence limits. Latest app: [Daily planner](https://healthiest-food.vercel.app/#plan) · [Longevity and meal-timing guide](https://healthiest-food.vercel.app/longevity.html#timing).
+
+
 
 ## NEW — Complete daily meals and real-date scheduling (17 October 2026)
 
