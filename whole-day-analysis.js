@@ -5,10 +5,13 @@
 (function(root,factory){const api=factory(root);if(typeof module==="object"&&module.exports)module.exports=api;if(root)root.FoodDayAnalysis=api;})(typeof window!=="undefined"?window:null,function(root){
 "use strict";
 const F=()=>root?.AFCD3_FOODS?.foods||{},L=()=>root?.FoodNutrients;
+const canonicalSource=()=>root?.FoodIngredients||(typeof module==="object"&&module.exports?require("./ingredient-catalogue.js"):null);
 const fields=["kj","protein","fat","fibre","sodium","calcium","iron","iodine","magnesium","potassium","selenium","zinc","b12","vitaminD","folate","vitaminC"];
 const SOURCE="https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/data-files";
 const food=(id,portion)=>({id,portion});
 function ingredientId(name){
+ const canonical=canonicalSource()?.resolveName(name);
+ if(canonical)return canonical.afcd.map(([id,portion])=>food(id,portion));
  const n=name.toLowerCase();let ids=[];
  // A declared 50/50 vegetable mixture is only a modelling convention, not a product analysis.
  if(/frozen broccoli\/cauliflower/.test(n))return [food("F001905",.5),food("F002378",.5)];
@@ -60,6 +63,13 @@ function ingredientId(name){
 function weight(ing){
  const [v,unit,name]=ing;
  if(!Number.isFinite(v)||v<0)return null;
+ const record=canonicalSource()?.byIngredient(ing);
+ if(record&&(unit==="tin"||unit==="tins")){
+  const portions={ "fish-sardines":75,"legume-chickpeas-canned":252,"legume-black-beans-canned":225 };
+  if(Object.hasOwn(portions,record.id))return v*portions[record.id];
+  return null; // No manufactured generic kidney-bean edible tin yield.
+ }
+
  const n=name.toLowerCase();
  if(unit==="g")return v;
  if(unit==="mL")return v*(/oil|\bevoo\b/i.test(n)?.91:1);
@@ -105,7 +115,7 @@ function row(ing){
   nums[key]=Number.isFinite(value)&&Number.isFinite(grams)?value*grams/100:null;
   origin[key]=nums[key]===null?null:src;
  }
- return {ingredient:ing[2],grams,ids:generic.map(x=>x.id),label:branded?.product?.name||null,nutrients:nums,sources:origin,complete:fields.every(k=>nums[k]!==null)};
+ return {ingredient:ing[2],ingredientId:canonicalSource()?.byIngredient(ing)?.id||null,grams,ids:generic.map(x=>x.id),label:branded?.product?.name||null,nutrients:nums,sources:origin,complete:fields.every(k=>nums[k]!==null)};
 }
 function analyze(recipe,portions=1){
  if(!recipe||!Array.isArray(recipe.ingredients)||!(recipe.yield>0)||!(portions>0))throw Error("Invalid recipe");
