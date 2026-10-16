@@ -208,3 +208,22 @@
 
 /* Native view visibility prevents inactive menus entering Safari's layout width. */
 .view[hidden]{display:none!important}
+
+/* Transparent nutrient calculations: horizontal table scroll is intentional on phones. */
+.nutrient-ledger{margin:18px 0 25px}
+.nutrient-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:15px;background:#fff}
+.nutrient-table{width:100%;min-width:670px;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.nutrient-table caption{caption-side:top;text-align:left;background:#eef3e9;color:#355a42;padding:12px 15px;font-size:12px}
+.nutrient-table th,.nutrient-table td{text-align:right;padding:12px 10px;border-bottom:1px solid #e5ebdc;font-size:12px}
+.nutrient-table th:first-child{text-align:left;min-width:150px}
+.nutrient-table thead th{font-size:11px;background:#f3f5ea;color:#496a55}
+.nutrient-table tbody th{font-weight:750;color:#204a36}
+.nutrient-warning{font-size:12px;line-height:1.7;color:#596f5f;background:#f8f2e4;border:1px solid #e7ddcc;border-radius:11px;padding:13px 16px;margin:12px 0}
+.nutrient-warning a,.nutrient-detail-inner a{color:#245a43;text-decoration:underline}
+.nutrient-details{border:1px solid #d8e5d2;border-radius:12px;background:#fffdf7;margin:8px 0}
+.nutrient-details summary{cursor:pointer;padding:13px 16px;font-size:13px;font-weight:750;color:#28543b}
+.nutrient-detail-inner{padding:0 16px 15px;font-size:12px;color:#4a6854}
+.nutrient-detail-inner ul{padding-left:20px;line-height:1.65}
+.nutrient-detail-inner li{margin:7px 0}
+.nutrient-detail-inner small{display:block;color:#718174}
+@media(max-width:540px){.nutrient-details summary{font-size:12px}.nutrient-warning{padding:11px}}
