@@ -70,6 +70,6 @@ test('scheduled serving counts make an unpriced date/week shopping ingredient li
  const list=core.shoppingText(['2026-10-17']);
  assert.match(list,/INGREDIENTS FOR/);
  assert.match(list,/Amounts are for scheduled adult portions/);
- assert.match(list,/large eggs|raw salmon fillet/);
+ assert.match(list,/boneless skinless chicken thigh|green beans|avocado flesh/);
  assert.match(core.shoppingText(['2026-10-17','2026-10-18']),/INGREDIENTS · WEEK/);
 });
