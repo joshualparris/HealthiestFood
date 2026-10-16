@@ -3,12 +3,12 @@
  * guidance as current. Cache only same-origin static assets, never personal data.
  * An offline copy is a convenience, NOT current supermarket/product information.
  */
-const CACHE_NAME="healthiestfood-shell-20261017-podcast-allphotos-v2";
+const CACHE_NAME="healthiestfood-shell-20261017-handling-v3";
 const ASSETS=[
  "./","./index.html","./longevity.html","./cooking-methods.html","./site.css","./site-data.js",
  "./whole-day-data.js","./ingredient-catalogue.js",
  "./br-oats.webp","./br-eggs.webp","./br-smoothie.webp","./br-toast.webp","./di-lentil.webp","./di-chicken.webp","./di-chilli.webp","./di-stirfry.webp","./di-salmon.webp","./sn-hummus.webp",
- "./a.webp","./b.webp","./c.webp","./d.webp","./sn-apple.webp","./sn-eggs.webp","./sn-berries.webp","./recipe-methods.js","./timers.js","./recipe-scale.js","./food-safety.js",
+ "./a.webp","./b.webp","./c.webp","./d.webp","./sn-apple.webp","./sn-eggs.webp","./sn-berries.webp","./recipe-methods.js","./timers.js","./recipe-scale.js","./food-safety.js","./food-handling-log.js","./food-handling-ui.js",
  "./local-backup.js","./offline-ready.js","./cook-trial.js","./app.js","./food-shopping.js",
  "./media-data.js","./podcast-streams.js","./podcast-player.js","./app-pages.js","./iframe-route-bridge.js","./media-library.js","./cooking-methods-data.js","./cooking-methods.js","./custom-shopping.js",
  "./food-planner.js","./nutrition-coverage.js","./nutrient-ledger.js",
