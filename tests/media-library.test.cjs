@@ -55,7 +55,7 @@ test('Mobile, desktop, science and longevity-guide media entry points are wired'
  assert.ok(html.indexOf('src="media-library.js"')<html.indexOf('src="app.js"'));
  assert.ok(app.includes('window.FoodMedia?.init()'));
  assert.ok(app.includes('window.FoodMedia?.injectRecipe(r'));
- assert.ok(app.includes('"media"].includes(route)'));
+ assert.ok(/function setRoute\(route\)/.test(app) && /"media"[^\n]*\.includes\(route\)/.test(app),"Media remains in the recognised routes, even when new app-page routes are added");
  assert.ok(guide.includes('index.html?topic=Meal%20timing#media'));
  assert.ok(guide.includes('index.html?topic=Calcium%20%26%20fortification#media'));
  assert.ok(sw.includes('./media-data.js')&&sw.includes('./media-library.js'));
