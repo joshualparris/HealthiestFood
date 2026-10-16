@@ -265,3 +265,50 @@
 .offline-notice{position:relative;z-index:58;background:#fff0d7;color:#68450d;border-bottom:1px solid #e1b878;padding:11px 20px;font-size:12px;font-weight:700;line-height:1.6;text-align:center}
 .offline-notice[hidden]{display:none!important}
 @media(max-width:800px){.offline-notice{padding:8px 16px;font-size:11px}}
+
+
+/* Choose any combination of the 17 recipes rather than the fixed 20-lunch basket. */
+.custom-shopping{border:1px solid #d8e5d5;background:#fffefa;border-radius:24px;padding:27px;margin:27px 0 34px;min-width:0;scroll-margin-top:90px}
+.custom-shopping-top h2{font:500 clamp(27px,4vw,43px)/1.2 var(--serif);color:var(--pine);margin:8px 0}
+.custom-shopping-top p{font-size:14px;color:#617566;line-height:1.7;max-width:800px}
+.custom-shopping-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:25px 0}
+.custom-recipe-group{border:1px solid #dce6d4;border-radius:16px;min-width:0;padding:12px 14px;background:#f8faf3}
+.custom-recipe-group legend{font-weight:800;font-size:13px;color:#345b43;padding:0 6px}
+.custom-recipe-row{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e4e9df;min-width:0}
+.custom-recipe-row:last-child{border-bottom:0}
+.custom-recipe-choice{display:flex;align-items:flex-start;gap:10px;font-size:12px;font-weight:700;line-height:1.45;color:#284c3a;min-width:0;flex:1}
+.custom-recipe-choice span{min-width:0;overflow-wrap:anywhere}
+.custom-recipe-choice input{width:21px;height:21px;flex:0 0 21px;margin:0;accent-color:#286049}
+.custom-recipe-count{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:11px;color:#526b59}
+.custom-recipe-count input{width:57px;min-height:42px;border:1px solid #b9ccb5;border-radius:10px;background:white;text-align:center;color:var(--pine);font-weight:800;font-size:14px;padding:5px}
+.custom-shopping-actions{display:flex;flex-wrap:wrap;gap:9px;margin:22px 0}
+.custom-shopping-actions button{border:1px solid #b9d0ba;border-radius:99px;background:#fff;color:var(--pine);padding:11px 16px;font-weight:800;font-size:12px}
+.custom-shopping-actions #customShopCopy{background:var(--pine);color:white;border-color:var(--pine)}
+.custom-shopping-actions button:disabled{opacity:.45;cursor:not-allowed}
+.custom-shopping-results{border-top:1px solid #e2e9df;padding-top:20px}
+.custom-shopping-results h3{font:500 29px var(--serif);margin:0 0 6px;color:var(--pine)}
+.custom-shopping-stats{font-size:13px;color:#526d59;font-weight:700}
+.custom-shopping-subtotal{background:#e8f0df;border-radius:15px;padding:18px;display:flex;align-items:center;gap:15px;margin:18px 0}
+.custom-shopping-subtotal strong{font:500 35px var(--serif);color:#184535;white-space:nowrap}
+.custom-shopping-subtotal span{font-size:12px;line-height:1.6;color:#47664f}
+.custom-shopping-empty{background:#f4f7ee;border-radius:12px;padding:20px;font-size:14px;color:#55705c}
+.custom-shopping-items{display:grid;grid-template-columns:1fr;gap:7px;margin:15px 0}
+.custom-shopping-item{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border:1px solid #e0e8d8;background:white;border-radius:12px;padding:15px;min-width:0}
+.custom-shopping-item-main{display:flex;align-items:flex-start;gap:10px;flex:1;min-width:0;cursor:pointer}
+.custom-shopping-item-main input{width:22px;height:22px;flex:0 0 22px;accent-color:#417354;margin:2px 0}
+.custom-shopping-item-main span{min-width:0}
+.custom-shopping-item-main strong{display:block;color:#254735;font-size:13px;overflow-wrap:anywhere}
+.custom-shopping-item-main small{display:block;color:#647765;line-height:1.65;font-size:11px;margin-top:4px}
+.custom-shopping-item-main a{display:inline-block;font-size:11px;font-weight:800;color:#336e48;margin-top:3px}
+.custom-shopping-item.is-complete{background:#f6f9f2}
+.custom-shopping-item.is-complete strong{text-decoration:line-through;text-decoration-thickness:1px;opacity:.65}
+.custom-shopping-have{font-size:11px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;color:#517057;flex:0 0 160px}
+.custom-shopping-have input{width:86px;height:44px;border:1px solid #bfceba;border-radius:9px;background:white;padding:6px 8px;color:var(--pine);font-weight:700}
+.custom-shopping-have small{font-size:10px}
+.custom-shopping-disclaimer,.custom-shopping-feedback{font-size:12px;color:#647467;line-height:1.7}
+.legacy-basket{border:1px solid #dce6d5;padding:17px;border-radius:17px;background:#f9faf5;margin-top:20px}
+.legacy-basket summary{cursor:pointer;font-weight:800;color:var(--pine);padding:4px 0}
+.legacy-basket>p{font-size:13px;color:#667d69}
+@media(max-width:800px){.custom-shopping-groups{grid-template-columns:1fr}}
+@media(max-width:540px){.custom-shopping{padding:17px;margin-top:17px}.custom-recipe-row{gap:8px}.custom-recipe-choice{font-size:12px}.custom-recipe-count{flex-direction:column;gap:3px}.custom-shopping-item{flex-wrap:wrap;padding:12px}.custom-shopping-have{flex:1 1 100%;margin-left:31px}.custom-shopping-subtotal{flex-direction:column;align-items:flex-start;gap:3px}.custom-shopping-subtotal strong{font-size:31px}.legacy-basket{padding:12px}}
+@media print{#legacyV6Shop,.custom-shopping-top,.custom-shopping-groups,.custom-shopping-actions,.custom-shopping-feedback,.custom-shopping-have,.custom-shopping-disclaimer,.custom-shopping-item-main a{display:none!important}.custom-shopping{border:0;padding:0;margin:0}.custom-shopping-item{break-inside:avoid;padding:7px;margin:3px 0}.custom-shopping-item.is-complete{display:none}.custom-shopping-item-main input{display:none}.custom-shopping-subtotal{padding:8px}}
