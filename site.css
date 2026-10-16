@@ -120,3 +120,43 @@
 /* Evidence-led weekly pattern review; informational, not a nutrient score. */
 .planner-pattern{background:#fffdf6;border:1px solid var(--line);border-radius:18px;padding:18px 23px;margin:15px 0 20px}.planner-pattern h3{margin:0 0 8px;font:600 23px/1.3 var(--serif);color:var(--pine)}.planner-pattern p{font-size:13px;line-height:1.65;margin:9px 0;color:var(--ink)}.planner-pattern p strong{color:var(--pine)}.planner-pattern a{color:var(--pine);font-weight:700}.planner-pattern em{font-style:normal;font-weight:700}
 @media(max-width:470px){.planner-pattern{padding:14px}.planner-pattern h3{font-size:21px}}
+
+/* Planned week shopping and evidence-led nutrient displays */
+.cook-scale-note{border-left:4px solid #bd8e57;background:#f7edd6;padding:12px 15px;border-radius:8px;margin:15px 0;font-size:12px;color:#71572c;line-height:1.6}
+.dynamic-shop{background:#fffef8;border:1px solid #dfe8d7;border-radius:22px;padding:26px;margin-top:32px;min-width:0}
+.dynamic-shop-head h2,.nutrition-head h2{font:600 clamp(26px,4vw,39px) var(--serif);margin:8px 0 9px;color:var(--pine)}
+.dynamic-shop-head p,.nutrition-head p{color:#637568;font-size:13px;line-height:1.7}
+.dynamic-shop-actions{display:flex;gap:7px;flex-wrap:wrap;margin:17px 0 13px}
+.dynamic-shop-actions button{border:1px solid #bed3b6;background:white;color:#204c37;border-radius:100px;padding:10px 14px;font-size:12px;font-weight:800}
+.dynamic-shop-actions button[aria-pressed="true"]{color:white;background:var(--pine)}
+.dynamic-shop-stats{padding:14px 16px;background:#eaf1e2;border-radius:12px;display:flex;flex-direction:column;gap:4px;margin:10px 0}
+.dynamic-shop-stats strong{font-size:13px}.dynamic-shop-stats span{font-size:12px;color:#536957}
+.dynamic-shop-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.dynamic-shop-line{display:flex;align-items:center;gap:9px;border:1px solid #e1e9d9;background:white;padding:10px 12px;border-radius:10px;min-width:0;cursor:pointer}
+.dynamic-shop-line input{width:18px;height:18px;flex-shrink:0;accent-color:#476c4e}
+.dynamic-shop-line>span:nth-child(2){flex:1;min-width:0}
+.dynamic-shop-line strong{display:block;font-size:12px;color:#264537;overflow-wrap:anywhere}
+.dynamic-shop-line small{display:block;font-size:11px;color:#657967}
+.dynamic-shop-have{font-size:10px;color:#517655}
+.dynamic-shop-line:has(input:checked){opacity:.55}
+.dynamic-shop-warning{font-size:11px;color:#73816e;line-height:1.6;margin-bottom:0}
+#nutritionCoverage{padding:32px 0 25px}
+.nutrition-ref{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:22px 0}
+.nutrition-ref-card{border:1px solid #dce7d7;border-radius:14px;background:white;display:flex;flex-direction:column;gap:5px;padding:16px}
+.nutrition-ref-card>span{font-size:11px;font-weight:800;color:#5b7a5e}
+.nutrition-ref-card strong{font:600 32px var(--serif);color:#274537}
+.nutrition-ref-card small{font-size:11px;color:#6f7f70}
+.nutrition-ref-card a{font-size:11px;font-weight:800;color:#51765c;margin-top:auto}
+.nutrition-milk,.nutrition-unknown{background:#edf2e5;padding:23px;border-radius:18px;margin:12px 0}
+.nutrition-milk h3{font:600 25px var(--serif);margin:0}
+.nutrition-milk p,.nutrition-unknown p{font-size:12px;color:#5f745f;line-height:1.75}
+.nutrition-milk label{font-size:12px;font-weight:800}
+.nutrition-milk select{border:1px solid #b7cbaa;border-radius:9px;padding:9px;background:white;max-width:100%;margin:8px 0}
+.drink-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:13px 0}
+.drink-stats span{border-radius:9px;background:#fffdf7;padding:11px;font-size:12px}
+.drink-stats b{display:block;font-size:16px}
+.nutrition-unknown{background:#fbf2df}
+.nutrition-unknown a{color:#436951;font-weight:800;font-size:12px}
+.planner-fish-note{font-size:12px;line-height:1.6;background:#f4f3df;color:#646b46;border-radius:11px;padding:10px 13px;margin:10px 0}
+@media(max-width:850px){.nutrition-ref{grid-template-columns:repeat(2,minmax(0,1fr))}.dynamic-shop-items{grid-template-columns:1fr}}
+@media(max-width:520px){.dynamic-shop{padding:17px}.dynamic-shop-line{padding:10px}.dynamic-shop-have{font-size:9px}.drink-stats{grid-template-columns:repeat(2,1fr)}}
