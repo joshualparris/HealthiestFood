@@ -123,23 +123,33 @@ async function main(){
       assert.equal(await page.locator('#timerDashboard .timer-tile').count(),1);
       await page.locator('#closeCook').click();
     });
-    await check('shopping ticks persist after refresh',async()=>{
+    await check('custom shopping allows one or two chosen meals with their own portions',async()=>{
       await page.locator('.mobile-nav [data-goto="shop"]').click();
-      const shopLoaded=await page.locator('#shopTotal').isVisible();
-      if(!shopLoaded){
-        const state=await page.evaluate(()=>({
-          href:location.href,hash:location.hash,ready:document.readyState,
-          views:[...document.querySelectorAll('.view')].map(v=>({id:v.id,hidden:v.hidden,classes:v.className})),
-          selectedNav:[...document.querySelectorAll('.mobile-nav button')].filter(x=>x.classList.contains('active')).map(x=>x.dataset.goto)
-        }));
-        process.stdout.write('SHOP DEBUG '+JSON.stringify({state,runtimeErrors})+'\n');
-      }
-      await page.locator('#shopTotal').waitFor({state:'visible',timeout:6000});
-      assert.match(await page.locator('#shopTotal').innerText(),/256\.43/);
+      await page.locator('#view-shop').waitFor({state:'visible'});
+      const custom=page.locator('#customShopping');
+      await custom.locator('[data-custom-recipe="br-oats"]').check();
+      assert.match(await custom.locator('.custom-shopping-stats').innerText(),/1 recipes · 1 portions/);
+      await custom.locator('[data-custom-recipe="a"]').check();
+      await custom.locator('[data-custom-portions="a"]').fill('5');
+      await custom.locator('[data-custom-portions="a"]').dispatchEvent('change');
+      assert.match(await custom.locator('.custom-shopping-stats').innerText(),/2 recipes · 6 portions/);
+      assert.ok(await custom.locator('.custom-shopping-item').count()>8);
+      await page.reload({waitUntil:'domcontentloaded'});
+      await page.locator('.mobile-nav [data-goto="shop"]').click();
+      await page.locator('#view-shop').waitFor({state:'visible'});
+      assert.equal(await page.locator('[data-custom-recipe="a"]').isChecked(),true);
+      assert.equal(await page.locator('[data-custom-portions="a"]').inputValue(),'5');
+    });
+    await check('archived V6 basket checks persist when expanded',async()=>{
+      await page.locator('#legacyV6Shop summary').click();
+      await page.locator('#shopTotal').waitFor({state:'visible'});
+      assert.match(await page.locator('#shopTotal').innerText(),/256\\.43/);
       await page.locator('[data-filter="all"]').click();
       await page.locator('#shoppingList [data-item="0"]').check();
       await page.reload({waitUntil:'domcontentloaded'});
       await page.locator('.mobile-nav [data-goto="shop"]').click();
+      await page.locator('#view-shop').waitFor({state:'visible'});
+      await page.locator('#legacyV6Shop summary').click();
       await page.locator('[data-filter="all"]').click();
       assert.equal(await page.locator('#shoppingList [data-item="0"]').isChecked(),true);
     });
