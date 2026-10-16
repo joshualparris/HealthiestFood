@@ -54,14 +54,15 @@ async function toggleWakeLock(){
  }catch{wakeRequested=false;wakeLock=null;updateWakeButton();toast("Screen stay-awake request was declined");}
 }
 function toast(message){const t=$("#toast"); t.textContent=message;t.classList.add("show");clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove("show"),3400);}
-function setRoute(route){const target=["home","recipes","plan","shop","science"].includes(route)?route:"home"; if(location.hash!== "#"+target){location.hash=target;return}renderView(target);}
-function renderView(route){const target=["home","recipes","plan","shop","science"].includes(route)?route:"home";
+function setRoute(route){const target=["home","recipes","plan","shop","science","media"].includes(route)?route:"home"; if(location.hash!== "#"+target){location.hash=target;return}renderView(target);}
+function renderView(route){const target=["home","recipes","plan","shop","science","media"].includes(route)?route:"home";
  $$(".view").forEach(v=>{const inactive=v.id!=="view-"+target;v.classList.toggle("hidden",inactive);v.hidden=inactive;v.inert=inactive;});
  $$("[data-route]").forEach(a=>{const active=a.dataset.route===target;a.classList.toggle("active",active);if(active)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
  $$(".mobile-nav button").forEach(b=>b.classList.toggle("active",b.dataset.goto===target));
  if(target==="shop")renderShop();
  if(target==="plan")renderPlan();
  if(target==="recipes")renderDetail();
+ if(target==="media")window.FoodMedia?.render();
  window.scrollTo({top:0,behavior:"instant"});
  document.title=(target==="home"?"Good Food, Long Game":target.charAt(0).toUpperCase()+target.slice(1)+" | Good Food, Long Game");
 }
@@ -100,6 +101,7 @@ function renderDetail(){
  const ing=r.ingredients.map(([amt,unit,name])=>'<li><span class="ingredient-amount">'+formatNum(amt*multiplier)+' '+escapeHTML(unit)+'</span><span>'+escapeHTML(name)+'</span></li>').join("");
  const steps=r.steps.map(s=>'<li>'+escapeHTML(s.title)+'</li>').join("");
  $("#recipeDetail").innerHTML='<div class="detail-layout" id="selected-recipe"><div class="detail-left"><div class="detail-eyebrow">✳ &nbsp; RECIPE '+r.id.toUpperCase()+' · '+escapeHTML(r.label)+'</div><h2>'+escapeHTML(r.name)+'</h2><p>'+escapeHTML(r.description)+'</p><div class="detail-pills">'+r.tags.map(t=>'<span class="pill">'+escapeHTML(t)+'</span>').join("")+'</div><div class="detail-highlight"><strong>Nutrition note:</strong> '+escapeHTML(r.nutrition)+'</div><div class="detail-actions"><button class="btn btn-primary" data-start="'+r.id+'">Start guided cooking →</button><button class="btn btn-outline" data-add-to-shop="'+r.id+'" data-shop-portions="'+servings+'">Add '+servings+' portions to shopping list ↗</button></div><div class="evidence-chip">'+(r.category==="lunch"?"Original V6 lunch quantities; nutrition totals are partial estimates.":"New adult recipe suggestions adapted from historical family plans; not kitchen or lab tested.")+'</div></div><div class="detail-right"><div class="servings-box"><span>SCALE THE RECIPE<br><small>Base yield: '+r.yield+' '+(r.yield===1?"portion":"portions")+'</small></span><div class="stepper"><button data-servings="-1" aria-label="Decrease servings">−</button><output aria-live="polite">'+servings+'</output><button data-servings="1" aria-label="Increase servings">+</button></div></div><h3>What you’ll need</h3><p>All quantities shown for '+servings+' '+(servings===1?'portion':'portions')+'. Changing this scales ingredients. Choose “Add to shopping list” to buy just these portions. Cooking times and equipment may still need adjusting.</p><ul class="ingredients-list">'+ing+'</ul><h3 style="margin-top:29px">The simple steps</h3><ol class="method-preview">'+steps+'</ol></div></div>';
+ window.FoodMedia?.injectRecipe(r,$("#recipeDetail"));
  window.FoodTrial?.render(r);
 }
 const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday"];const WEEKS=[["a","c","b","d","a"],["c","b","d","a","c"],["b","d","a","c","b"],["d","a","c","b","d"]];
@@ -284,5 +286,5 @@ document.addEventListener("change",e=>{
 $("#shopSearch").addEventListener("input",e=>{search=e.target.value.toLowerCase().trim();renderShop();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&cook){closeCook();return}if(e.key==="Tab"&&cook){const list=$("button:not(:disabled),input:not(:disabled),a[href],select:not(:disabled)",$("#cookOverlay")).filter(el=>el.getClientRects().length);if(list.length){const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){last.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===last){first.focus();e.preventDefault();}}}});
 window.addEventListener("hashchange",()=>renderView(location.hash.slice(1)));
-servings=recipe(selected).yield;window.FoodDataBackup?.init();window.FoodTrial?.init();renderCards();renderDetail();renderPlan();renderShop();renderSources();window.FoodNutrition?.render();renderView(location.hash.slice(1));
+servings=recipe(selected).yield;window.FoodDataBackup?.init();window.FoodTrial?.init();renderCards();renderDetail();renderPlan();renderShop();renderSources();window.FoodMedia?.init();window.FoodNutrition?.render();renderView(location.hash.slice(1));
 })();
