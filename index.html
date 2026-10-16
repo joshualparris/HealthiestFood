@@ -24,6 +24,7 @@
   <script src="whole-day-analysis.js" defer></script>
   <script src="cook-trial.js" defer></script>
   <script src="food-safety.js" defer></script>
+  <script src="local-backup.js" defer></script>
   <script src="app.js" defer></script>
   <script src="food-shopping.js" defer></script>
   <script src="food-planner.js" defer></script>
@@ -112,6 +113,11 @@
     <section id="view-plan" class="view hidden section-shell view-body">
       <div class="page-head"><span class="section-kicker">MEAL PLANNING THAT FITS YOUR LIFE</span><h1>Your daily <em>rhythm.</em></h1><p>Start with today's actual date in Dubbo (Australia/Sydney). Choose any day, schedule breakfast, lunch, dinner and snacks at exact editable times, and mark meals done. Your schedule stays on this device.</p></div>
       <div id="planGrid" class="plan-grid"></div>
+      <section id="dataPortability" class="data-portability" aria-labelledby="dataPortabilityHeading">
+        <div><span class="section-kicker">YOUR DATA, YOUR CHOICE</span><h2 id="dataPortabilityHeading">Keep your plans safe.</h2><p>Your recipes, meal plan, pantry, timers and cook-up notes are saved separately in each browser and website domain. <strong>Render and Vercel do not share saved progress.</strong> Export a private backup to move your data or protect it from cleared browser storage.</p></div>
+        <div class="data-portability-actions"><button type="button" id="exportFoodData" class="btn btn-outline">Export private backup ↓</button><label class="btn btn-outline" for="importFoodData">Import private backup ↑</label><input type="file" id="importFoodData" accept=".json,application/json" aria-label="Choose a previous HealthiestFood private backup file"></div>
+        <p id="dataBackupStatus" role="status" aria-live="polite">No data leaves your device unless you choose to export it. Keep downloaded files private.</p>
+      </section>
       <div class="wellbeing-note"><span>✷</span><p><strong>A gentle reminder:</strong> No exact meal clock guarantees longevity. Eat enough to feel well, change times for your family and skip rigid fasting rules.</p></div>
     </section>
 
