@@ -107,7 +107,16 @@ async function main(){
     });
     await check('shopping ticks persist after refresh',async()=>{
       await page.locator('.mobile-nav [data-goto="shop"]').click();
-      await page.locator('#shopTotal').waitFor({state:'visible'});
+      const shopLoaded=await page.locator('#shopTotal').isVisible();
+      if(!shopLoaded){
+        const state=await page.evaluate(()=>({
+          href:location.href,hash:location.hash,ready:document.readyState,
+          views:[...document.querySelectorAll('.view')].map(v=>({id:v.id,hidden:v.hidden,classes:v.className})),
+          selectedNav:[...document.querySelectorAll('.mobile-nav button')].filter(x=>x.classList.contains('active')).map(x=>x.dataset.goto)
+        }));
+        process.stdout.write('SHOP DEBUG '+JSON.stringify({state,runtimeErrors})+'\n');
+      }
+      await page.locator('#shopTotal').waitFor({state:'visible',timeout:6000});
       assert.match(await page.locator('#shopTotal').innerText(),/256\.43/);
       await page.locator('[data-filter="all"]').click();
       await page.locator('#shoppingList [data-item="0"]').check();
