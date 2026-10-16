@@ -4,7 +4,7 @@ A source-linked, dairy-free collection of home-cooked and historically planned f
 
 **Important:** “healthiest” means a practical food-pattern comparison, **not** a claim that any one recipe maximises lifespan. The historical scores below are subjective, unvalidated 10-category assessments from an earlier recipe audit; scores are not medical evidence, and a meal that scores higher is not necessarily better for everyone.
 
-## V4 — newest recipe plan (16 October 2026)
+## V4 — 20-lunch recipe revision (16 October 2026)
 
 **[V4: exact 20-lunch recipes and four-week menu](V4_RECIPES_2026-10-16.md)** — two cook days, 10 lunches each; 4 sardine, 4 salmon and 12 high-protein-tofu/legume lunches in total. Uses drained fish weights, labelled calcium-rich tofu and practical freezer handling.
 
