@@ -1,0 +1,33 @@
+name: Verify cooking website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'site.css'
+      - 'site-data.js'
+      - 'app.js'
+      - 'tests/**'
+      - '.github/workflows/site-tests.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'site.css'
+      - 'site-data.js'
+      - 'app.js'
+      - 'tests/**'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify website recipes, shopping arithmetic and app structure
+        run: node --test tests/site.test.cjs
