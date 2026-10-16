@@ -4,6 +4,18 @@ A source-linked, dairy-free collection of home-cooked and historically planned f
 
 **Important:** “healthiest” means a practical food-pattern comparison, **not** a claim that any one recipe maximises lifespan. The historical scores below are subjective, unvalidated 10-category assessments from an earlier recipe audit; scores are not medical evidence, and a meal that scores higher is not necessarily better for everyone.
 
+## V4 — newest recipe plan (16 October 2026)
+
+**[V4: exact 20-lunch recipes and four-week menu](V4_RECIPES_2026-10-16.md)** — two cook days, 10 lunches each; 4 sardine, 4 salmon and 12 high-protein-tofu/legume lunches in total. Uses drained fish weights, labelled calcium-rich tofu and practical freezer handling.
+
+**[V4: Dubbo Woolworths + Coles shopping list](V4_SHOPPING_DUBBO_2026-10-16.md)** — **37 product lines** with quantities, price provenance and an estimated **$224.52** first shopping basket including 5 L optional fortified soy milk (**$209.52** without). Actual Dubbo store stock/prices were **not** independently checkout-verified. [Editable CSV for price checking](V4_SHOPPING_DUBBO_2026-10-16.csv).
+
+**[V4: evidence and V3 comparison](V4_EVIDENCE_AUDIT_2026-10-16.md)** — fish/label arithmetic, objective changes and subjective 10-metric rubric. V4 proposed score **94/100 (A)** and **91/100 (B)** in the non-validated editorial rubric; **these are not longevity predictions**.
+
+**Status:** V4 is a new **proposed, not yet cooked** variation, and cannot be claimed scientifically superior for every person. All original historical recipes and V3 documents remain untouched.
+
+---
+
 ## Start here
 
 - **[V5: four five-portion recipes](v5/RECIPES.md)** — twenty varied adult lunches, exact ingredients and methods, with salmon cost/energy trade-offs.
