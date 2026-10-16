@@ -106,7 +106,7 @@ function row(ing){
  for(const key of fields){
   const fromLabel=Object.prototype.hasOwnProperty.call(label,key)&&Number.isFinite(label[key]);
   let value=null,src=null;
-  if(fromLabel){value=label[key];src="Retail label";}
+  if(fromLabel){value=label[key];src=branded?.brandAssumed?"Retail-label candidate (SKU unverified)":"Retail label (SKU catalogued)";}
   else if(generic.length===ids.length&&ids.length&&!(branded&&/tofu/i.test(branded.product.id)&&key==="calcium")){
    const weighted=generic.every(x=>Number.isFinite(F()[x.id].per100[key]))?generic.reduce((sum,x)=>sum+F()[x.id].per100[key]*x.portion,0):null;
    if(weighted!==null&&Number.isFinite(weighted)){value=weighted;src="AFCD3 generic proxy";}
@@ -115,7 +115,7 @@ function row(ing){
   nums[key]=Number.isFinite(value)&&Number.isFinite(grams)?value*grams/100:null;
   origin[key]=nums[key]===null?null:src;
  }
- return {ingredient:ing[2],ingredientId:canonicalSource()?.byIngredient(ing)?.id||null,grams,ids:generic.map(x=>x.id),label:branded?.product?.name||null,nutrients:nums,sources:origin,complete:fields.every(k=>nums[k]!==null)};
+ return {ingredient:ing[2],ingredientId:canonicalSource()?.byIngredient(ing)?.id||null,grams,ids:generic.map(x=>x.id),label:branded?.product?.name||null,labelSkuVerified:branded?!!branded.verifiedSku:null,nutrients:nums,sources:origin,complete:fields.every(k=>nums[k]!==null)};
 }
 function analyze(recipe,portions=1){
  if(!recipe||!Array.isArray(recipe.ingredients)||!(recipe.yield>0)||!(portions>0))throw Error("Invalid recipe");
