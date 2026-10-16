@@ -26,12 +26,28 @@ function fishReport(slots){
 }
 function render(){
  const root=document.getElementById("nutritionCoverage");if(!root)return;
- root.innerHTML='<div class="nutrition-head"><span class="section-kicker">WHAT WE CAN REALLY MEASURE</span><h2>Nutrition, without the guesswork.</h2><p>These are <strong>verified label-based protein subtotals for the original V6 lunches</strong>. They leave out foods without reconciled nutrient data, so they are <em>not</em> complete meal protein, energy or nutritional adequacy.</p></div>'+
- '<div class="nutrition-ref">'+ref.map(x=>'<div class="nutrition-ref-card"><span>'+x.label+'</span><strong>'+x.protein.toFixed(1)+' g</strong><small>protein from '+x.known.join(", ")+' only</small><a href="'+x.source+'" target="_blank" rel="noopener noreferrer">See product label ↗</a></div>').join("")+'</div>'+
+ root.innerHTML='<div class="nutrition-head"><span class="section-kicker">SOURCE-TRACED FOOD LABELS</span><h2>Nutrition, without invented totals.</h2><p>The comparison below combines known nutrient label panels for matched raw/dry/drained ingredients only. <strong>These are partial pre-cooking figures</strong>, not whole-meal calories, not finished cooked nutrients, and not an adequacy verdict. Unmatched ingredients, cooking losses, and most vitamins/minerals remain unknown. Label data should be rechecked before shopping.</p></div>'+
+ '<div id="nutrientLedger" class="nutrient-ledger"></div>'+
  '<div class="nutrition-milk"><h3>Optional dairy-free fortified drink comparison</h3><p>Choose a drink to compare <em>verified</em> per-250 mL label contributions. These are not automatically included in your planned meals.</p><label for="nutritionDrink">Drink to compare</label> <select id="nutritionDrink"><option value="none">No drink included</option><option value="sogood">So Good High Protein Soy (250 mL)</option><option value="vitasoy">Vitasoy Protein Plus Unsweetened (250 mL)</option></select><div id="nutritionDrinkResult" role="status"></div></div>'+
  '<div class="nutrition-unknown"><strong>Still not verified for your complete day</strong><p>Calcium, iodine, vitamin B12, vitamin D, iron, zinc, fibre, energy and total protein from all 17 recipes. A missing result is <strong>unknown, not zero</strong>. For context, Australian adult 19–50 calcium RDI is generally 1,000 mg/day; iodine RDI 150 µg/day and B12 RDI 2.4 µg/day. Requirements differ by age, sex, pregnancy, lactation and health circumstances.</p><p>Next data requirement: map exact Australian Food Composition Database Release 3 food IDs and current branded labels to each raw, dry and drained ingredient, then apply cooking yields. Until then, this app must not declare a diet nutritionally complete.</p><a href="https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/data-files" target="_blank" rel="noopener noreferrer">Official AFCD Release 3 nutrient files ↗</a> · <a href="https://www.eatforhealth.gov.au/nutrient-reference-values" target="_blank" rel="noopener noreferrer">Australian Nutrient Reference Values ↗</a></div>';
+ renderLedger();
  updateDrink("none");
  root.addEventListener("change",e=>{if(e.target.id==="nutritionDrink")updateDrink(e.target.value);});
+}
+
+function escape(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function renderLedger(){
+ const el=document.getElementById("nutrientLedger");
+ const ledger=typeof window!=="undefined"&&window.FoodNutrients;
+ const data=typeof window!=="undefined"&&window.FOOD_DATA;
+ if(!el||!ledger||!data){if(el)el.textContent="Label calculations unavailable. Full nutrient totals cannot be verified.";return;}
+ const rows=data.recipes.filter(r=>["a","b","c","d"].includes(r.id)).map(r=>({r,calc:ledger.calculate(r)}));
+ const fmt=(n,d=0)=>n===null?"Unknown":Number(n).toLocaleString("en-AU",{maximumFractionDigits:d,minimumFractionDigits:d});
+ el.innerHTML='<div class="nutrient-scroll"><table class="nutrient-table"><caption>Partial pre-cooking nutrient contributions per adult lunch portion. Unknown is never zero.</caption><thead><tr><th scope="col">V6 lunch</th><th scope="col">Energy (kJ)</th><th scope="col">Protein (g)</th><th scope="col">Fibre (g)</th><th scope="col">Sodium (mg)</th><th scope="col">Matched ingredients</th></tr></thead><tbody>'+
+ rows.map(({r,calc})=>'<tr><th scope="row">'+escape(r.name)+'</th><td>'+fmt(calc.totals.kj/calc.servings)+'</td><td>'+fmt(calc.totals.protein/calc.servings,1)+'</td><td>'+fmt(calc.totals.fibre/calc.servings,1)+'</td><td>'+fmt(calc.totals.sodium/calc.servings,1)+'</td><td>'+calc.matchedLines+'/'+calc.totalLines+'</td></tr>').join('')+
+ '</tbody></table></div><p class="nutrient-warning">Values sum only ingredients whose exact supermarket nutrition panels were mapped. They do not include all fruits, vegetables, oils, nuts, spices or lentils; sodium also excludes products that report only an upper limit. Some cans have uncertain drained yields. No figure above is a validated full lunch total or a basis for comparing which recipe is healthiest.</p>'+
+ rows.map(({r,calc})=>'<details class="nutrient-details"><summary>'+escape(r.name)+': '+calc.matchedLines+' matched, '+calc.unmatched.length+' unresolved ingredients</summary><div class="nutrient-detail-inner"><p><strong>Matched source labels and weights:</strong></p><ul>'+calc.sources.map(x=>'<li>'+escape(x.grams.toFixed(1))+' g '+escape(x.product)+' — <a href="'+escape(x.url)+'" target="_blank" rel="noopener noreferrer">Woolworths label ↗</a> <small>'+escape(x.flags)+'</small></li>').join('')+'</ul><p><strong>Not yet nutrient-quantified:</strong> '+escape(calc.unmatched.join("; ")||"None")+'</p></div></details>').join('')+
+ '<p class="nutrient-warning"><strong>Important:</strong> black beans are calculated at 225 g edible per 420 g can (three 75 g labelled servings). Ingredient declaration suggests 60% beans (252 g), so weigh drained beans at home and check your pack. Salmon, fish and tofu are not interchangeable with unrelated store brands for these numeric values. <a href="https://github.com/joshualparris/HealthiestFood/blob/main/NUTRIENT_LABEL_RECONCILIATION_2026-10-17.md" target="_blank" rel="noopener noreferrer">Read provenance and calculation rules ↗</a></p>';
 }
 function updateDrink(id){
  const box=document.getElementById("nutritionDrinkResult");if(!box)return;
@@ -39,5 +55,5 @@ function updateDrink(id){
  if(id==="none"){box.innerHTML="<p>No fortified drink counted. Neither adequacy nor deficiency can be determined from this alone.</p>";return;}
  box.innerHTML='<div class="drink-stats"><span><b>'+x.protein+' g</b> protein</span><span><b>'+x.calcium+' mg</b> calcium</span><span><b>'+(x.b12===null?"Unknown":x.b12+" µg")+'</b> vitamin B12</span><span><b>'+(x.d===null?"Unknown":x.d+" µg")+'</b> vitamin D</span></div><p>~'+x.kcal+' kcal/250 mL. <a href="'+x.source+'" target="_blank" rel="noopener noreferrer">Manufacturer label ↗</a>. Product availability and price in Dubbo unconfirmed. Fortification differs; neither drink is universally better.</p>';
 }
-return {ref,drinks,fishReport,render};
+return {ref,drinks,fishReport,render,renderLedger};
 });
