@@ -558,3 +558,12 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
 .pantry-dinner-ideas button{align-self:start;margin-top:6px;color:var(--pine);background:#e9f1e2;border:1px solid #c5d6bd;padding:9px 12px;border-radius:10px;min-height:43px;font-size:12px;font-weight:800}
 .pantry-next-dates{background:#f8f1e1;padding:11px 13px;border-radius:10px}
 @media(max-width:650px){.pantry-dinner-ideas>div{grid-template-columns:1fr}.pantry-dinner-ideas{padding:13px}}
+
+
+/* The uploaded homepage artwork replaces only the decorative SVG.
+   Statistics and cooking-methods navigation remain live HTML controls. */
+.hero-art.hero-art-photo:before{display:none}
+.hero-art.hero-art-photo{isolation:isolate;min-height:0}
+.homepage-bowl-photo{display:block;width:min(100%,570px);height:min(100%,520px);object-fit:contain;border-radius:26px;filter:drop-shadow(0 14px 22px rgba(9,35,29,.16))}
+@media(max-width:760px){.hero-art.hero-art-photo{height:400px;padding:5px 8px 14px}.homepage-bowl-photo{height:100%;max-width:440px;border-radius:23px}}
+@media(max-width:480px){.hero-art.hero-art-photo{height:356px}.homepage-bowl-photo{max-width:100%;border-radius:19px}}
