@@ -1,0 +1,35 @@
+name: Browser cooking journey
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'index.html'
+      - 'site.css'
+      - 'site-data.js'
+      - 'whole-day-data.js'
+      - 'food-planner.js'
+      - 'timers.js'
+      - 'e2e/**'
+      - '.github/workflows/browser-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium browser test dependencies
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test mobile cooking, overlapping timers and meal shopping
+        run: node e2e/smoke.cjs
