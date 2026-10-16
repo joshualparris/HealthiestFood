@@ -503,3 +503,15 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
  html.embedded-site .cm-hero{border-radius:0 0 22px 22px}
  .inapp-subpage.inapp-immersive iframe{min-height:0!important;height:1200px}
 }
+
+
+/* Recipe photography: only show exact photos uploaded and verified in the repository.
+   Other recipes deliberately retain their original illustrated plates. */
+.recipe-card-visual.has-photo{background:#e6ede3}
+.recipe-card-visual.has-photo::after{display:none}
+.recipe-card-image{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;object-position:center;transition:transform .35s ease}
+.recipe-card-visual.has-photo .card-number{color:#fff;background:rgba(21,55,42,.82);border:1px solid rgba(255,255,255,.25);padding:6px 9px;border-radius:7px;letter-spacing:1px}
+.recipe-detail-figure{margin:20px 0 22px;overflow:hidden;border-radius:16px;border:1px solid var(--line);background:#e4ebe0;aspect-ratio:16/10}
+.recipe-detail-photo{width:100%;height:100%;object-fit:cover;display:block}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){.recipe-card:hover .recipe-card-image{transform:scale(1.035)}}
+@media(max-width:600px){.recipe-detail-figure{margin:17px 0 21px;border-radius:12px;aspect-ratio:16/11}}
