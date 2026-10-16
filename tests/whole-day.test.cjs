@@ -106,3 +106,22 @@ test('dated planner exposes an editable, locally saved, unpriced weekly ingredie
  assert.match(planner,/shopChecks\[week\]/);
  assert.match(css,/\.planner-shopping-items/);
 });
+
+test('partial pantry quantities reduce outstanding pack counts without pretending live prices',()=>{
+ const shop=require('../food-shopping.js');
+ const recipes=[{id:'x',name:'Test bowl',yield:1,ingredients:[[150,'g','dry quinoa'],[1,'tins','John West springwater sardines, 110 g']]}];
+ const first=shop.merge([{recipeId:'x',portions:1}],recipes);
+ const one=shop.reconcile(first,{quinoa:50,sardines:0});
+ const quinoa=one.rows.find(x=>x.key==='quinoa');
+ const sardines=one.rows.find(x=>x.key==='sardines');
+ assert.equal(quinoa.toBuy,100);
+ assert.equal(quinoa.packsToBuy,1);
+ assert.equal(quinoa.priceToBuy,5.75);
+ assert.equal(sardines.toBuy,1);
+ assert.equal(sardines.packsToBuy,1);
+ const more=shop.reconcile(shop.merge([{recipeId:'x',portions:4}],recipes),{quinoa:50,sardines:0});
+ assert.equal(more.rows.find(x=>x.key==='quinoa').toBuy,550);
+ assert.equal(more.rows.find(x=>x.key==='quinoa').packsToBuy,2);
+ assert.equal(more.rows.find(x=>x.key==='quinoa').priceToBuy,11.5);
+ assert.equal(shop.reconcile(first,{quinoa:true}).rows.find(x=>x.key==='quinoa').toBuy,0);
+});
