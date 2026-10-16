@@ -1,0 +1,16 @@
+name: Export audited AFCD3 values
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/afcd3_export_selected.py','.github/workflows/afcd3-selected.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve FSANZ official Release 3 and verify exact food names
+        run: python scripts/afcd3_export_selected.py
