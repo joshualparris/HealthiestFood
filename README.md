@@ -1,5 +1,14 @@
 # HealthiestFood
 
+## New: Cooking Methods Lab (17 October 2026)
+
+**[Open the interactive Cooking Methods Lab on GitHub Pages](https://joshualparris.github.io/HealthiestFood/cooking-methods.html)** · [Research, safety and original scientific sources](COOKING_METHODS_EVIDENCE_2026-10-17.md) · [Source data](cooking-methods-data.js) · [Coverage tests](tests/cooking-methods.test.cjs).
+
+A full food-by-food comparison of **77 food families**, covering **all 132 distinct labels in the 17 active recipes and original 35-product V6 shopping basket**, plus 21 additional historic food categories. The interactive guide compares boiling, steaming, poaching, frying, stir-frying, roasting, baking, microwaving, air-frying, pressure cooking and raw preparation where appropriate. For each food, choose two methods side by side, view all options, see safety precautions, exact ingredient aliases and official source links. Recipe details link directly to a version filtered to that meal (`cooking-methods.html?recipe=br-eggs`); `?food=egg` jumps directly to eggs. The five evidence principles include food safety, vitamin retention, bioavailability, charring/acrylamide and realistic uncertainty. **No invented longevity scores or claims that boiling is best for everything.** The 132-label test is recomputed from the actual live recipe/shopping code, and fails if an active ingredient becomes unmapped.
+
+Older recipe archive prose is not a machine-verified exhaustive ingredient inventory; the 21 historical groups are added explicitly, while the active 17-recipes-plus-basket coverage is complete. No actual kitchen/lab preparation trials of the 77 groups have been performed.
+
+
 ## Podcasts & videos backed by source science (17 October 2026)
 
 **[Open the searchable audio/video library](https://joshualparris.github.io/HealthiestFood/#media)** · [Source-to-claim editorial evidence map](MEDIA_EVIDENCE_MAP_2026-10-17.md) · [Official video safety guidance](https://www.foodstandards.gov.au/consumer/prevention-of-foodborne-illness/food-safety-basics).
