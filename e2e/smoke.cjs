@@ -100,6 +100,39 @@ async function main(){
       assert.equal(errors.length,0,errors.join(', '));
       await lab.close();
     });
+    if(browserName==="chromium")await check('ABC podcast stays playing when minimised and across recipes, planner, guide and cooking lab',async()=>{
+      // Locally generated 45-second silence fixture replaces the remote MP3 in this browser test only.
+      // Production points directly to first-party ABC public podcast enclosures, never stored on our site.
+      const duration=45,rate=8000,pcm=Buffer.alloc(duration*rate*2),wav=Buffer.alloc(44+pcm.length);
+      wav.write("RIFF",0);wav.writeUInt32LE(wav.length-8,4);wav.write("WAVE",8);wav.write("fmt ",12);
+      wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(rate,24);
+      wav.writeUInt32LE(rate*2,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write("data",36);wav.writeUInt32LE(pcm.length,40);pcm.copy(wav,44);
+      const audioPage=await browser.newPage({viewport:{width:390,height:844}});
+      await audioPage.route(/https:\/\/(?:mediacore-live-production|abcmedia)\.akamaized\.net\/.*\.mp3/,route=>route.fulfill({status:200,contentType:"audio/wav",headers:{"Accept-Ranges":"bytes"},body:wav}));
+      await audioPage.goto(base,{waitUntil:"domcontentloaded"});
+      await audioPage.locator('.mobile-nav [data-goto="media"]').click();
+      const pod=audioPage.locator('[data-media-id="med"] [data-play-episode="med"]');
+      await pod.click();
+      await audioPage.waitForFunction(()=>window.FoodPodcastPlayer?.state().playing,{timeout:10000});
+      assert.equal(await audioPage.locator('#podcastPlayer').isVisible(),true);
+      const active=await audioPage.evaluate(()=>{const a=document.querySelector('#podcastPlayer')?.previousElementSibling;const el=document.querySelector('audio');if(el)el.dataset.keepPlaying="same-node";return {src:el?.currentSrc,playing:!el?.paused,episode:window.FoodPodcastPlayer.state().episode}});
+      assert.equal(active.playing,true);assert.equal(active.episode,"med");
+      assert.match(active.src,/akamaized\.net/);
+      await audioPage.locator('#podcastCompact').click();
+      assert.equal(await audioPage.locator('#podcastExpanded').isHidden(),true);
+      for(const route of ["recipes","plan","lab","guide","media"]){
+        await audioPage.evaluate(hash=>location.hash=hash,route);
+        await audioPage.locator('#view-'+route).waitFor({state:"visible"});
+        assert.equal(await audioPage.evaluate(()=>document.querySelector('audio')?.dataset.keepPlaying),"same-node","Audio element got replaced at "+route);
+        assert.equal(await audioPage.evaluate(()=>window.FoodPodcastPlayer.state().playing),true,"Audio paused at "+route);
+      }
+      await audioPage.locator('#podcastCompact').click();
+      await audioPage.locator('#podcastSpeed').selectOption('1.25');
+      assert.equal(await audioPage.evaluate(()=>document.querySelector('audio')?.playbackRate),1.25);
+      await audioPage.locator('#podcastStop').click();
+      assert.equal(await audioPage.locator('#podcastPlayer').isHidden(),true);
+      await audioPage.close();
+    });
     await check('17 recipes and category controls render',async()=>{
       await page.locator('.mobile-nav [data-goto="recipes"]').click();
       assert.equal(await page.locator('#recipeCards .recipe-card').count(),17);
