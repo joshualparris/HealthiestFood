@@ -2,35 +2,16 @@ name: Probe AFCD Release 3
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/afcd3-probe.yml']
+    paths:
+      - 'scripts/afcd3_explore.py'
+      - '.github/workflows/afcd3-probe.yml'
 permissions:
   contents: read
 jobs:
   inspect:
     runs-on: ubuntu-latest
+    timeout-minutes: 6
     steps:
-      - name: Inspect official Australian food composition spreadsheet
-        run: |
-          python - <<'PY'
-          import urllib.request,urllib.parse,zipfile,io,xml.etree.ElementTree as ET,json
-          base='https://www.foodstandards.gov.au/sites/default/files/2025-12/'
-          for filename in ['AFCD Release 3 - Nutrient profiles.xlsx','AFCD Release 3 - Food Details.xlsx']:
-            try:
-              req=urllib.request.Request(base+urllib.parse.quote(filename),headers={'User-Agent':'Mozilla/5.0'})
-              with urllib.request.urlopen(req,timeout=30) as response: data=response.read()
-              print('FILE',filename,'BYTES',len(data))
-              z=zipfile.ZipFile(io.BytesIO(data))
-              ns={'m':'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
-              ss=[''.join(t.itertext()) for t in ET.fromstring(z.read('xl/sharedStrings.xml')).findall('.//m:si',ns)] if 'xl/sharedStrings.xml' in z.namelist() else []
-              for fn in sorted(n for n in z.namelist() if n.startswith('xl/worksheets/sheet') and n.endswith('.xml'))[:2]:
-                root=ET.fromstring(z.read(fn))
-                for row in root.findall('.//m:sheetData/m:row',ns)[:9]:
-                  data=[]
-                  for cell in row.findall('m:c',ns)[:18]:
-                    v=cell.find('m:v',ns); inline=cell.find('m:is',ns)
-                    val=v.text if v is not None else ''.join(inline.itertext()) if inline is not None else ''
-                    if cell.get('t')=='s' and val: val=ss[int(val)]
-                    data.append([cell.get('r'),str(val)[:85]])
-                  print('ROW',fn,json.dumps(data))
-            except Exception as exc: print('ERROR',filename,str(exc))
-          PY
+      - uses: actions/checkout@v4
+      - name: Inspect Australian FSANZ food IDs and full nutrient-column names
+        run: python scripts/afcd3_explore.py
