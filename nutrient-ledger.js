@@ -52,5 +52,60 @@
    sources:matched.map(x=>({ingredient:x.m.ingredient,product:x.m.product.name,grams:x.m.grams*scale,url:x.m.product.url,
     flags:x.m.product.status}))};
  }
- return {items,metrics,observed,matchIngredient,calculate};
+
+ // Mapping to analysed/borrowed AFCD foods only when the actual raw ingredient
+ // description matches or the clearly declared, cautious approximation is shown.
+ const afcdMatches=[
+  {id:"F005184",match:/^dry red split lentils$/i,unit:"g",note:"raw hulled red lentil; split form approximated"},
+  {id:"F002276",match:/^carrots$/i,unit:"g",note:"raw peeled mature carrot assumed; weigh after trimming"},
+  {id:"F002247",match:/^red capsicum$/i,unit:"g",note:"raw red capsicum"},
+  {id:"F009775",match:/^zucchini$/i,unit:"g",note:"raw unpeeled green zucchini assumed"},
+  {id:"F006225",match:/^peeled brown onion$/i,unit:"g",note:"raw peeled brown onion"},
+  {id:"F004781",match:/^de-stemmed kale(?: leaves)?$/i,unit:"g",note:"raw kale; AFCD includes generic kale, leaf/stem distinction uncertain"},
+  {id:"F005946",match:/^mushrooms$/i,unit:"g",note:"common mushrooms, raw; variety assumed"},
+  {id:"F004193",match:/^garlic$/i,unit:"g",note:"fresh peeled garlic, raw"},
+  {id:"F004213",match:/^grated fresh ginger$/i,unit:"g",note:"fresh peeled ginger, raw"},
+  {id:"F004726",match:/^(?:fresh )?lemon juice$/i,unit:"mL",multiplier:1,note:"40 mL estimated approximately 40 g; density not kitchen-verified"},
+  {id:"F006116",match:/^walnuts?(?:\\b|,| )/i,unit:"g",note:"raw unsalted walnuts assumed; add after reheating"},
+  {id:"F008210",match:/^ground flaxseed(?:\\b|,| )/i,unit:"g",note:"AFCD raw linseed profile used for ground flaxseed"}
+ ];
+ const mineralKeys=["calcium","iron","magnesium","potassium","zinc","iodine","folate","b12","vitaminD"];
+ function matchAFCD(ing,dataset){
+  if(!dataset?.foods||!Array.isArray(ing)||ing.length!==3)return null;
+  const [amount,unit,name]=ing;
+  if(!Number.isFinite(amount)||amount<=0)return null;
+  const rule=afcdMatches.find(x=>x.unit===unit&&x.match.test(name));
+  if(!rule||!dataset.foods[rule.id])return null;
+  const x=dataset.foods[rule.id];
+  const source={name:x.name,per100:x.per100,source:"AFCD Release 3",
+   url:"https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/search",
+   status:"FSANZ food "+rule.id+" · "+x.derivation+" · "+rule.note};
+  return {product:source,grams:amount*(rule.multiplier||1),ingredient:name,sourceId:rule.id};
+ }
+ function calculateExpanded(recipe,servings=recipe?.yield,afcdData=typeof window!=="undefined"?window.AFCD3_SELECTED:null){
+  const old=calculate(recipe,servings);
+  const allMetrics=[...metrics,...mineralKeys];
+  const rows=recipe.ingredients.map((ing)=>{
+   const match=matchIngredient(ing);
+   return match||matchAFCD(ing,afcdData);
+  });
+  const checked=rows.filter(Boolean);
+  const totals={},metricCoverage={};
+  const scale=servings/recipe.yield;
+  for(const key of allMetrics){
+   const compatible=checked.filter(x=>Number.isFinite(x.product.per100[key]));
+   totals[key]=compatible.length?compatible.reduce((sum,x)=>sum+x.grams*x.product.per100[key]/100,0)*scale:null;
+   metricCoverage[key]=compatible.length;
+  }
+  return {...old,totals,metricCoverage,matchedLines:checked.length,
+   unmatched:rows.map((m,i)=>m?null:recipe.ingredients[i][2]).filter(Boolean),
+   allMatched:checked.length===recipe.ingredients.length,
+   sources:checked.map(x=>({ingredient:x.ingredient,product:x.product.name,grams:x.grams*scale,url:x.product.url,
+    flags:x.product.status||"Exact Woolworths product; check live label",
+    sourceId:x.sourceId||x.product.productId||"product-label"})),
+   sourceClass:"Woolworths product panel OR FSANZ AFCD Release 3 food profile; assumptions disclosed",
+   completedAFCD:!!afcdData};
+ }
+
+ return {items,metrics,mineralKeys,observed,matchIngredient,matchAFCD,calculate,calculateExpanded};
 });
