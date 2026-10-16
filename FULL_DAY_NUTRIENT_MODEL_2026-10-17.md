@@ -8,23 +8,23 @@ Reference: https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20R
 
 | Recipe | Group | kJ† | Protein g† | Fibre g† | Calcium mg† | Iron mg† | Iodine µg† | B12 µg† | Vitamin D µg† | Ingredients mapped |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Lemon–paprika sardine bowls | lunch | 2798† | 38.4† | 19.3† | 194† | 5.3† | 3.1† | 0.00† | 0.00† | 15/19 |
+| Lemon–paprika sardine bowls | lunch | 2798† | 38.4† | 19.3† | 194† | 5.3† | 3.1† | Unknown | Unknown | 15/19 |
 | Lemon coho salmon bowls | lunch | 2714† | 40.1† | 18.5† | 247† | 4.0† | 8.4† | 2.75† | 7.76† | 13/15 |
-| Golden pumpkin lentil curry | lunch | 3350† | 51.5† | 23.8† | 180† | 9.4† | 12.3† | 0.00† | 0.00† | 16/21 |
-| Smoky black-bean tofu bowls | lunch | 2982† | 46.8† | 22.5† | 157† | 6.6† | 5.7† | 0.00† | 1.36† | 15/19 |
-| Berry, chia & walnut overnight oats | breakfast | 1999† | 19.0† | 12.2† | 305† | 4.6† | 39.3† | 1.62† | 0.00† | 5/6 |
+| Golden pumpkin lentil curry | lunch | 3350† | 51.5† | 23.8† | 180† | 9.4† | 12.3† | Unknown | Unknown | 16/21 |
+| Smoky black-bean tofu bowls | lunch | 2982† | 46.8† | 22.5† | 157† | 6.6† | 5.7† | Unknown | 1.36† | 15/19 |
+| Berry, chia & walnut overnight oats | breakfast | 1999† | 19.0† | 12.2† | 305† | 4.6† | 39.3† | 1.62† | Unknown | 5/6 |
 | Spinach, mushroom & egg scramble | breakfast | 903† | 16.3† | 3.5† | 107† | 3.3† | 61.3† | 1.40† | 7.36† | 5/6 |
 | Berry, banana, spinach & soy smoothie | breakfast | 1809 | 19.9 | 11.3 | 395 | 3.9 | 8.5 | 2.25 | 0.00 | 6/6 |
-| Avocado, tomato & chickpea toast | breakfast | 864† | 6.8† | 9.5† | 56† | 2.0† | 0.0† | 0.00† | 0.00† | 4/6 |
-| Tomato lentil & vegetable soup | dinner | 1892† | 20.2† | 16.1† | 145† | 7.7† | 13.3† | 0.00† | 0.00† | 7/9 |
-| Lemon chicken, sweet potato & green beans | dinner | 1283† | 31.1† | 4.7† | 55† | 1.6† | 0.0† | 0.60† | 1.97† | 5/7 |
-| Smoky bean & vegetable chilli | dinner | 1578† | 14.5† | 12.9† | 81† | 4.2† | 8.8† | 0.00† | 1.13† | 7/10 |
-| Ginger tofu & rainbow veggie stir-fry | dinner | 2255† | 29.3† | 10.1† | 371† | 5.2† | 16.1† | 0.00† | 1.13† | 9/10 |
+| Avocado, tomato & chickpea toast | breakfast | 864† | 6.8† | 9.5† | 56† | 2.0† | Unknown | Unknown | Unknown | 4/6 |
+| Tomato lentil & vegetable soup | dinner | 1892† | 20.2† | 16.1† | 145† | 7.7† | 13.3† | Unknown | Unknown | 7/9 |
+| Lemon chicken, sweet potato & green beans | dinner | 1283† | 31.1† | 4.7† | 55† | 1.6† | Unknown | 0.60† | 1.97† | 5/7 |
+| Smoky bean & vegetable chilli | dinner | 1578† | 14.5† | 12.9† | 81† | 4.2† | 8.8† | Unknown | 1.13† | 7/10 |
+| Ginger tofu & rainbow veggie stir-fry | dinner | 2255† | 29.3† | 10.1† | 371† | 5.2† | 16.1† | Unknown | 1.13† | 9/10 |
 | Salmon, quinoa & roast vegetables | dinner | 2521† | 38.1† | 14.2† | 165† | 3.5† | 0.8† | 2.75† | 7.76† | 6/7 |
 | Crunchy vegetables & hummus | snack | 676 | 4.6 | 5.6 | 60 | 1.1 | 1.4 | 0.00 | 0.00 | 3/3 |
-| Apple & nut butter | snack | 312† | 0.5† | 3.8† | 6† | 0.2† | 0.0† | 0.00† | 0.00† | 1/2 |
+| Apple & nut butter | snack | 312† | 0.5† | 3.8† | 6† | 0.2† | Unknown | Unknown | Unknown | 1/2 |
 | Hard-boiled egg & cherry tomatoes | snack | 340 | 6.9 | 1.1 | 35 | 1.2 | 28.8 | 0.70 | 2.89 | 2/2 |
-| Berries, soy yoghurt & walnuts | snack | 426† | 1.9† | 2.7† | 21† | 0.6† | 0.0† | 0.00† | 0.00† | 2/3 |
+| Berries, soy yoghurt & walnuts | snack | 426† | 1.9† | 2.7† | 21† | 0.6† | Unknown | Unknown | Unknown | 2/3 |
 
 † **Subtotals only.** A † denotes at least one unmapped or nutrient-unknown component. No † does *not* certify cooking retention or brand equivalence. Sodium is modelled but actual added salt, drained yields and label substitutions may substantially change it. Do not compare these directly with daily RDIs.
 
