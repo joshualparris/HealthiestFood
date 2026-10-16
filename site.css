@@ -16,3 +16,29 @@
 /* Fix: an empty toast must not appear as a green bar above the mobile nav. */
 .toast:not(.show){visibility:hidden;opacity:0;pointer-events:none}
 .toast.show{visibility:visible;opacity:1;pointer-events:auto}
+
+/* Multi-timer panel (timers remain alive across recipe steps). */
+.timer-dashboard{position:sticky;top:0;z-index:8;background:#e7efdf;border-bottom:1px solid #c9dabe;padding:12px 18px;box-shadow:0 5px 14px #173d3120}
+.timer-dashboard.hidden{display:none!important}
+.timer-board-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.timer-board-head strong{font-size:13px;color:#254637}
+.timer-board-head strong span{display:inline-grid;place-items:center;background:#cfdfbf;border-radius:99px;min-width:23px;height:23px;margin-left:5px;padding:0 5px}
+.timer-board-head small{font-size:10px;color:#6b806c}
+.timer-cards{display:flex;gap:9px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:5px}
+.timer-tile{border:1px solid #c8d8bf;border-radius:13px;background:#fffdf6;padding:10px 12px;min-width:240px;flex:0 0 240px;scroll-snap-align:start}
+.timer-tile.running{border-color:#8bad85;box-shadow:inset 3px 0 #639467}
+.timer-tile.done{border-color:#cc9255;background:#fff4e2}
+.timer-tile-name{color:#7c927a;font-size:10px;font-weight:800;text-transform:uppercase}
+.timer-tile>strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:3px 0 8px}
+.timer-tile-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.timer-tile-clock{font:600 22px var(--serif);color:var(--pine);font-variant-numeric:tabular-nums}
+.timer-tile.done .timer-tile-clock{font-size:16px;color:#935e2e}
+.timer-tile-actions{display:flex;gap:4px}
+.timer-tile-actions button{border:1px solid #cddcc6;background:#eef5e6;color:var(--pine);border-radius:9px;width:30px;height:30px;font-size:15px}
+.timer-board-warning{font-size:10px;color:#627865;margin-top:6px}
+.floating-timers{position:fixed;right:18px;bottom:20px;z-index:110;border:1px solid #b5d4ad;border-radius:99px;background:#173e33;color:white;padding:11px 18px;box-shadow:0 5px 17px #153e3455;font-size:12px;font-weight:800}
+.floating-timers.hidden{display:none!important}
+.timer-button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:800px){.timer-board-head{align-items:flex-start;flex-direction:column;gap:2px}.floating-timers{bottom:85px;right:13px}}
+@media(max-width:540px){.timer-dashboard{padding:10px 16px}.timer-tile{min-width:215px;flex-basis:215px}.cook-body{padding-top:24px}}
+@media print{.floating-timers,.timer-dashboard{display:none!important}}
