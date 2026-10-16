@@ -59,7 +59,7 @@ async function main(){
       const cookingLink=page.locator('#view-home .hero-actions a[href="cooking-methods.html"]');
       assert.equal(await cookingLink.count(),1);
       assert.match(await cookingLink.innerText(),/Compare cooking methods/);
-      const popup=await page.context().newPage();
+      const popup=await browser.newPage({viewport:{width:390,height:844}});
       await popup.goto(base,{waitUntil:'domcontentloaded'});
       await popup.locator('#view-home .hero-actions a[href="cooking-methods.html"]').click();
       await popup.waitForURL(/cooking-methods\.html/);
