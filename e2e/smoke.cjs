@@ -9,7 +9,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
-const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml'};
+const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.webp':'image/webp'};
 const server = http.createServer(async(req,res)=>{
   try {
     const pathname = new URL(req.url,'http://localhost').pathname;
@@ -171,6 +171,24 @@ async function main(){
       await page.locator('[data-recipe-type="breakfast"]').click();
       assert.equal(await page.locator('#recipeCards .recipe-card').count(),4);
       await page.locator('[data-recipe-type="all"]').click();
+    });
+    await check('uploaded meal photography loads on all ten matching cards',async()=>{
+      const ids=['br-oats','br-eggs','br-smoothie','br-toast','di-lentil','di-chicken','di-chilli','di-stirfry','di-salmon','sn-hummus'];
+      assert.equal(await page.locator('#recipeCards img.recipe-card-image').count(),ids.length);
+      assert.equal(await page.locator('#recipeCards .mini-plate').count(),7,'Seven meals without supplied photos retain their illustration');
+      for(const id of ids){
+        const img=page.locator('#recipeCards .recipe-card:has([data-select="'+id+'"]) img.recipe-card-image');
+        assert.equal(await img.count(),1,id);
+        assert.equal(await img.getAttribute('src'),id+'.webp');
+        assert.match(await img.getAttribute('alt'),/Illustrative food photograph of /);
+        const response=await page.request.get(new URL(id+'.webp',base+'/').href,{timeout:15000});
+        assert.equal(response.status(),200,'Photo should load from host: '+id);
+        assert.ok((await response.body()).length>10000,id+' should not be an empty placeholder');
+      }
+      const first=page.locator('#recipeCards .recipe-card:has([data-select="br-oats"]) img');
+      await first.scrollIntoViewIfNeeded();
+      await first.evaluate(el=>el.decode());
+      assert.ok(await first.evaluate(el=>el.naturalWidth>0&&el.naturalHeight>0),'First card photo must decode');
     });
     await check('meal filters never leave an unrelated expanded recipe underneath',async()=>{
       const cases=[
