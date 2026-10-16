@@ -217,7 +217,7 @@ function renderCook(){
  '<div class="cook-wake-control"><button type="button" id="cookWakeLock" aria-pressed="false">Keep screen awake</button><small id="cookWakeNote">Optional. This is not a background alarm.</small><a href="device-timer-check.html" target="_blank" rel="noopener noreferrer">Test this phone ↗</a></div>';
  if(cook.index>=r.steps.length){
   $("#cookContent").innerHTML=h+p+board+'<div class="cook-complete"><h3>Nearly finished</h3><p>Complete these real-world food safety reminders before marking this batch done. You can close and return without claiming the food is finished.</p>'+window.FoodSafety.render(r,cook.safetyChecked,cook.portions)+'<button id="finishCook" class="btn btn-primary" disabled>Confirm checks and finish ↗</button></div>';
-  renderTimerBoard();updateWakeButton();return;
+  renderTimerBoard();updateWakeButton();window.FoodHandlingUI?.mount(r.id);return;
  }
  const ready=Array.isArray(state.prepped[r.id])?state.prepped[r.id].filter(n=>Number.isInteger(n)&&n>=0&&n<r.ingredients.length):[];
  const readySet=new Set(ready);
@@ -227,7 +227,7 @@ function renderCook(){
  const measured=window.RecipeMethods.stage(r,step,cook.portions);
  const stepQuantities='<section class="step-measures" aria-label="Measured ingredients for this step"><h4>Measure for this step</h4>'+(measured.length?'<ul>'+measured.map(row=>'<li><strong>'+escapeHTML(formatNum(row.amount)+(row.unit?" "+row.unit:""))+'</strong> '+escapeHTML(row.name)+'</li>').join("")+'</ul>':'<p>No new ingredients to measure. Use the ingredients prepared in earlier steps.</p>')+'</section>';
  $("#cookContent").innerHTML=h+p+board+'<div class="cook-body">'+capacityMarkup+prep+'<div class="cook-stepcount">STEP '+(cook.index+1)+' OF '+r.steps.length+'</div><h3 tabindex="-1" id="cookStepHeading">'+escapeHTML(step.title)+'</h3>'+stepQuantities+'<p>'+escapeHTML(window.RecipeMethods.describe(r,step,cook.portions))+'</p><div class="cook-scale-note">'+escapeHTML(window.RecipeScale.caution(r,cook.portions))+'</div><div class="cook-tip"><strong>✳</strong><span>'+escapeHTML(step.tip)+'</span></div>'+(step.minutes?'<div class="cook-timer"><div class="timer-display" id="timerClock" aria-live="off">'+T.format(step.minutes*60)+'</div><button class="timer-button" id="timerToggle">Start timer</button><button class="timer-button" id="timerReset">Reset</button><span class="timer-safety">Timers continue independently when you press Next. Check doneness and packet instructions.</span></div>':'<p class="evidence-chip" style="margin-top:20px">No countdown for this safety/finishing step.</p>')+'</div><footer class="cook-footer"><button class="btn btn-outline" id="prevStep" '+(cook.index===0?'disabled':'')+'>← Previous</button><button class="btn btn-primary" id="nextStep">'+(last?'Finish this batch ✓':'Next step →')+'</button></footer>';
- renderTimerBoard();updateWakeButton();
+ renderTimerBoard();updateWakeButton();window.FoodHandlingUI?.mount(r.id);
 }
 function stepChange(by){
  if(!cook)return;
