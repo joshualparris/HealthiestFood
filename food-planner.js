@@ -42,7 +42,7 @@ function loadShopChecks(){try{const val=JSON.parse(localStorage.getItem(SHOP_KEY
 let active=today(),data=load(),lastAutoToday=today(),message="",shopChecks=loadShopChecks();
 function saveShopChecks(){try{localStorage.setItem(SHOP_KEY,JSON.stringify(shopChecks));return true}catch{return false}}
 function slotsFor(day){return (Object.hasOwn(data,day)?data[day]:makeDefaults(day)).map(s=>({...s}));}
-function change(day,fn){const slots=slotsFor(day);fn(slots);data[day]=slots;const ok=save(data);message=ok?"Saved on this device":"Unable to save on this device (storage unavailable)";render();}
+function change(day,fn){const slots=slotsFor(day);fn(slots);data[day]=slots;const ok=save(data);message=ok?"Saved on this device":"Unable to save on this device (storage unavailable)";render();window.FoodDayReport?.render();}
 function weeklyPattern(days){
  let fishOccasions=0,lunchPortions=0,mainMeals=0;
  const fishIds=new Set(["a","b","di-salmon"]);
@@ -155,7 +155,7 @@ function init(){
  // If user stays on this screen past Sydney midnight, move with the date only if they were following yesterday's today.
  window.setInterval(()=>{const n=today();if(n!==lastAutoToday){if(active===lastAutoToday)active=n;lastAutoToday=n;render();}else if(active===n&&root.closest(".view:not(.hidden)")){const clock=root.querySelector(".planner-description");if(clock&&clock.textContent.includes("Today")){const fresh="Today · local time "+timeInSydney();if(!clock.textContent.includes(fresh))render();}}},60000);
 }
-window.FoodPlannerCore={today,timeInSydney,validDate,validTime,shift,weekday,monday,makeDefaults,weeklyPattern,shoppingText};
+window.FoodPlannerCore={today,timeInSydney,validDate,validTime,shift,weekday,monday,makeDefaults,getSlots:slotsFor,weeklyPattern,shoppingText};
 window.FoodPlanner={render,init,selectDate:changeDate};
 if(typeof document!=="undefined")init();
 })();
