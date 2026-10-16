@@ -113,6 +113,44 @@ async function main(){
       assert.equal(errors.length,0,errors.join("; "));
       await p.close();
     });
+    if(browserName==="chromium")await check('dated pantry pack consumption is reversible and can be copied to shopping',async()=>{
+      const p=await browser.newPage({viewport:{width:390,height:844}});
+      await p.goto(base+'/#shop',{waitUntil:'domcontentloaded'});
+      await p.locator('#pantryAddForm').waitFor({state:'visible'});
+      await p.locator('#pantryNewKey').selectOption('rice');
+      await p.locator('#pantryAddForm [name="amount"]').fill('500');
+      await p.locator('#pantryAddForm [name="bestBefore"]').fill('2026-10-23');
+      await p.locator('#pantryAddForm button[type="submit"]').click();
+      assert.match(await p.locator('.pantry-lot').first().innerText(),/500 g/);
+      await p.locator('.pantry-lot [data-qty]').first().fill('150');
+      await p.locator('.pantry-lot [data-lot-use]').first().click();
+      assert.match(await p.locator('.pantry-lot').first().innerText(),/350 g/);
+      await p.locator('.pantry-lot [data-lot-undo]').first().click();
+      assert.match(await p.locator('.pantry-lot').first().innerText(),/500 g/);
+      p.once('dialog',dialog=>dialog.accept());
+      await p.locator('[data-pantry-sync]').click();
+      assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem('good-food-planned-have-v1')).rice),500);
+      await p.close();
+    });
+    if(browserName==="chromium")await check('cooking handling log records real cumulative intervals and does not call unknown zero',async()=>{
+      const p=await browser.newPage({viewport:{width:390,height:844}});
+      await p.goto(base+'/#recipes',{waitUntil:'domcontentloaded'});
+      await p.locator('[data-start="a"]').first().click();
+      await p.locator('#foodHandlingMount').waitFor();
+      await p.locator('#foodHandlingMount summary').click();
+      assert.match(await p.locator('#handlingStatus').innerText(),/not established/i);
+      await p.locator('#handlingPrior').fill('135');
+      await p.locator('[data-handling-action="prior"]').click();
+      assert.match(await p.locator('#handlingStatus').innerText(),/do not return/i);
+      await p.locator('[data-handling-action="start"]').click();
+      assert.equal(await p.locator('#handlingStatus').getAttribute('data-state'),'use-now');
+      await p.locator('[data-handling-action="stop"]').click();
+      await p.locator('#closeCook').click();
+      await p.locator('[data-start="a"]').first().click();
+      await p.locator('#foodHandlingMount summary').click();
+      assert.equal(await p.locator('#handlingStatus').getAttribute('data-state'),'use-now');
+      await p.close();
+    });
     await check('ingredient-by-ingredient cooking lab filters and compares without claiming longevity scores',async()=>{
       const lab=await browser.newPage({viewport:{width:390,height:844}});
       const errors=[];lab.on('pageerror',e=>errors.push(e.message));
