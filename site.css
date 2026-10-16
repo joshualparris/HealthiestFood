@@ -42,3 +42,45 @@
 @media(max-width:800px){.timer-board-head{align-items:flex-start;flex-direction:column;gap:2px}.floating-timers{bottom:85px;right:13px}}
 @media(max-width:540px){.timer-dashboard{padding:10px 16px}.timer-tile{min-width:215px;flex-basis:215px}.cook-body{padding-top:24px}}
 @media print{.floating-timers,.timer-dashboard{display:none!important}}
+
+
+/* All-day meal filters and Australia/Sydney date-aware scheduler */
+.meal-filters{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0 28px}
+.meal-filters button{border:1px solid var(--line);border-radius:999px;padding:10px 16px;background:var(--paper);color:var(--pine);font-weight:700;font-size:13px}
+.meal-filters button.is-active{color:white;background:var(--pine);border-color:var(--pine)}
+.daily-planner{display:block;margin-top:10px}
+.planner-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:22px;border:1px solid var(--line);border-radius:22px;background:#fffdf6}
+.planner-toolbar h2{font-family:var(--serif);font-size:clamp(24px,3vw,36px);line-height:1.2;margin:9px 0 6px}
+.planner-description{color:var(--muted);margin:0;max-width:660px;font-size:13px}
+.planner-nav{display:flex;align-items:end;gap:7px;flex-wrap:wrap}
+.planner-nav button{min-height:44px;padding:8px 13px;background:#fff;color:var(--pine);border-radius:11px;border:1px solid var(--line);font-weight:700}
+.planner-nav .planner-today{background:var(--pine);color:white}
+.planner-nav label{font-weight:700;color:var(--muted);font-size:11px;display:flex;flex-direction:column;gap:4px}
+.planner-nav input{min-height:44px;padding:7px 9px;border-radius:11px;border:1px solid var(--line);color:var(--pine);background:#fff;color-scheme:light}
+.planner-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:17px 0}
+.planner-weekday{min-width:0;display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;min-height:90px;background:#fffdf6;border:1px solid var(--line);border-radius:16px;color:var(--pine);padding:9px 3px}
+.planner-weekday span{font-size:12px;font-weight:600}.planner-weekday strong{font-size:25px;line-height:1.1}.planner-weekday small{font-size:11px;color:var(--muted)}
+.planner-weekday.is-selected{background:var(--pine);color:white;border-color:var(--pine)}.planner-weekday.is-selected small{color:#e9f8d7}
+.planner-weekday.is-today:not(.is-selected){outline:2px solid #ad8c45;outline-offset:2px}
+.planner-day-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:19px}
+.planner-day-summary>div{border-radius:15px;background:#eef3e7;padding:15px;display:flex;flex-direction:column;gap:1px}
+.planner-day-summary strong{font-size:20px;font-family:var(--serif)}.planner-day-summary span{font-size:12px;color:var(--muted)}
+.planner-slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.planner-slot{background:#fffdf6;border:1px solid var(--line);border-radius:19px;padding:17px;min-width:0}.planner-slot.is-done{background:#eef5e9}
+.planner-slot-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}.planner-slot-icon{font-size:20px}.planner-slot-head strong{font-size:16px}
+.planner-slot-status{margin-left:auto;font-size:11px;color:var(--leaf);background:#ebf4df;padding:5px 9px;border-radius:10px}
+.planner-slot-fields{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px}
+.planner-slot-fields label,.planner-add-fields label{font-size:12px;font-weight:700;display:flex;flex-direction:column;gap:5px;color:var(--muted);min-width:0}
+.planner-slot input[type=time],.planner-slot select,.planner-add select,.planner-add input[type=time]{width:100%;max-width:100%;min-width:0;background:#fff;border:1px solid #d5dbca;border-radius:10px;padding:10px 7px;min-height:45px;color:var(--pine);color-scheme:light;font-size:14px}
+.planner-slot-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:11px}
+.planner-slot-actions button{border:0;background:transparent;text-decoration:underline;color:var(--pine);font-size:12px;padding:8px 3px}
+.planner-check{display:flex;align-items:center;gap:6px;font-size:13px;margin-left:auto}.planner-check input{width:18px;height:18px;accent-color:var(--pine)}
+.planner-add{padding:20px;margin-top:18px;background:#edf3e8;border:1px solid #d5dfce;border-radius:19px}
+.planner-add h3{margin:0 0 14px;font-family:var(--serif);font-size:23px}
+.planner-add-fields{display:grid;grid-template-columns:130px minmax(0,1fr) 120px auto;align-items:end;gap:10px}
+.planner-add-fields button{min-height:45px;white-space:nowrap}
+.planner-bottom{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.planner-bottom button{padding:12px 15px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--pine);font-weight:700}
+.planner-message{min-height:20px;margin:13px 0 6px;color:var(--pine);font-size:13px;font-weight:600}
+.planner-note{color:var(--muted);font-size:13px;max-width:930px;margin:10px 0 0;line-height:1.65}
+@media(max-width:800px){.planner-slots{grid-template-columns:1fr}.planner-add-fields{grid-template-columns:1fr 1fr}.planner-add-fields label:nth-child(2){grid-column:span 2}.planner-add-fields button{grid-column:span 2}.planner-toolbar{padding:16px}.planner-nav{width:100%}.planner-day-summary{gap:7px}.planner-day-summary>div{padding:11px}.planner-day-summary strong{font-size:16px}}
+@media(max-width:470px){.planner-week{gap:4px}.planner-weekday{border-radius:11px;min-height:72px}.planner-weekday strong{font-size:18px}.planner-weekday span{font-size:10px}.planner-weekday small{font-size:10px}.planner-slot{padding:13px}.planner-slot-fields{grid-template-columns:92px minmax(0,1fr)}.planner-nav input{width:148px}.planner-day-summary span{font-size:10px}.meal-filters{gap:6px}.meal-filters button{padding:8px 10px;font-size:12px}}
