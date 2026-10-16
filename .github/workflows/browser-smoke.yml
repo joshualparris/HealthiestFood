@@ -70,7 +70,13 @@ jobs:
         run: |
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
-      - name: Verify the actual live Vercel website from mobile viewport
+      - name: Verify the latest live Render backup from mobile viewport (required)
+        env:
+          BROWSER_ENGINE: chromium
+          SMOKE_URL: https://healthiest-food-backup.onrender.com
+        run: node e2e/smoke.cjs
+      - name: Check Vercel production separately (advisory while deployment quota is limited)
+        continue-on-error: true
         env:
           BROWSER_ENGINE: chromium
           SMOKE_URL: https://healthiest-food.vercel.app
