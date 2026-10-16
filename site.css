@@ -170,3 +170,17 @@
 .dynamic-shop-pantry input{width:100px;height:44px;flex:0 1 100px;border:1px solid #b6c8ae;border-radius:9px;padding:6px 8px;background:#fff;color:#234c37;font-weight:700}
 .dynamic-shop-line:has(input:checked){opacity:1}
 @media(max-width:520px){.dynamic-shop-row-check{flex-basis:100%}.dynamic-shop-pantry{margin-left:31px}}
+
+/* Narrow-screen intrinsic sizing: avoid long editorial headings and cards forcing width. */
+@media(max-width:390px){
+  .section-heading{display:block;min-width:0}
+  .section-heading>div{min-width:0}
+  .section-heading .text-link{display:inline-block;margin-top:10px}
+  .hero,.hero-content,.hero-art,.recipe-card,.intro-note,.philosophy-grid{min-width:0}
+  .hero-facts{flex-wrap:wrap;gap:12px}
+  .hero-art .bowl-art{max-width:100%}
+  .philosophy-grid{padding:23px}
+  .philosophy-grid>div{grid-template-columns:44px minmax(0,1fr);gap:11px}
+  .philosophy-grid h3,.philosophy-grid p{min-width:0;overflow-wrap:break-word}
+  .footer-inner>div{min-width:0}
+}
