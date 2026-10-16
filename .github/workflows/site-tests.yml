@@ -8,6 +8,7 @@ on:
       - 'site.css'
       - 'site-data.js'
       - 'app.js'
+      - 'site-audit.js'
       - 'tests/**'
       - '.github/workflows/site-tests.yml'
   pull_request:
