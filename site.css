@@ -89,3 +89,5 @@
 .planner-slot-fields{grid-template-columns:100px 88px minmax(0,1fr)}.planner-add-fields{grid-template-columns:115px minmax(0,1fr) 115px 95px auto}.planner-slot input[type=number],.planner-add input[type=number]{width:100%;max-width:100%;min-width:0;background:#fff;border:1px solid #d5dbca;border-radius:10px;padding:10px 7px;min-height:45px;color:var(--pine);font-size:14px}
 @media(max-width:800px){.planner-add-fields{grid-template-columns:1fr 1fr}.planner-slot-fields{grid-template-columns:100px 90px minmax(0,1fr)}}
 @media(max-width:470px){.planner-slot-fields{grid-template-columns:1fr 1fr}.planner-slot-fields label:nth-child(3){grid-column:span 2}.planner-bottom button{flex:1 1 42%}}
+
+.inline-plan-link{border:0;background:transparent;color:var(--pine);font-weight:800;text-decoration:underline;text-underline-offset:3px;padding:0;font:inherit;cursor:pointer}.recipe-card-visual.berry{background:#f6dbe5}.recipe-card-visual.leaf{background:#d9e9d6}
