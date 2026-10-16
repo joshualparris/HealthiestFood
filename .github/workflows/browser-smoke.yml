@@ -15,6 +15,7 @@ on:
       - 'service-worker.js'
       - 'manifest.webmanifest'
       - 'site-data.js'
+      - 'ingredient-catalogue.js'
       - 'afcd3-selected.js'
       - 'afcd3-foods.js'
       - 'nutrient-ledger.js'
