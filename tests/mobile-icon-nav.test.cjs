@@ -14,10 +14,10 @@ test('seven mobile destinations are icons only and remain accessible',()=>{
   const entries=content.match(/<(?:button|a)\b[^>]*aria-label="[^"]+"[^>]*>/g)||[];
   assert.equal(entries.length,7,file);
   routes.forEach(name=>assert.ok(content.includes('aria-label="'+name+'"'),name+' in '+file));
-  assert.equal((content.match(/<span aria-hidden="true">/g)||[]).length,7);
+  assert.equal((content.match(/<span aria-hidden="true">/g)||[]).length+(content.match(/<svg aria-hidden="true"/g)||[]).length,7);
   // No visible word labels may slip outside the icon spans, notably "Methods".
   const visible=content.replace(/<span aria-hidden="true">[^<]*<\/span>/g,'')
-    .replace(/<[^>]*>/g,'').replace(/\s/g,'');
+    .replace(/<svg[^>]*>[\s\S]*?<\/svg>/g,'').replace(/<[^>]*>/g,'').replace(/\s/g,'');
   assert.equal(visible,'',file+' unexpectedly contains text in the bar');
   assert.ok(content.includes('href="cooking-methods.html"'),file);
  }
