@@ -102,3 +102,11 @@ test('guided cooking scales checklist and preserves checked prep state',()=>{
  assert.match(appJS,/cookStepHeading/);
  assert.match(css,/\.cook-prep-list/);
 });
+
+test('closed cooking modal cannot dereference an absent active cooking step',()=>{
+ const start=appJS.indexOf('function updateTimerDisplays()');
+ const stop=appJS.indexOf('function renderTimerBoard()',start);
+ const code=appJS.slice(start,stop);
+ assert.match(code,/if\(out && cook\)/);
+ assert.match(code,/if\(step\)out\.textContent/);
+});
