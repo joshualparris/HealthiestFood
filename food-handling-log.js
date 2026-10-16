@@ -44,7 +44,7 @@ function decision(total){
  return {state:"under-two",title:"Under two hours recorded",message:"Food may be used now or promptly refrigerated IF accurate temperature/time observations and all other safety/cooling rules support it. The log is not proof of safety."};
 }
 function inspect(batch,now=Date.now()){
- const b=clean(batch),total=minutes(b,now),d=decision(total);
+ const b=clean(batch),total=b&&(b.events.length||b.priorMinutes>0)?minutes(b,now):null,d=decision(total);
  return {...d,minutes:total,running:!!b?.events.length&&b.events[b.events.length-1].end===null};
 }
 function start(batch,now=Date.now()){
