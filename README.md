@@ -11,6 +11,10 @@ A source-linked, dairy-free collection of home-cooked and historically planned f
 - [5 September 2026 actual 18-portion batch](RECIPES_2026_SEPTEMBER.md) — distinguishes the 10-portion recipe design from the actual 18-portion cook-up.
 - [Mediterranean sardine / salmon / tofu 10-meal recipe](RECIPES_MEDITERRANEAN.md) — a strong, **planned**, dairy-free rotation.
 - [Latest 20-lunch concept](LATEST_20_LUNCH_CONCEPT.md) — identified as proposed until preparation evidence is available.
+- [June 2026 paired 12-lunch recipe](RECIPES_2026_JUNE.md) — exact six salmon/brown-rice bowls plus six lentil/pumpkin/tofu curry bowls.
+- [August 2026 fact-checked 10-lunch recipe](RECIPES_2026_AUGUST.md) — exact salmon/red-lentil/quinoa/vegetable amounts and method.
+- [Additional freezer recipes](ADDITIONAL_RECIPES.md) — full July tomato-lentil rice recipe and ten four-portion alternatives (the alternatives are not confirmed cooked).
+- [Older family-meal ideas](FAMILY_MEAL_CANDIDATES.md) — historical roster entries, distinctly labelled **unverified**.
 - [Provenance, limitations and safe food handling](SOURCES_AND_METHOD.md).
 
 ## Historical top five (older audit; subject to revision)
