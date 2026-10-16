@@ -118,7 +118,7 @@ async function main(){
             const r=el.getBoundingClientRect();return r.right>innerWidth+3||r.left< -3;
           }).slice(0,15).map(el=>({tag:el.tagName,id:el.id,cls:String(el.className).slice(0,70),
             left:Math.round(el.getBoundingClientRect().left),right:Math.round(el.getBoundingClientRect().right),
-            scroll:el.scrollWidth,client:el.clientWidth}))}));
+            scroll:el.scrollWidth,client:el.clientWidth,view:el.closest(".view")?.id,html:el.outerHTML.slice(0,150)}))}));
         assert.ok(size.scroll <= size.viewport+2,JSON.stringify(size));
         await p.close();
       });
