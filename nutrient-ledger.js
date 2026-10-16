@@ -66,8 +66,8 @@
   {id:"F004193",match:/^garlic$/i,unit:"g",note:"fresh peeled garlic, raw"},
   {id:"F004213",match:/^grated fresh ginger$/i,unit:"g",note:"fresh peeled ginger, raw"},
   {id:"F004726",match:/^(?:fresh )?lemon juice$/i,unit:"mL",multiplier:1,note:"40 mL estimated approximately 40 g; density not kitchen-verified"},
-  {id:"F006116",match:/^walnuts?(?:\\b|,| )/i,unit:"g",note:"raw unsalted walnuts assumed; add after reheating"},
-  {id:"F008210",match:/^ground flaxseed(?:\\b|,| )/i,unit:"g",note:"AFCD raw linseed profile used for ground flaxseed"}
+  {id:"F006116",match:/^walnuts?/i,unit:"g",note:"raw unsalted walnuts assumed; add after reheating"},
+  {id:"F008210",match:/^ground flaxseed/i,unit:"g",note:"AFCD raw linseed profile used for ground flaxseed"}
  ];
  const mineralKeys=["calcium","iron","magnesium","potassium","zinc","iodine","folate","b12","vitaminD"];
  function matchAFCD(ing,dataset){
