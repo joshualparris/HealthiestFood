@@ -46,7 +46,7 @@ test('each date has sensible editable meal slots and linked recipes',()=>{
  assert.equal(slots.length,5);
  assert.deepEqual(Array.from(slots,s=>s.type),['breakfast','snack','lunch','snack','dinner']);
  assert.deepEqual(Array.from(slots,s=>s.time),['07:30','10:00','12:30','15:30','18:00']);
- for(const s of slots){assert.ok(data.recipes.some(r=>r.id===s.recipeId&&r.category===s.type));assert.equal(s.done,false);}
+ for(const s of slots){assert.ok(data.recipes.some(r=>r.id===s.recipeId&&r.category===s.type));assert.equal(s.done,false);assert.ok(Number.isInteger(s.portions)&&s.portions>=1);}
  }
 });
 test('new meal picker and dated plan screen are wired into HTML and app',()=>{
@@ -62,4 +62,14 @@ test('new meal picker and dated plan screen are wired into HTML and app',()=>{
  assert.ok(planner.includes('data-planner="copy-tomorrow"'));
  assert.ok(css.includes('.planner-week'));
  assert.ok(css.includes('max-width:470px'));
+});
+
+test('scheduled serving counts make an unpriced date/week shopping ingredient list',()=>{
+ const day=core.makeDefaults('2026-10-17');
+ assert.ok(day.some(s=>s.type==='dinner'&&s.portions>1));
+ const list=core.shoppingText(['2026-10-17']);
+ assert.match(list,/INGREDIENTS FOR/);
+ assert.match(list,/Amounts are for scheduled adult portions/);
+ assert.match(list,/large eggs|raw salmon fillet/);
+ assert.match(core.shoppingText(['2026-10-17','2026-10-18']),/INGREDIENTS · WEEK/);
 });
