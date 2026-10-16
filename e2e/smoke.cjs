@@ -43,6 +43,29 @@ async function main(){
       await page.locator('#view-home').waitFor({state:'visible'});
       assert.match(await page.title(),/Good Food, Long Game/);
     });
+    await check('uploaded homepage photograph replaces hero SVG without breaking interactive controls',async()=>{
+      const img=page.locator('#view-home img.homepage-bowl-photo');
+      assert.equal(await img.count(),1);
+      assert.equal(await img.getAttribute('src'),'homepage-bowl.webp');
+      assert.equal(await page.locator('#view-home .bowl-art').count(),0);
+      assert.equal(await page.locator('#view-home .art-caption').count(),0);
+      await img.scrollIntoViewIfNeeded();
+      await img.evaluate(el=>el.decode());
+      assert.ok(await img.evaluate(el=>el.naturalWidth>=700&&el.naturalHeight>=600),'New hero image must decode');
+      const response=await page.request.get(new URL('homepage-bowl.webp',base+'/').href,{timeout:15000});
+      assert.equal(response.status(),200);
+      assert.ok((await response.body()).length>25000);
+      assert.deepEqual(await page.locator('#view-home .hero-facts strong').allTextContents(),['20','17','7']);
+      const cookingLink=page.locator('#view-home .hero-actions a[href="cooking-methods.html"]');
+      assert.equal(await cookingLink.count(),1);
+      assert.match(await cookingLink.innerText(),/Compare cooking methods/);
+      const popup=await page.context().newPage();
+      await popup.goto(base,{waitUntil:'domcontentloaded'});
+      await popup.locator('#view-home .hero-actions a[href="cooking-methods.html"]').click();
+      await popup.waitForURL(/cooking-methods\.html/);
+      assert.match(await popup.title(),/Cooking|method/i);
+      await popup.close();
+    });
     await check('canonical ingredient IDs connect all 17 meals without changing recipes',async()=>{
       const stats=await page.evaluate(()=>{
         const c=window.FoodIngredients,recipes=window.FOOD_DATA.recipes;
