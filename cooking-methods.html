@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="theme-color" content="#173e33">
+ <meta name="description" content="Compare boiling, steaming, frying, roasting, microwaving and more for every recipe ingredient, with evidence, safety and nutrient trade-offs.">
+ <title>Cooking Methods Lab | Good Food, Long Game</title>
+ <link rel="icon" href="favicon.svg" type="image/svg+xml">
+ <link rel="manifest" href="manifest.webmanifest">
+ <link rel="stylesheet" href="site.css">
+ <script defer src="site-data.js"></script>
+ <script defer src="whole-day-data.js"></script>
+ <script defer src="cooking-methods-data.js"></script>
+ <script defer src="cooking-methods.js"></script>
+ <script>document.addEventListener("DOMContentLoaded",()=>window.CookingMethodsLab?.init());</script>
+</head>
+<body>
+ <a class="skip-link" href="#main">Skip to cooking method comparisons</a>
+ <header class="site-header">
+ <div class="header-inner">
+  <a class="brand" href="index.html#home" aria-label="Good Food home"><span class="brand-mark" aria-hidden="true">✳</span><span>good food<span class="brand-period">.</span><small>THE LONG GAME</small></span></a>
+  <nav class="cm-page-nav" aria-label="Main site"><a href="index.html#recipes">Recipes</a><a href="index.html#plan">Meal planner</a><a href="index.html#science">Science</a><a href="index.html#media">Media</a><a class="cm-page-nav-current" href="cooking-methods.html" aria-current="page">Cooking Lab</a></nav>
+ </div></header>
+ <main id="main" class="cm-page">
+ <section class="cm-hero">
+   <div class="cm-hero-text"><div class="cm-kicker"><span aria-hidden="true">✳</span> THE INGREDIENT-BY-INGREDIENT EXPERIMENT</div>
+    <h1>How should you <em>cook it?</em></h1>
+    <p>Boil, steam, roast, sauté, air-fry, poach, microwave or eat raw? Find the practical trade-offs for every ingredient in your HealthiestFood recipes and shopping list.</p>
+    <div class="cm-hero-links"><a class="btn btn-primary" href="#cmRoot">Compare ingredients ↓</a><a class="btn btn-outline" href="index.html#recipes">Back to recipes ↗</a></div>
+   </div>
+   <div class="cm-hero-panel" aria-label="Examples of different food preparation evidence"><span>DIFFERENT FOODS · DIFFERENT ANSWERS</span>
+     <div><strong>🥚 Eggs</strong><small>Safety + added fats</small><span>Poach / boil / fry</span></div>
+     <div><strong>🥦 Broccoli</strong><small>Vitamin C + glucosinolates</small><span>Steam / microwave</span></div>
+     <div><strong>🍅 Tomatoes</strong><small>Absorbable lycopene</small><span>Raw + gently cooked</span></div>
+     <div><strong>🍚 Rice</strong><small>Arsenic vs nutrient losses</small><span>Absorb / boil & drain</span></div>
+   </div>
+ </section>
+ <section class="cm-intro section-shell" aria-labelledby="cmIntro"><div><span class="section-kicker">A MORE USEFUL QUESTION</span><h2 id="cmIntro">There is no universal <em>healthiest cooking method.</em></h2></div><p>The right choice depends on food safety, vitamin retention, carotenoid availability, added oil, dietary pattern and how much of the food you actually eat. We compare real methods without inventing longevity scores, nutrient-retention percentages or exact optimum temperatures unsupported by studies.</p></section>
+ <section class="cm-principles section-shell" aria-label="Four essential cooking principles">
+  <article><span>01</span><h3>Protect safety first</h3><p>Poultry ≥75°C centre per FSANZ, fully set eggs for vulnerable people, cooked dried kidney beans and quickly chilled leftovers.</p><a href="https://www.foodstandards.gov.au/consumer/prevention-of-foodborne-illness/food-safety-basics" target="_blank" rel="noopener noreferrer">FSANZ food safety ↗</a></article>
+  <article><span>02</span><h3>Keep water-soluble vitamins</h3><p>Brief steaming or microwaving often limits losses compared with prolonged boiling of vegetables and discarding water.</p><a href="https://pubmed.ncbi.nlm.nih.gov/30263756/" target="_blank" rel="noopener noreferrer">Food vitamin-retention study ↗</a></article>
+  <article><span>03</span><h3>Some heat unlocks nutrients</h3><p>Heating tomatoes with a modest amount of olive oil can improve lycopene absorption; raw isn't always nutritionally superior.</p><a href="https://pubmed.ncbi.nlm.nih.gov/15927929/" target="_blank" rel="noopener noreferrer">Human lycopene trial ↗</a></article>
+  <article><span>04</span><h3>Avoid unneeded charring</h3><p>For starchy foods, lighter browning can reduce acrylamide exposure. Deep-frying usually adds more oil.</p><a href="https://www.foodstandards.gov.au/consumer/chemicals/acrylamide" target="_blank" rel="noopener noreferrer">FSANZ acrylamide advice ↗</a></article>
+ </section>
+ <section class="cm-section section-shell" aria-labelledby="cmPageHeading"><div class="cm-section-head"><span class="section-kicker">FULL ACTIVE RECIPE + SHOPPING INVENTORY</span><h2 id="cmPageHeading">The Cooking <em>Methods Lab.</em></h2><p>Find a food, filter by its recipe, and choose two cooking techniques to compare. Each food includes recommended practical choices, limitations, exact matching ingredient names and research links.</p></div>
+ <div id="cmRoot" aria-label="Interactive food cooking and preparation method comparisons"><p>Loading your ingredient inventory…</p></div>
+ </section>
+ <section class="cm-methodology section-shell" aria-label="Research methodology and limits">
+  <span class="section-kicker">READ THIS BEFORE CHANGING A RECIPE</span><h2>How we weigh evidence</h2>
+  <div class="cm-evidence-steps">
+   <div><strong>Safety / regulatory guidance</strong><p>FSANZ, NSW Food Authority and FDA guidance takes precedence over vitamins if a method leaves food unsafe. Temperature and timing must actually be measured where relevant.</p></div>
+   <div><strong>Measured food composition</strong><p>Cooking-method studies can compare vitamin retention, glucosinolates and fatty acids. Results often vary with produce variety, slice size, pan conditions and whether values are per raw weight, cooked weight or true retention.</p></div>
+   <div><strong>Human nutrient absorption</strong><p>Some small human trials show changes to lycopene or beta-carotene in blood. Those are surrogate measurements, not proof that eating those foods cooked that way makes people live longer.</p></div>
+   <div><strong>Health outcomes and adherence</strong><p>Long-term human trials that isolate boiling vs steaming vs frying for each individual food and measure mortality are generally unavailable. Overall food quality and safe, enjoyable habits carry more weight.</p></div>
+  </div>
+  <p class="cm-source-note">Coverage audits enumerate ingredient labels from all <strong>17 currently active adult recipes</strong> plus the <strong>35-line original V6 retailer basket</strong>. Multiple label descriptions are mapped to one food family. This is not a claim to individually analyse every ingredient mentioned in archived experimental notes or external connected research repositories. <a href="https://github.com/joshualparris/HealthiestFood/blob/main/COOKING_METHODS_EVIDENCE_2026-10-17.md" target="_blank" rel="noopener noreferrer">Read the full methodology, citations and coverage test ↗</a>. No kitchen cook-ups or laboratory tests were performed.</p>
+ </section>
+ </main>
+ <footer class="site-footer"><div class="footer-inner"><div><strong>good food<span>.</span></strong><p>Food safety first. Sources beside every claim.</p></div><div><a href="index.html#recipes">Recipes ↗</a><a href="index.html#media">Podcasts & videos ↗</a><a href="index.html#science">Nutrient analysis ↗</a><a href="https://github.com/joshualparris/HealthiestFood/blob/main/COOKING_METHODS_EVIDENCE_2026-10-17.md" target="_blank" rel="noopener noreferrer">Methodology ↗</a></div></div></footer>
+</body>
+</html>
