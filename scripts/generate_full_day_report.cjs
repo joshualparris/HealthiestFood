@@ -6,7 +6,7 @@ const context={window:{},Intl,Date};vm.createContext(context);
 for(const p of ['site-data.js','whole-day-data.js','afcd3-foods.js','nutrient-ledger.js','whole-day-analysis.js','food-planner.js'])vm.runInContext(read(p),context,{filename:p});
 const {FOOD_DATA,FoodDayAnalysis:A,FoodPlannerCore:P,AFCD3_FOODS:AF}=context.window;
 const start='2026-10-17',dates=Array.from({length:7},(_,i)=>P.shift(start,i));
-const fmt=(obj,k,dec=1)=>{const v=obj.subtotal[k];return v===null?'Unknown':v.toFixed(dec)+(obj.unknown?.[k]>0?'†':'');};
+const fmt=(obj,k,dec=1)=>{const v=obj.subtotal[k];return v===null||(obj.unknown?.[k]>0&&['b12','vitaminD','iodine','calcium'].includes(k)&&v===0)?'Unknown':v.toFixed(dec)+(obj.unknown?.[k]>0?'†':'');};
 let lines=[
  '# AFCD3 ingredient nutrient modelling — 17 adult recipes & 7 days',
  '',
@@ -28,7 +28,7 @@ lines.push('','† **Subtotals only.** A † denotes at least one unmapped or nu
 );
 const weekly=A.week(dates,P.makeDefaults,FOOD_DATA.recipes);
 for(const day of weekly){const find=t=>day.meals.filter(m=>m.type===t).map(m=>FOOD_DATA.recipes.find(r=>r.id===m.recipeId)?.name||m.recipeId).join('; ');
- const parts=['kj','protein','fibre','calcium','iodine'].map(k=>day.subtotal[k]===null?'Unknown':day.subtotal[k].toFixed(k==='kj'||k==='calcium'?0:1)+(day.incomplete[k]?'†':''));
+ const parts=['kj','protein','fibre','calcium','iodine'].map(k=>day.subtotal[k]===null||(day.incomplete[k]&&['iodine','calcium'].includes(k)&&day.subtotal[k]===0)?'Unknown':day.subtotal[k].toFixed(k==='kj'||k==='calcium'?0:1)+(day.incomplete[k]?'†':''));
  lines.push('| '+day.date+' | '+find('breakfast')+' | '+find('lunch')+' | '+find('dinner')+' | '+find('snack')+' | '+parts.join(' | ')+' |');
 }
 lines.push('',
