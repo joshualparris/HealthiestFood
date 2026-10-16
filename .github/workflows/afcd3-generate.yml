@@ -1,0 +1,29 @@
+name: Generate evidence-labelled AFCD 3 food subset
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/afcd3_extract.py'
+      - '.github/workflows/afcd3-generate.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Fetch FSANZ official workbook and generate generic nutrient subset
+        run: python scripts/afcd3_extract.py
+      - name: Commit reproducible AFCD3 subset for browser
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add afcd3-foods.js
+          if git diff --cached --quiet; then echo "No data changes"; exit 0; fi
+          git commit -m "Refresh official AFCD3 generic nutrient dataset"
+          git pull --rebase origin main
+          git push origin HEAD:main
