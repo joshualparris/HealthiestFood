@@ -39,3 +39,22 @@ jobs:
         env:
           BROWSER_ENGINE: ${{ matrix.engine }}
         run: node e2e/smoke.cjs
+
+  production:
+    needs: cross-browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install actual-browser test dependencies
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify the actual live Vercel website from mobile viewport
+        env:
+          BROWSER_ENGINE: chromium
+          SMOKE_URL: https://healthiest-food.vercel.app
+        run: node e2e/smoke.cjs
