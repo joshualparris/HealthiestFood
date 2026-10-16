@@ -53,3 +53,14 @@ The [original October 20-lunch concept](LATEST_20_LUNCH_CONCEPT.md) is retained 
 - **[Nutrition science audit and 10-metric /100 scorecard](NUTRITION_AUDIT_2026-10-16.md)** — original 89/86, revised 92/89 subjective rubric, primary sources and caveats.
 
 **A “100/100” nutritional/longevity claim is unsupported.** The revised recipe has a **100% specification checklist** only; the 10-category nutrition rubric is openly subjective and does not predict lifespan.
+
+
+## V3 — 16 October 2026: precision-first Woolworths recipes
+
+**Latest proposed plan (not yet cooked or proven "100/100"):**
+
+- **[V3: 20 freezer lunches — complete weighed recipes and detailed cooking instructions](V3_RECIPES_20_LUNCHES.md)** — 10 Mediterranean sardine/salmon/quinoa + 10 lentil/tofu/pea/brown-rice bowls; four-week alternating schedule, measured fish drained weights, distinct fruit/nut toppings, gluten/dairy checks and safe freezing.
+- **[V3: Woolworths Dubbo shopping list](V3_WOOLWORTHS_DUBBO_SHOPPING.md)** — 38 consolidated ingredient lines, exact pack count and recipe use, links, price provenance and estimated **$221.99** initial cart (including optional 5 L high-protein soy). **Not a live Dubbo checkout or stock confirmation**. Check pantry before buying.
+- **[V3: nutrition evidence and 10-metric audit](V3_NUTRITION_EVIDENCE_AND_SCORES.md)** — explicitly subjective scores, source links, known gaps, label-based protein subtotal and food safety.
+
+**Relative to V2:** improves fruit/topping variety, buying accuracy, calcium-label clarity and verification detail. No scientific evidence proves this exact recipe increases lifespan over V2, and a perfect-health “100/100” label would be misleading. Older versions and cooked-batch documentation remain preserved.
