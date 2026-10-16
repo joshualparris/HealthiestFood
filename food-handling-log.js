@@ -53,7 +53,7 @@ function start(batch,now=Date.now()){
  return {...b,events:[...b.events,{start:n,end:null}]};
 }
 function stop(batch,now=Date.now()){
- const b=clean(batch),n=num(now);if(!b||n===null||!inspect(b,n).running)return null;
+ const b=clean(batch),n=num(now);if(!b||n===null||!inspect(b,n).running||n<b.events[b.events.length-1].start)return null;
  const events=b.events.map((e,i)=>i===b.events.length-1?{start:e.start,end:n}:e);
  return {...b,events};
 }
