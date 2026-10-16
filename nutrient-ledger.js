@@ -9,6 +9,8 @@
  if(root)root.FoodNutrients=api;
 })(typeof window!=="undefined"?window:null,function(){
  "use strict";
+ const canonical=()=>typeof window!=="undefined"&&window.FoodIngredients?window.FoodIngredients:
+  typeof module==="object"&&module.exports?require("./ingredient-catalogue.js"):null;
  const observed="2026-10-17";
  // All nutrient values per 100 g edible product in the nutrient panel, before cooking.
  // Fibre and sodium may legitimately be absent; < signs not rounded into exact figures.
@@ -30,10 +32,16 @@
   if(!Array.isArray(ing)||ing.length!==3)return null;
   const [amount,unit,name]=ing;
   if(!Number.isFinite(amount)||amount<=0)return null;
-  const p=items.find(x=>x.match.test(name)&&x.unit===unit);
+  const entry=canonical()?.resolve(name,unit);
+  const p=entry?.sku?items.find(x=>x.productId===entry.sku&&x.unit===unit):
+    items.find(x=>x.match.test(name)&&x.unit===unit);
   if(!p)return null;
-  const grams=unit==="tins"?amount*p.ediblePerTinG:amount;
-  return {product:p,grams,ingredient:name,quantity:amount,unit};
+  // An unbranded but matching ingredient is a candidate SKU estimate,
+  // never evidence that the person actually purchased this brand.
+  const verifiedSku=!!entry?.sku&&entry.sku===p.productId;
+  const grams=(unit==="tins"||unit==="tin")?amount*p.ediblePerTinG:amount;
+  return {product:p,grams,ingredient:name,ingredientId:entry?.id||null,
+   verifiedSku,brandAssumed:!verifiedSku,quantity:amount,unit};
  }
  function calculate(recipe,servings=recipe?.yield){
   if(!recipe||!Array.isArray(recipe.ingredients)||!Number.isFinite(recipe.yield)||recipe.yield<=0||!Number.isFinite(servings)||servings<=0)throw Error("Invalid recipe or serving count");
@@ -50,7 +58,7 @@
   return {recipeId:recipe.id,servings,matchedLines:matched.length,totalLines:lines.length,
    unmatched:missing,totals,metricCoverage:counts,allMatched:missing.length===0,
    sources:matched.map(x=>({ingredient:x.m.ingredient,product:x.m.product.name,grams:x.m.grams*scale,url:x.m.product.url,
-    flags:x.m.product.status}))};
+    flags:x.m.product.status+(x.m.brandAssumed?"; candidate product NOT exact ingredient brand":"")}))};
  }
 
  // Mapping to analysed/borrowed AFCD foods only when the actual raw ingredient
@@ -100,7 +108,7 @@
   return {...old,totals,metricCoverage,matchedLines:checked.length,
    unmatched:rows.map((m,i)=>m?null:recipe.ingredients[i][2]).filter(Boolean),
    allMatched:checked.length===recipe.ingredients.length,
-   sources:checked.map(x=>({ingredient:x.ingredient,product:x.product.name,grams:x.grams*scale,url:x.product.url,
+   sources:checked.map(x=>({ingredient:x.ingredient,ingredientId:x.ingredientId||null,product:x.product.name,grams:x.grams*scale,url:x.product.url,
     flags:x.product.status||"Exact Woolworths product; check live label",
     sourceId:x.sourceId||x.product.productId||"product-label"})),
    sourceClass:"Woolworths product panel OR FSANZ AFCD Release 3 food profile; assumptions disclosed",
