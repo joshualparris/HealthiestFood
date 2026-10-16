@@ -9,9 +9,11 @@ const Scale=require('../recipe-scale.js');
 const Shopping=require('../food-shopping.js');
 const Nutrition=require('../nutrition-coverage.js');
 test('New modules parse and are loaded in dependency order',()=>{
- for(const x of ['recipe-scale.js','food-shopping.js','nutrition-coverage.js','app.js','food-planner.js']) assert.doesNotThrow(()=>new vm.Script(read(x)),x);
+ for(const x of ['recipe-scale.js','recipe-methods.js','food-shopping.js','nutrition-coverage.js','app.js','food-planner.js']) assert.doesNotThrow(()=>new vm.Script(read(x)),x);
  const html=read('index.html');
  assert.ok(html.indexOf('src="recipe-scale.js"')<html.indexOf('src="app.js"'));
+ assert.ok(html.indexOf('src="whole-day-data.js"')<html.indexOf('src="recipe-methods.js"'));
+ assert.ok(html.indexOf('src="recipe-methods.js"')<html.indexOf('src="app.js"'));
  assert.ok(html.indexOf('src="food-shopping.js"')<html.indexOf('src="food-planner.js"'));
  assert.ok(html.indexOf('src="nutrition-coverage.js"')<html.indexOf('src="app.js"'));
  assert.ok(html.includes('id="nutritionCoverage"'));
@@ -22,7 +24,7 @@ test('Scaled cooking measurements do not change minutes, temperatures or per-per
  assert.match(doubled,/15 min at 190°C/);assert.match(doubled,/10 g walnuts per serving/);
  assert.match(Scale.scaleDetail('Thaw five 125 g raw salmon portions, then keep remaining 375 g frozen.',2),/five 125 g raw salmon portions/);
  assert.match(Scale.scaleDetail('Distribute 125 g raw equivalent each.',2),/125 g raw equivalent each/);
- assert.match(Scale.caution({yield:5},10),/separate original-size batches/);
+ assert.match(Scale.caution({yield:5},10),/prepare a full original-size batch/);
 });
 test('Fish and grocery pack math merges comparable ingredient units conservatively',()=>{
  const sample=[
@@ -57,7 +59,8 @@ test('Planner shopping integration is implemented and label unknowns persist',()
  assert.ok(planner.includes('window.FoodShopping.render('));
  assert.ok(planner.includes('window.FoodShopping?.handle('));
  assert.ok(app.includes('window.FoodNutrition?.render()'));
- assert.ok(app.includes('window.RecipeScale.scaleDetail('));
+ assert.ok(app.includes('window.RecipeMethods.describe(r,step,cook.portions)'));
+ assert.ok(app.includes('window.RecipeMethods.stage(r,step,cook.portions)'));
  assert.ok(read('nutrition-coverage.js').includes('unknown, not zero'));
  assert.ok(html.includes('id="nutritionCoverage"'));
 });
