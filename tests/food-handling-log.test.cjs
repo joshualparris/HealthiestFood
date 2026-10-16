@@ -58,7 +58,7 @@ test("UI is present in cooking states and blocks marking clearly discarded food 
  assert.equal(app.split("window.FoodHandlingUI?.mount(r.id)").length-1,2);
  assert.ok(html.includes('src="food-handling-log.js"'));
  assert.ok(html.includes('src="food-handling-ui.js"'));
- assert.ok(ui.includes('if(info.state==="discard")'));
+ assert.ok(ui.includes('info.state==="discard"||info.state==="use-now"'));
  assert.ok(ui.includes("e.stopImmediatePropagation()"));
  assert.ok(ui.includes("setInterval(clock,2000)"));
  assert.ok(ui.includes("data-handling-action"));
