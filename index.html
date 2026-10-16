@@ -30,7 +30,10 @@
   <script src="local-backup.js" defer></script>
   <script src="offline-ready.js" defer></script>
   <script src="media-data.js" defer></script>
+  <script src="podcast-streams.js" defer></script>
+  <script src="podcast-player.js" defer></script>
   <script src="media-library.js" defer></script>
+  <script src="app-pages.js" defer></script>
   <script src="app.js" defer></script>
   <script src="food-shopping.js" defer></script>
   <script src="custom-shopping.js" defer></script>
@@ -52,7 +55,7 @@
         <a href="#plan" data-route="plan" class="nav-link">My plan</a>
         <a href="#shop" data-route="shop" class="nav-link">Shopping list</a>
         <a href="#science" data-route="science" class="nav-link">The science</a>
-        <a href="#media" data-route="media" class="nav-link">Podcasts & videos</a><a href="cooking-methods.html" class="nav-link">Cooking methods</a>
+        <a href="#media" data-route="media" class="nav-link">Podcasts & videos</a><a href="#lab" data-route="lab" class="nav-link">Cooking methods</a>
       </nav>
       <button id="resetProgress" class="icon-button small-reset" aria-label="Reset saved progress" title="Reset shopping and cooking progress">↺</button>
     </div>
@@ -170,16 +173,29 @@
       <div class="page-head">
         <span class="section-kicker">LISTEN · WATCH · CHECK THE EVIDENCE</span>
         <h1>Learn the <em>why.</em></h1>
-        <p>Australian podcasts, expert explainers and official food-safety videos about the ingredients and habits used throughout this website.</p>
+        <p>Listen to ABC podcasts without leaving the app. Play, pause, skip, change speed and keep listening while browsing your recipes or research. Official videos and original research remain linked to publishers.</p>
       </div>
       <div class="media-guide-intro">
-        <div><strong>Hear the explanation</strong><p>Listen to the episode or watch the official video. Audio and video open at their original publisher; nothing autoplayed or tracked by this website.</p></div>
+        <div><strong>Hear the explanation</strong><p>Listen to the episode or watch the official video. Play the ABC podcasts directly here using the publisher’s official audio streams. Videos open at their publishers. Nothing autoplays or gets downloaded to this site.</p></div>
         <div><strong>Check the actual evidence</strong><p>Each entry separately links to official dietary guidance or primary research and explains what the recording <em>doesn't</em> prove.</p></div>
         <div><strong>No invented certainty</strong><p>No podcast proves that a particular freezer lunch extends lifespan, or validates our local supermarket prices or partial nutrient estimates.</p></div>
       </div>
       <div class="media-featured-note"><span aria-hidden="true">✳</span><div><strong>Start here</strong><p>For the overall food pattern, listen to ABC's <a href="https://www.abc.net.au/listen/programs/whats-that-rash/mediterranean-diet-nutrition/104246670" target="_blank" rel="noopener noreferrer">Mediterranean diet episode</a>. For cooking safety, start with <a href="https://www.youtube.com/watch?v=IB2f0C_b32k" target="_blank" rel="noopener noreferrer">FSANZ's leftovers video</a>.</p></div></div>
       <div id="mediaLibrary" aria-label="Searchable science podcast and video resources"></div>
-      <p class="media-footer-note">Editorial links checked 17 October 2026. External videos, audio episodes and associated research can change. No sponsorship, endorsements or auto-playing embeds. For exact numerical claims about ingredients, rely on Australian Food Composition Database values and current purchased package labels rather than podcast anecdotes.</p>
+      <p class="media-footer-note">ABC podcast audio plays through official RSS streams in our in-app audio player. You can minimise the player and continue browsing, including the cooking and longevity pages. Playback in the background depends on your browser and Android settings. External recordings, video resources and research may change. No sponsorship or autoplay. For exact numerical claims about ingredients, rely on Australian Food Composition Database values and current purchased package labels rather than podcast anecdotes.</p>
+    </section>
+
+    <section id="view-guide" class="view hidden section-shell view-body inapp-subpage" hidden aria-label="Longevity Guide without interrupting podcast playback">
+      <div class="inapp-page-head"><span class="section-kicker">THE LONG GAME · AUDIO STAYS ON</span><h1>Longevity <em>Guide</em></h1><p>Research and practical guidance. Your podcast keeps playing in the compact audio bar.</p></div>
+      <iframe id="foodGuideFrame" title="HealthiestFood Longevity Guide" loading="lazy" src="longevity.html"></iframe>
+    </section>
+    <section id="view-lab" class="view hidden section-shell view-body inapp-subpage" hidden aria-label="Cooking Methods Lab without interrupting podcast playback">
+      <div class="inapp-page-head"><span class="section-kicker">EVIDENCE FOR EVERY INGREDIENT · AUDIO STAYS ON</span><h1>Cooking Methods <em>Lab</em></h1><p>Choose foods and compare their methods without stopping your podcast.</p></div>
+      <iframe id="foodLabFrame" title="HealthiestFood Cooking Methods Lab" loading="lazy" src="cooking-methods.html"></iframe>
+    </section>
+    <section id="view-page" class="view hidden section-shell view-body inapp-subpage" hidden aria-label="More HealthiestFood tools without interrupting podcast playback">
+      <div class="inapp-page-head"><h1>More <em>tools.</em></h1><p>Podcast playback stays available while you use other HealthiestFood pages.</p></div>
+      <iframe id="foodOtherFrame" title="Additional HealthiestFood tools" loading="lazy" src="product-check.html"></iframe>
     </section>
   </main>
 
