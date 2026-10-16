@@ -41,16 +41,30 @@
    return {records:obj.records,exportedAt:String(obj.exportedAt||"unknown"),count:keys.length};
  }
  function restore(storage, parsed, replace=false){
+   // Storage is not transactional: stage new values, then delete stale app-owned
+   // keys. On ANY failure, try to restore the complete original app snapshot.
+   // Never claim import succeeded when writes or rollback are unreliable.
    const keys=Object.keys(parsed.records);
    const before=collect(storage);
-   if(replace)for(const k of Object.keys(before))if(!Object.hasOwn(parsed.records,k))storage.removeItem(k);
    try{
      for(const k of keys)storage.setItem(k,parsed.records[k]);
+     if(replace)for(const k of Object.keys(before)){
+       if(!Object.hasOwn(parsed.records,k))storage.removeItem(k);
+     }
    }catch(e){
-     // Best-effort rollback of only app-owned keys.
-     for(const k of Object.keys(collect(storage)))storage.removeItem(k);
-     for(const [k,v] of Object.entries(before))storage.setItem(k,v);
-     throw e;
+     let rollbackError=null;
+     try{
+       const now=collect(storage);
+       // Restore original values before deleting imported-only records.
+       for(const [k,v] of Object.entries(before))storage.setItem(k,v);
+       for(const k of Object.keys(now)){
+         if(!Object.hasOwn(before,k))storage.removeItem(k);
+       }
+     }catch(restoreError){rollbackError=restoreError;}
+     const reason=rollbackError?
+       "Import failed and browser storage could not be fully rolled back. Keep your original private backup and inspect saved data before retrying.":
+       "Import failed; original app data restored where browser storage allowed.";
+     throw new Error(reason,{cause:e});
    }
    return keys.length;
  }
