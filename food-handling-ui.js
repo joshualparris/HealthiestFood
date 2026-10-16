@@ -61,9 +61,9 @@ if(w&&typeof document!=="undefined"){
  document.addEventListener("click",e=>{
   if(!e.target.closest("#finishCook"))return;
   const info=status();
-  if(info.state==="discard"){
+  if(info.state==="discard"||info.state==="use-now"){
    e.preventDefault();e.stopImmediatePropagation();
-   alert("Do not mark this batch finished or store it: the recorded 5–60°C exposure is four hours or more. Discard the food. A time log is not a thermometer.");
+   alert(info.state==="discard"?"Do not mark this batch completed or store it: recorded cumulative exposure is four hours or more. Discard the food. A time log is not a thermometer.":"Do not mark this batch as completed FOR STORAGE: cumulative 5–60°C time is two to four hours. NSW guidance says use immediately or discard; do not refrigerate for later. A manual log cannot prove safety.");
   }
  },true);
  setInterval(clock,2000);
