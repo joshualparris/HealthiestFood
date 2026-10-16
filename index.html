@@ -27,6 +27,8 @@
   <script src="food-safety.js" defer></script>
   <script src="local-backup.js" defer></script>
   <script src="offline-ready.js" defer></script>
+  <script src="media-data.js" defer></script>
+  <script src="media-library.js" defer></script>
   <script src="app.js" defer></script>
   <script src="food-shopping.js" defer></script>
   <script src="custom-shopping.js" defer></script>
@@ -48,6 +50,7 @@
         <a href="#plan" data-route="plan" class="nav-link">My plan</a>
         <a href="#shop" data-route="shop" class="nav-link">Shopping list</a>
         <a href="#science" data-route="science" class="nav-link">The science</a>
+        <a href="#media" data-route="media" class="nav-link">Podcasts & videos</a>
       </nav>
       <button id="resetProgress" class="icon-button small-reset" aria-label="Reset saved progress" title="Reset shopping and cooking progress">↺</button>
     </div>
@@ -64,6 +67,7 @@
           <div class="hero-actions">
             <button class="btn btn-primary" data-goto="plan">Plan today <span>↗</span></button><button class="btn btn-ghost" data-goto="recipes">Browse recipes <span>↗</span></button>
             <button class="btn btn-ghost" data-goto="shop">See what to buy <span>↗</span></button>
+            <button class="btn btn-ghost" data-goto="media">Listen & watch <span>↗</span></button>
           </div>
           <div class="hero-facts"><div><strong>20</strong><span>V6 freezer lunches</span></div><div><strong>17</strong><span>meal and snack recipes</span></div><div><strong>7</strong><span>days you can schedule</span></div></div>
         </div>
@@ -143,7 +147,7 @@
 
     <section id="view-science" class="view hidden section-shell view-body">
       <div class="page-head"><span class="section-kicker">NOT HYPE. JUST THE EVIDENCE.</span><h1>What makes this <em>nourishing?</em></h1><p>What research supports, what the supermarket labels actually say, and where the evidence stops.</p></div>
-      <p><a class="btn btn-outline" href="longevity.html">Longevity habits & research guide ↗</a></p>
+      <p><a class="btn btn-outline" href="longevity.html">Longevity habits & research guide ↗</a> <a class="btn btn-outline" href="#media">Hear the researchers & watch official safety videos ↗</a></p>
       <p class="evidence-chip"><strong>Whole-site nutrition review:</strong> Detailed 17-recipe improvements, Australian food-group targets, meal-timing trials and food-safety priorities. <a href="https://github.com/joshualparris/HealthiestFood/blob/main/WHOLE_SITE_EVIDENCE_REVIEW_2026-10-17.md" target="_blank" rel="noopener noreferrer">Read the evidence audit ↗</a></p>
       <div class="truth-card"><span class="truth-icon">✷</span><div><h2>There is no scientifically proven “healthiest meal”.</h2><p>These meals reflect food groups associated with healthy dietary patterns. A perfect 100/100 longevity rating would be invented. Individual nutritional needs, the rest of the diet and sustained habits matter.</p></div></div>
       <div class="science-columns">
@@ -158,6 +162,22 @@
       <div id="sourceList" class="source-list"></div>
       <div class="disclaimer">This site is general food information, not individual medical nutrition advice. Recipes are planned, not kitchen-tested or independently nutrient-analysed. Gluten-free suitability depends on current labels and cross-contact requirements. Price figures are not live retail quotes.</div>
     </section>
+
+    <section id="view-media" class="view hidden section-shell view-body">
+      <div class="page-head">
+        <span class="section-kicker">LISTEN · WATCH · CHECK THE EVIDENCE</span>
+        <h1>Learn the <em>why.</em></h1>
+        <p>Australian podcasts, expert explainers and official food-safety videos about the ingredients and habits used throughout this website.</p>
+      </div>
+      <div class="media-guide-intro">
+        <div><strong>Hear the explanation</strong><p>Listen to the episode or watch the official video. Audio and video open at their original publisher; nothing autoplayed or tracked by this website.</p></div>
+        <div><strong>Check the actual evidence</strong><p>Each entry separately links to official dietary guidance or primary research and explains what the recording <em>doesn't</em> prove.</p></div>
+        <div><strong>No invented certainty</strong><p>No podcast proves that a particular freezer lunch extends lifespan, or validates our local supermarket prices or partial nutrient estimates.</p></div>
+      </div>
+      <div class="media-featured-note"><span aria-hidden="true">✳</span><div><strong>Start here</strong><p>For the overall food pattern, listen to ABC's <a href="https://www.abc.net.au/listen/programs/whats-that-rash/mediterranean-diet-nutrition/104246670" target="_blank" rel="noopener noreferrer">Mediterranean diet episode</a>. For cooking safety, start with <a href="https://www.youtube.com/watch?v=IB2f0C_b32k" target="_blank" rel="noopener noreferrer">FSANZ's leftovers video</a>.</p></div></div>
+      <div id="mediaLibrary" aria-label="Searchable science podcast and video resources"></div>
+      <p class="media-footer-note">Editorial links checked 17 October 2026. External videos, audio episodes and associated research can change. No sponsorship, endorsements or auto-playing embeds. For exact numerical claims about ingredients, rely on Australian Food Composition Database values and current purchased package labels rather than podcast anecdotes.</p>
+    </section>
   </main>
 
   <div id="cookOverlay" class="cook-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="cookHeading">
@@ -166,8 +186,8 @@
     </div>
   </div>
 
-  <footer class="site-footer"><div class="footer-inner"><div><strong>good food<span>.</span></strong><p>Made for the long game. Rooted in evidence, grounded in real life.</p></div><div><a href="#science">Sources & safety</a><a href="longevity.html">Longevity guide ↗</a><a href="https://github.com/joshualparris/HealthiestFood" target="_blank" rel="noopener noreferrer">GitHub ↗</a><small>V6 · Updated 16 Oct 2026 · All prices indicative</small></div></div></footer>
-  <nav class="mobile-nav" aria-label="Mobile navigation"><button data-goto="home"><span>⌂</span>Home</button><button data-goto="recipes"><span>♨</span>Cook</button><button data-goto="plan"><span>▦</span>Plan</button><button data-goto="shop"><span>☑</span>Shop</button><button data-goto="science"><span>✧</span>Learn</button></nav>
+  <footer class="site-footer"><div class="footer-inner"><div><strong>good food<span>.</span></strong><p>Made for the long game. Rooted in evidence, grounded in real life.</p></div><div><a href="#science">Sources & safety</a><a href="#media">Podcasts & videos</a><a href="longevity.html">Longevity guide ↗</a><a href="https://github.com/joshualparris/HealthiestFood" target="_blank" rel="noopener noreferrer">GitHub ↗</a><small>V6 · Updated 16 Oct 2026 · All prices indicative</small></div></div></footer>
+  <nav class="mobile-nav" aria-label="Mobile navigation"><button data-goto="home"><span>⌂</span>Home</button><button data-goto="recipes"><span>♨</span>Cook</button><button data-goto="plan"><span>▦</span>Plan</button><button data-goto="shop"><span>☑</span>Shop</button><button data-goto="science"><span>✧</span>Learn</button><button data-goto="media"><span>♫</span>Media</button></nav>
   <button id="floatingTimers" class="floating-timers hidden" type="button" aria-label="Open cooking countdown timers">◷ <span id="floatingTimerCount">0</span> timers</button>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
