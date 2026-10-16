@@ -1,5 +1,14 @@
 # HealthiestFood
 
+## Official AFCD3 model: all 17 recipes + seven dated days (17 Oct 2026)
+
+**[Read the 17-recipe and seven-day source-traced nutrient report](FULL_DAY_NUTRIENT_MODEL_2026-10-17.md)** · [Open the interactive website nutrition view](https://healthiest-food.vercel.app/#science) · [Open independent GitHub Pages backup](https://joshualparris.github.io/HealthiestFood/)
+
+A GitHub Actions job downloaded **FSANZ Australian Food Composition Database Release 3**, extracted **51 precisely identified generic-food profiles**, and combined them with explicitly matched Woolworths product labels where available. The interactive science view now models **energy, protein, fibre, calcium, iron, iodine** and additional available nutrients across **17 adult recipes** and **seven actual calendar days** from the browser's local planner. Source and assumptions are in [scripts/afcd3_extract.py](scripts/afcd3_extract.py), [whole-day-analysis.js](whole-day-analysis.js), and [scripts/generate_full_day_report.cjs](scripts/generate_full_day_report.cjs). **These are incomplete pre-cooking, raw/dry/drained ingredient subtotals, not verified complete meal nutrient totals**. Undefined nutrients are marked *Unknown*, including unquantified tofu calcium, and explicit cooking losses / particular product discrepancies remain. *Do not infer deficiency from the seven-day partial iodine or calcium sums.*
+
+**Backup:** GitHub Pages is enabled; [.github/workflows/github-pages-backup.yml](.github/workflows/github-pages-backup.yml) deploys the same static app separately from Vercel after repository changes. Both hosts should be checked after each relevant push.
+
+
 ## Master improvement backlog (17 October 2026)
 
 **[231 prioritised improvements — detailed, with acceptance criteria](docs/IMPROVEMENT_BACKLOG_2026-10-17.md)** · **[CSV for issue/agent tracking](docs/IMPROVEMENT_BACKLOG_2026-10-17.csv)**. Includes nutrition/AFCD, food safety, recipe precision, Dubbo Woolworths shopping, pantry carryover, cooking and timers, accessibility, privacy, backups, deployment validation and QA. **23 P0, 151 P1, 56 P2, 1 P3.** Labels distinguish observed repo limitations, unverified physical/device questions and new feature proposals. **Backlog documentation only:** not a claim that these changes have been implemented or personally kitchen-tested.
