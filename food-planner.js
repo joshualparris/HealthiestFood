@@ -105,11 +105,14 @@ function render(){
  '<div class="planner-bottom"><button type="button" class="btn btn-outline" data-planner="copy-tomorrow">Copy this day to tomorrow →</button><button type="button" data-planner="copy-day-shopping">Copy day ingredients</button><button type="button" data-planner="copy-week-shopping">Copy week ingredients</button><button type="button" data-planner="restore">Restore suggested day</button></div>'+
  '<p class="planner-message" role="status">'+escape(message||"Changes to dates, meals and times are saved in this browser on this device. No calendar account is connected.")+'</p>'+
  '<p class="planner-note">Start with these editable times: 7:30 breakfast, 10:00 snack, 12:30 lunch, 15:30 snack and 18:00 dinner. Eat according to your appetite, family and work routines; there is no proven single longevity-optimal meal clock. The Woolworths basket currently covers only the four V6 freezer lunches, not these added meals.</p>';
+ if(window.FoodShopping){const scope=[active,...week.filter(day=>day!==active)];window.FoodShopping.render(root,scope,slotsFor,D.recipes);}
+
 }
 function changeDate(v){if(!validDate(v))return;active=v;message="";render();}
 function init(){
  const root=document.getElementById("planGrid");if(!root)return;render();
  root.addEventListener("click",e=>{
+ if(window.FoodShopping?.handle(e,()=>render()))return;
  const day=e.target.closest("[data-plan-date]");if(day){changeDate(day.dataset.planDate);return;}
  const action=e.target.closest("[data-planner]");if(action){const a=action.dataset.planner;
   if(a==="previous")changeDate(shift(active,-1));if(a==="next")changeDate(shift(active,1));if(a==="today")changeDate(today());
@@ -122,6 +125,7 @@ function init(){
  const remove=e.target.closest("[data-slot-remove]");if(remove){change(active,s=>{const i=s.findIndex(x=>x.id===remove.dataset.slotRemove);if(i>=0)s.splice(i,1);});return;}
  });
  root.addEventListener("change",e=>{
+ if(window.FoodShopping?.handle(e,()=>render()))return;
  if(e.target.hasAttribute("data-plan-shop")){
   const week=monday(active),key=e.target.getAttribute("data-plan-shop");
   const required=shoppingRows(Array.from({length:7},(_,i)=>shift(week,i)));
