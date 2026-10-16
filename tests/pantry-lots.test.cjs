@@ -59,3 +59,16 @@ test('Lot manager is wired into website and cached for offline after online visi
  assert.match(read('site.css'),/\.pantry-lot-manager/);
  assert.doesNotThrow(()=>new vm.Script(read('pantry-lots.js')));
 });
+
+test('Dinner suggestions order by the fewest genuinely unmatched pantry purchase lines',()=>{
+ const vm=require('node:vm'),sandbox={window:{}};vm.runInNewContext(read('site-data.js'),sandbox);vm.runInNewContext(read('whole-day-data.js'),sandbox);
+ const recipes=sandbox.window.FOOD_DATA.recipes;
+ const before=P.dinnerNeeds([],recipes,S,'2026-10-17');
+ assert.ok(before.length>=4);
+ assert.ok(before.every(d=>typeof d.name==='string'&&Number.isInteger(d.missing)&&d.missing>=0&&Array.isArray(d.items)));
+ const a=P.add([],{...base,key:'rice',name:'Dry brown rice',amount:10000},at);
+ const after=P.dinnerNeeds(a,recipes,S,'2026-10-17');
+ const byId=Object.fromEntries(after.map(x=>[x.id,x.missing]));
+ for(const d of before)assert.ok(byId[d.id]<=d.missing,d.id+' cannot need more purchases when rice was added');
+ assert.ok(after.every((d,i)=>i===0||after[i-1].missing<=d.missing));
+});
