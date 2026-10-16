@@ -29,6 +29,7 @@
   <script src="offline-ready.js" defer></script>
   <script src="app.js" defer></script>
   <script src="food-shopping.js" defer></script>
+  <script src="custom-shopping.js" defer></script>
   <script src="food-planner.js" defer></script>
   <script src="whole-day-report.js" defer></script>
   <script src="site-audit.js" defer></script>
@@ -125,8 +126,10 @@
     </section>
 
     <section id="view-shop" class="view hidden section-shell view-body">
-      <div class="page-head"><span class="section-kicker">A SMARTER SUPERMARKET RUN</span><h1>Everything in <em>one basket.</em></h1><p>This priced basket still covers the four V6 lunch batches only. For breakfasts, dinners and snacks, <button type="button" data-goto="plan" class="inline-plan-link">open your dated plan</button> and use <strong>Copy week ingredients</strong> to get a separate quantity-scaled, unpriced list. Prices here remain estimates, not live Dubbo shelf prices.</p></div>
+      <div class="page-head"><span class="section-kicker">A SMARTER SUPERMARKET RUN</span><h1>Everything in <em>one basket.</em></h1><p>Select exactly the meals you want to make and how many portions. Your shopping list will combine overlapping ingredients and subtract what you already have. You can also shop from your <button type="button" data-goto="plan" class="inline-plan-link">dated meal plan</button>.</p></div>
       <p class="verify-shop-note"><a href="product-check.html">Check exact Woolworths Dubbo products, record local prices and stock ↗</a> · <a href="device-timer-check.html">Test timers on your phone ↗</a></p>
+      <section id="customShopping" class="custom-shopping" aria-label="Choose recipes and create a personal shopping list"></section>
+      <details id="legacyV6Shop" class="legacy-basket"><summary>Original V6 full 20-lunch basket — $256.43 historical estimate</summary><p>This archived basket buys ingredients for all four five-portion freezer lunch batches. You do <strong>not</strong> need this entire basket to make one or two recipes. Use the custom list above for smaller shops.</p>
       <div class="shop-summary">
         <div><span>Full first-shop estimate</span><strong id="shopTotal">$256.43</strong><small>Includes optional soy and full pantry packs</small></div>
         <div><span>Still on your list</span><strong id="shopRemaining">—</strong><small id="shopProgress">0 of 35 items ticked</small></div>
@@ -135,6 +138,7 @@
       <div class="shop-toolbar"><label class="search-control"><span aria-hidden="true">⌕</span><input id="shopSearch" type="search" placeholder="Find an ingredient…" aria-label="Search shopping list"></label><div class="segmented" aria-label="Shopping list filter"><button data-filter="remaining" class="is-active">To buy</button><button data-filter="all">All</button><button data-filter="checked">Ticked</button></div></div>
       <div id="shoppingList"></div>
       <div class="disclaimer">Prices use a mix of historical retailer listings, third-party comparisons and estimates, dated 16 October 2026. Availability at your selected Dubbo Woolworths is unverified. Check the current store app and read each product label, particularly for gluten and allergens.</div>
+      </details>
     </section>
 
     <section id="view-science" class="view hidden section-shell view-body">
