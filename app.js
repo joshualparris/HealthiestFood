@@ -262,5 +262,5 @@ document.addEventListener("change",e=>{
 $("#shopSearch").addEventListener("input",e=>{search=e.target.value.toLowerCase().trim();renderShop();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&cook){closeCook();return}if(e.key==="Tab"&&cook){const list=$("button:not(:disabled),input:not(:disabled),a[href],select:not(:disabled)",$("#cookOverlay")).filter(el=>el.getClientRects().length);if(list.length){const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){last.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===last){first.focus();e.preventDefault();}}}});
 window.addEventListener("hashchange",()=>renderView(location.hash.slice(1)));
-servings=recipe(selected).yield;window.FoodTrial?.init();renderCards();renderDetail();renderPlan();renderShop();renderSources();window.FoodNutrition?.render();renderView(location.hash.slice(1));
+servings=recipe(selected).yield;window.FoodDataBackup?.init();window.FoodTrial?.init();renderCards();renderDetail();renderPlan();renderShop();renderSources();window.FoodNutrition?.render();renderView(location.hash.slice(1));
 })();
