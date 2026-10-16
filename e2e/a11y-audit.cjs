@@ -46,6 +46,7 @@ async function main(){
   });
   report.targets.push({...x,errors,...found});
   console.log(x.id,'violations',found.violations.length,'serious/critical',found.violations.filter(v=>['serious','critical'].includes(v.impact)).length,'JS errors',errors.length);
+  for(const v of found.violations)console.log('A11Y_ISSUE',x.id,v.id,v.impact,JSON.stringify(v.affected.slice(0,3).map(n=>({target:n.target,summary:n.summary?.slice(0,180)}))));
   await p.close();
  }
  report.totals={states:report.targets.length,violations:report.targets.reduce((n,x)=>n+x.violations.length,0),seriousOrCritical:report.targets.reduce((n,x)=>n+x.violations.filter(v=>['serious','critical'].includes(v.impact)).length,0),runtimeErrors:report.targets.reduce((n,x)=>n+x.errors.length,0)};
