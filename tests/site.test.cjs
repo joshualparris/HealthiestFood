@@ -89,3 +89,16 @@ test('invalid old timer records are ignored safely',()=>{
  const restored=timers.clean({bad:{status:'running',durationSec:1},'a:1':{recipeId:'a',stepIndex:1,title:'Veg',status:'running',durationSec:100,remainingSec:100,deadline:9000}});
  assert.equal(Object.keys(restored).length,1);
 });
+
+test('recipe filter initialises on a collection of elements, not single-element querySelector',()=>{
+ const part=appJS.slice(appJS.indexOf('function renderCards'),appJS.indexOf('function formatNum'));
+ assert.match(part,/\$\$\("\[data-recipe-type\]"\)\.forEach/);
+ assert.doesNotMatch(part,/(^|[^$])\$\("\[data-recipe-type\]"\)\.forEach/);
+});
+test('guided cooking scales checklist and preserves checked prep state',()=>{
+ assert.match(appJS,/cook\.portions\/r\.yield/);
+ assert.match(appJS,/data-prep-index/);
+ assert.match(appJS,/state\.prepped\[cook\.id\]/);
+ assert.match(appJS,/cookStepHeading/);
+ assert.match(css,/\.cook-prep-list/);
+});
