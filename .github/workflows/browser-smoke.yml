@@ -39,6 +39,9 @@ jobs:
         env:
           BROWSER_ENGINE: ${{ matrix.engine }}
         run: node e2e/smoke.cjs
+      - name: Check scaled steps, labelled nutrition and dynamic groceries in Chromium
+        if: matrix.engine == 'chromium'
+        run: node tests/browser-e2e.cjs
 
   production:
     needs: cross-browser
