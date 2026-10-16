@@ -12,6 +12,8 @@ A GitHub Actions job downloaded **FSANZ Australian Food Composition Database Rel
 ## Master improvement backlog (17 October 2026)
 
 **[231 prioritised improvements — detailed, with acceptance criteria](docs/IMPROVEMENT_BACKLOG_2026-10-17.md)** · **[CSV for issue/agent tracking](docs/IMPROVEMENT_BACKLOG_2026-10-17.csv)**. Includes nutrition/AFCD, food safety, recipe precision, Dubbo Woolworths shopping, pantry carryover, cooking and timers, accessibility, privacy, backups, deployment validation and QA. **23 P0, 151 P1, 56 P2, 1 P3.** Labels distinguish observed repo limitations, unverified physical/device questions and new feature proposals. **Backlog documentation only:** not a claim that these changes have been implemented or personally kitchen-tested.
+**Implementation status (17 October 2026):** [Evidence-based progress report](docs/IMPLEMENTATION_PROGRESS_2026-10-17.md) · [231-row implementation tracker](docs/IMPLEMENTATION_TRACKER_2026-10-17.csv). First improvements include source-linked cooking safety checks, three core meals with optional snacks, private browser-data backup/import and network-first offline cooking. **These are partial milestones; 231/231 are not finished.**
+
 
 
 
