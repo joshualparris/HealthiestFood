@@ -7,7 +7,7 @@ const CACHE_NAME="healthiestfood-shell-20261016-v1";
 const ASSETS=[
  "./","./index.html","./longevity.html","./site.css","./site-data.js",
  "./whole-day-data.js","./timers.js","./recipe-scale.js","./food-safety.js",
- "./local-backup.js","./cook-trial.js","./app.js","./food-shopping.js",
+ "./local-backup.js","./offline-ready.js","./cook-trial.js","./app.js","./food-shopping.js",
  "./food-planner.js","./nutrition-coverage.js","./nutrient-ledger.js",
  "./afcd3-selected.js","./afcd3-foods.js","./whole-day-analysis.js",
  "./whole-day-report.js","./site-audit.js","./favicon.svg","./manifest.webmanifest"
