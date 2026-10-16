@@ -105,3 +105,14 @@
 .cook-prep button{min-height:40px}
 .timer-tile-actions button{min-width:40px;min-height:40px;width:40px;height:40px}
 @media(max-width:540px){.cook-prep-list{grid-template-columns:1fr}.cook-prep{padding:12px}.cook-prep-list label{padding:9px 3px}}
+
+/* Dated planner's unpriced, consolidated ingredient checklist. */
+.planner-week-shopping{margin:20px 0;background:#fffdf7;border:1px solid #d7e4d0;border-radius:18px;padding:16px 20px}
+.planner-week-shopping>summary{font-size:16px;font-weight:800;color:#254e3b;cursor:pointer;line-height:1.5}
+.planner-week-shopping>summary span{font-size:12px;color:#55745c;font-weight:600}
+.planner-week-shopping>p{font-size:12px;line-height:1.7;color:#607563;max-width:780px}
+.planner-shopping-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 20px;max-height:470px;overflow-y:auto}
+.planner-shopping-items label{display:flex;gap:11px;align-items:flex-start;min-height:40px;padding:8px 3px;font-size:12px;line-height:1.5;color:#315542}
+.planner-shopping-items input{width:21px;height:21px;flex:0 0 21px;accent-color:#386b47}
+.planner-shopping-items input:checked+span{text-decoration:line-through;color:#758876}
+@media(max-width:540px){.planner-week-shopping{padding:14px}.planner-shopping-items{grid-template-columns:1fr;max-height:420px}}
