@@ -9,6 +9,7 @@
   <meta property="og:description" content="Breakfasts, lunches, dinners and snacks with a calendar-aware meal planner.">
   <title>Good Food, Long Game | HealthiestFood</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400,20,1;9..144,600,20,1;9..144,700,20,1&display=swap" rel="stylesheet">
@@ -25,6 +26,7 @@
   <script src="cook-trial.js" defer></script>
   <script src="food-safety.js" defer></script>
   <script src="local-backup.js" defer></script>
+  <script src="offline-ready.js" defer></script>
   <script src="app.js" defer></script>
   <script src="food-shopping.js" defer></script>
   <script src="food-planner.js" defer></script>
@@ -50,6 +52,7 @@
     </div>
   </header>
 
+  <div id="offlineCookingNote" class="offline-notice" role="status" hidden></div>
   <main id="main">
     <section id="view-home" class="view">
       <div class="hero section-shell">
