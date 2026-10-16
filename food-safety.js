@@ -15,12 +15,24 @@
   entertaining:"https://www.foodauthority.nsw.gov.au/consumer/food-safety-home/entertaining-home",
   vulnerable:"https://www.foodauthority.nsw.gov.au/consumer/food-risk-you/low-immunity"
  };
+ function catalog(){
+  return typeof window!=="undefined"&&window.FoodIngredients?window.FoodIngredients:
+   typeof module==="object"&&module.exports?require("./ingredient-catalogue.js"):null;
+ }
+ function allergenSummary(recipe){
+  const ingredients=catalog();
+  if(!ingredients||!recipe?.ingredients)return null;
+  const result=ingredients.allergensFor(recipe);
+  return {contains:result.contains,check:result.labelCheck,
+   note:"Ingredient-family flags only. Check every actual product label, manufacturer allergen statement and cross-contact; never infer a meal is safe for an allergy from this summary."};
+ }
  function classify(recipe){
+  const canonical=recipe.ingredients?.map(x=>catalog()?.byIngredient(x)?.id).filter(Boolean)||[];
   const ing=(recipe.ingredients||[]).map(x=>String(x[2]).toLowerCase()).join(" ");
   const steps=(recipe.steps||[]).map(x=>String(x.detail)+" "+String(x.title)).join(" ").toLowerCase();
-  const poultry=/\bchicken\b|\bturkey\b/.test(ing);
-  const fish=/\bsalmon\b|\bsardines\b|\bfish\b/.test(ing);
-  const rice=/\brice\b|\bpasta\b/.test(ing);
+  const poultry=canonical.some(x=>x==="protein-chicken-thigh")||/\bchicken\b|\bturkey\b/.test(ing);
+  const fish=canonical.some(x=>x.startsWith("fish-"))||/\bsalmon\b|\bsardines\b|\bfish\b/.test(ing);
+  const rice=canonical.some(x=>x==="grain-brown-rice-dry")||/\brice\b|\bpasta\b/.test(ing);
   const heated=/(?:cook|roast|simmer|bake|boil|heated|reheat|stir.fry|steam)/.test(steps);
   const chilled=/\b(smoothie|yoghurt|hummus|berries)\b/.test(ing)||!heated;
   return {poultry,fish,rice,heated,chilled};
@@ -46,7 +58,12 @@
  const escapeHTML=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
  function render(recipe,checked=[],portions=recipe?.yield) {
   const entries=checklist(recipe,portions),ids=new Set(checked);
-  return '<section class="cook-safety-gate" aria-labelledby="cookSafetyHeading"><div class="cook-safety-tag">Before you mark the cook-up complete</div><h3 id="cookSafetyHeading">Food-safety check</h3><p class="cook-safety-description">These are self-check reminders, not measurements or a certificate that food is safe. Do not tick a step until it is true; if food is still cooling, leave this cook-up unfinished and return later.</p><div class="cook-safety-items">'+entries.map(x=>'<label class="cook-safety-item"><input type="checkbox" data-cook-safety="'+escapeHTML(x.id)+'" '+(ids.has(x.id)?'checked':'')+'><span>'+escapeHTML(x.label)+'</span></label>').join("")+'</div><div class="cook-safety-sources"><a href="'+LINKS.leftovers+'" target="_blank" rel="noopener noreferrer">NSW leftovers guidance ↗</a> · <a href="'+LINKS.entertaining+'" target="_blank" rel="noopener noreferrer">NSW large-batch guidance ↗</a> · <a href="'+LINKS.vulnerable+'" target="_blank" rel="noopener noreferrer">Extra caution for low immunity ↗</a></div><p id="cookSafetyRemaining" role="status">'+entries.filter(x=>!ids.has(x.id)).length+' reminders not yet acknowledged</p></section>';
+  const allergy=allergenSummary(recipe);
+  const allergyMarkup=allergy?'<div class="cook-allergen-note"><strong>Ingredient-family allergen flags:</strong> '+
+   escapeHTML(allergy.contains.length?allergy.contains.join(", "):"None established from ingredient categories")+
+   (allergy.check.length?' · Check possible '+escapeHTML(allergy.check.join(", ")):"")+
+   '. <strong>Check the physical product labels for allergens and cross-contact.</strong></div>':"";
+  return '<section class="cook-safety-gate" aria-labelledby="cookSafetyHeading"><div class="cook-safety-tag">Before you mark the cook-up complete</div><h3 id="cookSafetyHeading">Food-safety check</h3><p class="cook-safety-description">These are self-check reminders, not measurements or a certificate that food is safe. Do not tick a step until it is true; if food is still cooling, leave this cook-up unfinished and return later.</p>'+allergyMarkup+'<div class="cook-safety-items">'+entries.map(x=>'<label class="cook-safety-item"><input type="checkbox" data-cook-safety="'+escapeHTML(x.id)+'" '+(ids.has(x.id)?'checked':'')+'><span>'+escapeHTML(x.label)+'</span></label>').join("")+'</div><div class="cook-safety-sources"><a href="'+LINKS.leftovers+'" target="_blank" rel="noopener noreferrer">NSW leftovers guidance ↗</a> · <a href="'+LINKS.entertaining+'" target="_blank" rel="noopener noreferrer">NSW large-batch guidance ↗</a> · <a href="'+LINKS.vulnerable+'" target="_blank" rel="noopener noreferrer">Extra caution for low immunity ↗</a></div><p id="cookSafetyRemaining" role="status">'+entries.filter(x=>!ids.has(x.id)).length+' reminders not yet acknowledged</p></section>';
  }
- return {LINKS,classify,capacityWarning,checklist,render};
+ return {LINKS,classify,capacityWarning,allergenSummary,checklist,render};
 });
