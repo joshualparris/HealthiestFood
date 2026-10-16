@@ -28,6 +28,31 @@ const saveTimers=()=>{try{localStorage.setItem(TIMER_KEY,JSON.stringify(timers))
 saveTimers();
 let lastCookRecipe=null;
 let lastFocus=null, toastTimeout=null;
+let wakeLock=null,wakeRequested=false;
+async function releaseWakeLock(){
+ wakeRequested=false;
+ if(wakeLock){try{await wakeLock.release();}catch{} wakeLock=null;}
+ updateWakeButton();
+}
+function updateWakeButton(){
+ const b=$("#cookWakeLock");if(!b)return;
+ b.textContent=wakeLock&&!wakeLock.released?"Screen awake: On":"Keep screen awake";
+ b.setAttribute("aria-pressed",wakeLock&&!wakeLock.released?"true":"false");
+ const note=$("#cookWakeNote");
+ if(note)note.textContent=!navigator.wakeLock?"Screen wake lock unsupported here. Use your device screen-timeout setting.":wakeLock&&!wakeLock.released?"The browser is requesting an awake screen. It can be released by the phone, battery settings or changing tabs.":"Optional, only while this page is visible; not a background alarm.";
+}
+async function toggleWakeLock(){
+ if(wakeLock&&!wakeLock.released){await releaseWakeLock();return;}
+ if(!navigator.wakeLock){updateWakeButton();toast("Screen wake lock unavailable on this device");return;}
+ wakeRequested=true;
+ try{
+  const sentinel=await navigator.wakeLock.request("screen");
+  if(!wakeRequested||!cook){await sentinel.release();return;}
+  wakeLock=sentinel;
+  sentinel.addEventListener("release",()=>{if(wakeLock===sentinel)wakeLock=null;updateWakeButton();});
+  updateWakeButton();
+ }catch{wakeRequested=false;wakeLock=null;updateWakeButton();toast("Screen stay-awake request was declined");}
+}
 function toast(message){const t=$("#toast"); t.textContent=message;t.classList.add("show");clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove("show"),3400);}
 function setRoute(route){const target=["home","recipes","plan","shop","science"].includes(route)?route:"home"; if(location.hash!== "#"+target){location.hash=target;return}renderView(target);}
 function renderView(route){const target=["home","recipes","plan","shop","science"].includes(route)?route:"home";
@@ -145,6 +170,7 @@ function closeCook(){
  $("#cookOverlay").classList.add("hidden");
  document.body.classList.remove("modal-open");
  // No timer cancellation: countdowns remain available from the floating badge.
+ void releaseWakeLock();
  updateTimerDisplays();
  if(lastFocus?.focus)lastFocus.focus();
 }
@@ -153,16 +179,17 @@ function renderCook(){
  const r=recipe(cook.id),step=r.steps[cook.index],last=cook.index===r.steps.length-1;
  const h='<header class="cook-header"><div><span>YOUR KITCHEN COMPANION · RECIPE '+r.id.toUpperCase()+'</span><h2 id="cookHeading">'+escapeHTML(r.name)+'</h2></div><button class="cook-close" id="closeCook" aria-label="Close cooking guide">×</button></header>';
  const p='<div class="cook-track" aria-label="Cooking progress"><div style="width:'+Math.round((cook.index+1)/r.steps.length*100)+'%"></div></div>';
- const board='<section class="timer-dashboard hidden" id="timerDashboard" aria-label="Running, paused and finished cooking timers"></section>';
+ const board='<section class="timer-dashboard hidden" id="timerDashboard" aria-label="Running, paused and finished cooking timers"></section>'+
+ '<div class="cook-wake-control"><button type="button" id="cookWakeLock" aria-pressed="false">Keep screen awake</button><small id="cookWakeNote">Optional. This is not a background alarm.</small><a href="device-timer-check.html" target="_blank" rel="noopener noreferrer">Test this phone ↗</a></div>';
  if(cook.index>=r.steps.length){
   $("#cookContent").innerHTML=h+p+board+'<div class="cook-complete"><div class="big-check">✓</div><h3>Something good is cooking.</h3><p>Chill safely, label your containers and enjoy the week ahead.</p><button id="finishCook" class="btn btn-primary">Finish and close ↗</button></div>';
-  renderTimerBoard();return;
+  renderTimerBoard();updateWakeButton();return;
  }
  const ready=Array.isArray(state.prepped[r.id])?state.prepped[r.id].filter(n=>Number.isInteger(n)&&n>=0&&n<r.ingredients.length):[];
  const readySet=new Set(ready);
  const prep='<details class="cook-prep"><summary>Ingredient checklist · '+cook.portions+' '+(cook.portions===1?'portion':'portions')+' <span id="prepProgress">'+readySet.size+'/'+r.ingredients.length+' ready</span></summary><p>Check ingredients as you measure them. Quantities below are scaled; the cooking-step wording retains the original '+r.yield+'-portion batch amounts. Use these scaled measurements instead and adjust equipment or cooking time where needed.</p><div class="cook-prep-list">'+r.ingredients.map(([amt,unit,name],i)=>'<label><input type="checkbox" data-prep-index="'+i+'"'+(readySet.has(i)?' checked':'')+'><span><strong>'+formatNum(amt*cook.portions/r.yield)+' '+escapeHTML(unit)+'</strong> '+escapeHTML(name)+'</span></label>').join('')+'</div><button type="button" id="resetPrep" class="timer-button">Clear ingredient checks</button></details>';
  $("#cookContent").innerHTML=h+p+board+'<div class="cook-body">'+prep+'<div class="cook-stepcount">STEP '+(cook.index+1)+' OF '+r.steps.length+'</div><h3 tabindex="-1" id="cookStepHeading">'+escapeHTML(step.title)+'</h3><p>'+escapeHTML(window.RecipeScale.scaleDetail(step.detail,cook.portions/r.yield))+'</p><div class="cook-scale-note">'+escapeHTML(window.RecipeScale.caution(r,cook.portions))+'</div><div class="cook-tip"><strong>✳</strong><span>'+escapeHTML(step.tip)+'</span></div>'+(step.minutes?'<div class="cook-timer"><div class="timer-display" id="timerClock" aria-live="off">'+T.format(step.minutes*60)+'</div><button class="timer-button" id="timerToggle">Start timer</button><button class="timer-button" id="timerReset">Reset</button><span class="timer-safety">Timers continue independently when you press Next. Check doneness and packet instructions.</span></div>':'<p class="evidence-chip" style="margin-top:20px">No countdown for this safety/finishing step.</p>')+'</div><footer class="cook-footer"><button class="btn btn-outline" id="prevStep" '+(cook.index===0?'disabled':'')+'>← Previous</button><button class="btn btn-primary" id="nextStep">'+(last?'Finish this batch ✓':'Next step →')+'</button></footer>';
- renderTimerBoard();
+ renderTimerBoard();updateWakeButton();
 }
 function stepChange(by){
  if(!cook)return;
@@ -174,7 +201,10 @@ function stepChange(by){
  $("#cookStepHeading")?.focus();
 }
 setInterval(timerTick,700);
-document.addEventListener("visibilitychange",timerTick);
+document.addEventListener("visibilitychange",()=>{
+ timerTick();
+ if(!document.hidden&&wakeRequested&&cook&&!wakeLock){void toggleWakeLock();}
+});
 window.addEventListener("pageshow",timerTick);
 function copyShop(){
  const toBuy=D.shopping.filter((_,i)=>!state.checked.includes(i));
@@ -194,6 +224,7 @@ document.addEventListener("click",e=>{
  if(e.target.closest("#nextStep")){stepChange(1);return}
  if(e.target.closest("#prevStep")){stepChange(-1);return}
  if(e.target.closest("#resetPrep") && cook){delete state.prepped[cook.id];save();renderCook();return}
+ if(e.target.closest("#cookWakeLock")){void toggleWakeLock();return}
  if(e.target.closest("#timerToggle")){const id=currentTimerId(),t=timers[id];if(id)handleTimerAction(t?.status==="running"?"pause":"start",id);return}
  if(e.target.closest("#timerReset")){const id=currentTimerId();if(id)handleTimerAction("reset",id);return}
  const timerButton=e.target.closest("[data-timer-action]");if(timerButton){handleTimerAction(timerButton.dataset.timerAction,timerButton.dataset.timerId);return}
