@@ -8,6 +8,7 @@ on:
       - 'site.css'
       - 'site-data.js'
       - 'app.js'
+      - 'timers.js'
       - 'site-audit.js'
       - 'tests/**'
       - '.github/workflows/site-tests.yml'
@@ -17,6 +18,7 @@ on:
       - 'site.css'
       - 'site-data.js'
       - 'app.js'
+      - 'timers.js'
       - 'tests/**'
 
 permissions:
