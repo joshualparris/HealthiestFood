@@ -1,4 +1,4 @@
-
+# HealthiestFood
 
 ## Latest — V6 (16 October 2026): Woolworths-only, four-batch freezer lunches
 
@@ -10,8 +10,6 @@
 - **[V6 shopping/recipe arithmetic validation script](v6/verify.py)** — check recipe totals and forecast basket.
 
 **V6 improvements** focus on Woolworths-only practical shopping, repeatability, actual protein sources, calcium set vs quantified calcium, label accuracy and safe four-batch preparation—not more “superfood” additions. Earlier versions are preserved as historical research. No V6 meal is confirmed cooked; ingredients/price calculations are planning estimates until checked in kitchen and the Woolworths Dubbo app.
-
-# HealthiestFood
 
 A source-linked, dairy-free collection of home-cooked and historically planned freezer meals, compiled from recipe documents and cook-up records through **16 October 2026**.
 
