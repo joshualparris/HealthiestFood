@@ -44,8 +44,8 @@ For a tin: `edible_weight_grams = number_of_tins × declared_edible_mass`. For d
 |---|---:|---:|---:|---:|---|
 | A Sardine bowl | 1921.1 | 34.0 | 12.2 | 369.1 | 6 / 19 |
 | B Salmon bowl | 1943.4 | 36.1 | 11.6 | 120.3 | 5 / 15 |
-| C Pumpkin tofu curry | 1696.2 | 35.4 | 8.3 | 62.8 | 5 / 20 |
-| D Black-bean tofu bowl | 1997.1 | 39.3 | 13.3 | 29.2 | 4 / 18 |
+| C Pumpkin tofu curry | 1696.2 | 35.4 | 8.3 | 62.8 | 5 / 21 |
+| D Black-bean tofu bowl | 1997.1 | 39.3 | 13.3 | 29.2 | 4 / 19 |
 
 **Never interpret these as full calories or recommended portions.** Oil, walnuts, fruit, raw vegetables, some legumes/lentils and other important foods are *missing from the above sums*. Cooking and draining losses were not assessed. Missing sodium may substantially change the calculated sum. A batch that's too low in energy for someone's needs should be adjusted based on their full dietary context, not this partial table.
 
@@ -61,3 +61,9 @@ For a tin: `edible_weight_grams = number_of_tins × declared_edible_mass`. For d
 The nutrient pattern evidence prioritises food diversity, adequate energy/protein and cardiovascular quality. Neither higher calories nor higher protein/fibre automatically makes a meal healthier. In an actual home freezer, safe cooling and storage are at least as important as the theoretical calculated micronutrient composition.
 
 Sources: [FSANZ AFCD Release 3](https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/about-afcd); [NSW Food Authority leftovers](https://www.foodauthority.nsw.gov.au/consumer/food-extra-care/leftovers). See source URLs in the product table above.
+
+## Update: official AFCD Release 3 data retrieved and modelled
+
+On 17 October 2026, GitHub Actions fetched the actual FSANZ nutrient-profiles workbook. The repository now includes [an officially sourced, reproducible AFCD3 subset](afcd3-selected.js) and [a broader generic-food subset](afcd3-foods.js), with source parsing scripts under `scripts/`. See [full day nutrient model](FULL_DAY_NUTRIENT_MODEL_2026-10-17.md) and [exact, unresolved ingredient-level maths](nutrient-ledger.js). Some **estimated raw/dry ingredient vitamin and mineral subtotals** are now supported. None of these estimates measures vitamin retention after cooking or establishes sufficient intake for any person. Branded products without quantifiable nutrients, variable frozen vegetable proportions and real drained/cooked yield remain unverified. Original table above deliberately documents the narrower *retailer-label-only* results; it has not been retroactively described as a full meal analysis.
+
+The official workbook includes nutrient data for foods that may differ by raw preparation, variety or packaging from those actually used. A named match must remain documented, not silently treated as exact.
