@@ -1,0 +1,30 @@
+name: Publish seven-day official AFCD nutrient model
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/generate_full_day_report.cjs'
+      - '.github/workflows/full-day-nutrition.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build seven-day source-traced nutrient calculations
+        run: node scripts/generate_full_day_report.cjs
+      - name: Publish the audit document to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add FULL_DAY_NUTRIENT_MODEL_2026-10-17.md
+          if git diff --cached --quiet; then echo "Report unchanged"; exit 0; fi
+          git commit -m "Publish source-traced 17-recipe AFCD3 model and seven-day menu"
+          git pull --rebase origin main
+          git push origin HEAD:main
