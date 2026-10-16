@@ -172,10 +172,10 @@ async function main(){
       assert.equal(await page.locator('#recipeCards .recipe-card').count(),4);
       await page.locator('[data-recipe-type="all"]').click();
     });
-    await check('uploaded meal photography loads on all ten matching cards',async()=>{
-      const ids=['br-oats','br-eggs','br-smoothie','br-toast','di-lentil','di-chicken','di-chilli','di-stirfry','di-salmon','sn-hummus'];
+    await check('all seventeen uploaded recipe photographs load and decode in the browser',async()=>{
+      const ids=['br-oats','br-eggs','br-smoothie','br-toast','di-lentil','di-chicken','di-chilli','di-stirfry','di-salmon','sn-hummus','a','b','c','d','sn-apple','sn-eggs','sn-berries'];
       assert.equal(await page.locator('#recipeCards img.recipe-card-image').count(),ids.length);
-      assert.equal(await page.locator('#recipeCards .mini-plate').count(),7,'Seven meals without supplied photos retain their illustration');
+      assert.equal(await page.locator('#recipeCards .mini-plate').count(),0,'All built-in meals now have their own photographs');
       for(const id of ids){
         const img=page.locator('#recipeCards .recipe-card:has([data-select="'+id+'"]) img.recipe-card-image');
         assert.equal(await img.count(),1,id);
@@ -185,6 +185,9 @@ async function main(){
         assert.equal(response.status(),200,'Photo should load from host: '+id);
         assert.ok((await response.body()).length>10000,id+' should not be an empty placeholder');
       }
+      await page.locator('#recipeCards [data-select="a"]').click();
+      const detail=page.locator('#recipeDetail img.recipe-detail-photo');
+      assert.equal(await detail.getAttribute('src'),'a.webp','Expanded sardine recipe must use its uploaded photograph');
       const first=page.locator('#recipeCards .recipe-card:has([data-select="br-oats"]) img');
       await first.scrollIntoViewIfNeeded();
       await first.evaluate(el=>el.decode());
