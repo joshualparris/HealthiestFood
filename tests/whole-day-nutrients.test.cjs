@@ -38,7 +38,7 @@ test('Seven-day dated plan uses one adult portion of each scheduled meal rather 
  const report=A.week(days,P.getSlots,D.recipes);
  assert.equal(report.length,7);
  assert.equal(report[0].date,'2026-10-17');
- assert.equal(report[0].meals.length,5);
+ assert.equal(report[0].meals.length,3); // New default: breakfast, lunch, dinner; snacks opt-in.
  assert.ok(report[0].subtotal.protein>0);
  for(const d of report){assert.ok(d.subtotal.kj>0);assert.ok(d.incomplete.calcium||typeof d.subtotal.calcium==='number');}
 });
