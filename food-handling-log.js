@@ -23,13 +23,14 @@ function clean(input){
    if(events.length&&events[events.length-1].end===null)return null;
    events.push({start,end});
  }
- return {id,recipeId:id.split(":")[0],events,createdAt:num(input.createdAt)||Number(id.split(":")[1])};
+ const priorMinutes=num(input.priorMinutes)??0;if(priorMinutes<0||priorMinutes>10080)return null;
+ return {id,recipeId:id.split(":")[0],events,priorMinutes,createdAt:num(input.createdAt)||Number(id.split(":")[1])};
 }
 function minutes(batch,now=Date.now()){
  if(!batch)return null;
  const b=clean(batch),clock=num(now);
  if(!b||clock===null)return null;
- let ms=0;
+ let ms=b.priorMinutes*60000;
  for(const e of b.events){
    if(e.start>clock||((e.end??clock)>clock))return null;
    ms+=(e.end??clock)-e.start;
@@ -58,7 +59,11 @@ function stop(batch,now=Date.now()){
 }
 function create(recipeId,now=Date.now()){
  if(!/^[a-z][a-z0-9-]{0,40}$/.test(String(recipeId||""))||!Number.isFinite(now)||now<1000000000)return null;
- return {id:recipeId+":"+Math.floor(now),recipeId,createdAt:Math.floor(now),events:[]};
+ return {id:recipeId+":"+Math.floor(now),recipeId,createdAt:Math.floor(now),events:[],priorMinutes:0};
+}
+function addPriorMinutes(batch,amount){
+ const b=clean(batch),a=num(amount);if(!b||a===null||a<=0||a>10080||b.priorMinutes+a>10080)return null;
+ return {...b,priorMinutes:b.priorMinutes+a};
 }
 function parse(storage){
  let raw;try{raw=JSON.parse(storage.getItem(KEY)||"{}")}catch{return {}}
@@ -87,7 +92,8 @@ function render(batch,now=Date.now()){
  '<p id="handlingMessage" class="handling-advice" role="status">'+esc(info.message)+'</p>'+
  '<div class="handling-actions"><button type="button" data-handling-action="'+(info.running?"stop":"start")+'">'+(info.running?"Stopped being in 5–60°C / safely temperature-controlled":"Start interval: food now 5–60°C")+'</button>'+
  '<button type="button" data-handling-action="new">Start a different batch log</button></div>'+
+ '<div class="handling-backfill"><label for="handlingPrior">Previously unrecorded time at 5–60°C (minutes)</label><input type="number" inputmode="numeric" min="1" max="10080" step="1" id="handlingPrior" placeholder="e.g. 25"><button type="button" data-handling-action="prior">Add earlier exposure</button></div>'+
  '<small>Batch '+esc(b?.id||"not started")+'. Use only if you know the food temperature; unknown prior time must be added manually before relying on the result. A new batch must never reset exposure for the same food. <a target="_blank" rel="noopener noreferrer" href="'+SOURCE+'">NSW Food Authority 2-hour/4-hour guidance ↗</a></small></section>';
 }
-return {KEY,SOURCE,MAX_EVENTS,create,clean,minutes,inspect,decision,start,stop,parse,persist,forRecipe,render,formatted};
+return {KEY,SOURCE,MAX_EVENTS,create,clean,minutes,inspect,decision,start,stop,addPriorMinutes,parse,persist,forRecipe,render,formatted};
 });
