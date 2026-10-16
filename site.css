@@ -260,3 +260,8 @@
 .data-portability-actions input[type=file]{position:absolute;left:-10000px;width:1px;height:1px}
 .data-portability #dataBackupStatus{grid-column:1/-1;margin:0;color:#477053;font-size:12px}
 @media(max-width:780px){.data-portability{grid-template-columns:1fr;padding:18px}.data-portability-actions{justify-content:flex-start}}
+
+/* Offline caution is text-first and not a hidden network-dependent warning. */
+.offline-notice{position:relative;z-index:58;background:#fff0d7;color:#68450d;border-bottom:1px solid #e1b878;padding:11px 20px;font-size:12px;font-weight:700;line-height:1.6;text-align:center}
+.offline-notice[hidden]{display:none!important}
+@media(max-width:800px){.offline-notice{padding:8px 16px;font-size:11px}}
