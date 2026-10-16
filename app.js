@@ -82,8 +82,8 @@ function updateTimerDisplays(){
  const now=Date.now();
  const id=currentTimerId(),t=id?timers[id]:null;
  const out=$("#timerClock");
- if(out){ const step=cook&&recipe(cook.id).steps[cook.index];
-   out.textContent=T.format(t?T.remaining(t,now):step.minutes*60);
+ if(out && cook){ const step=recipe(cook.id).steps[cook.index];
+   if(step)out.textContent=T.format(t?T.remaining(t,now):step.minutes*60);
  }
  const toggle=$("#timerToggle");
  if(toggle){toggle.textContent=t?(t.status==="running"?"Pause timer":t.status==="done"?"Restart timer":"Resume timer"):"Start timer";}
