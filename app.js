@@ -45,7 +45,7 @@ function card(r){return '<article class="recipe-card">'+artwork(r)+'<div class="
 function renderCards(){
  $("#featuredCards").innerHTML=R.filter(r=>r.category==="lunch").map(card).join("");
  $("#recipeCards").innerHTML=R.filter(r=>recipeType==="all"||r.category===recipeType).map(card).join("");
- $$("[data-recipe-type]").forEachb=>{const on=b.dataset.recipeType===recipeType;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",on?"true":"false");});
+ $("[data-recipe-type]").forEach(b=>{const on=b.dataset.recipeType===recipeType;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",on?"true":"false");});
 }
 function formatNum(n){return Number(n.toFixed(2)).toLocaleString("en-AU",{maximumFractionDigits:2});}
 function renderDetail(){
