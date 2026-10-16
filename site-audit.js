@@ -1,17 +1,16 @@
 /* Transparent claim ledger. No external requests, accounts or analytics. */
 (() => {
   "use strict";
-  const metrics = [
-   ["Vegetables & colour",9,9,9,9],
-   ["Legumes & fibre",9,9,10,9],
-   ["Wholegrain quality",9,9,9,9],
-   ["Protein consistency",9,9,9,9],
-   ["Unsaturated fat quality",9,9,9,9],
-   ["Omega-3 coverage",10,9,7,7],
-   ["Micronutrient breadth",8,8,8,8],
-   ["Sodium & added-sugar restraint",8,9,9,9],
-   ["Energy & satiety suitability",8,8,8,8],
-   ["Cooking safety & repeatability",9,8,9,9]
+  // Qualitative source-based comparison, NOT a made-up 100-point longevity score.
+  const comparison = [
+   ["Protein ingredients",["Sardines + chickpeas","Salmon + chickpeas","Tofu + red lentils","Tofu + black beans"]],
+   ["Marine omega-3",["Sardines: EPA/DHA","Salmon: EPA/DHA","Not present in this bowl","Not present in this bowl"]],
+   ["Plant omega-3",["Walnuts (ALA)","Walnuts (ALA)","Walnuts + flax (ALA)","Walnuts + flax (ALA)"]],
+   ["Wholegrain/pseudograin",["Quinoa","Brown rice","Brown rice","Quinoa"]],
+   ["Vegetables + legumes",["Both included","Both included","Both included","Both included"]],
+   ["Calcium certainty",["Edible sardine bones may add calcium; actual total unknown","Actual total unknown","Tofu calcium not quantified","Tofu calcium not quantified"]],
+   ["Nutrient calculation",["Incomplete","Incomplete","Incomplete","Incomplete"]],
+   ["Cooking/storage",["Must chill promptly","Thaw raw fish safely; chill cooked rice","Chill promptly","Chill promptly"]]
   ];
   const claims = [
    {title:"Mediterranean-style eating can support heart health",status:"Guideline + trial evidence",kind:"support",detail:"The corrected PREDIMED study tested long-term Mediterranean eating patterns in adults at higher cardiovascular risk. It did not test any of these particular bowls, supermarkets or individual lifespan gains.",url:"https://www.nejm.org/doi/10.1056/NEJMoa1800389"},
@@ -28,14 +27,12 @@
    {title:"More vegetables, more seeds or more expensive ingredients always increase lifespan",status:"Not established",kind:"limit",detail:"Dietary-pattern quality, adequate intake, variety, tolerability and consistency matter. There is no reliable trial showing a premium brand, an ever-larger seed serving or maximum meal fibre is automatically better.",url:"https://www.nhmrc.gov.au/adg"}
   ];
   const scoreRoot = document.getElementById("auditScores");
-  if(scoreRoot) {
-    const sums = [0,1,2,3].map(i=>metrics.reduce((sum,row)=>sum+row[i+1],0));
+  if(scoreRoot){
+    const escape=v=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     scoreRoot.innerHTML =
-      '<div class="audit-rating-chips">'+['A · Sardines','B · Salmon','C · Lentils','D · Black beans'].map((label,i)=>
-       '<div class="audit-rating"><span>'+label+'</span><strong>'+sums[i]+'<small> / 100</small></strong></div>').join('')+'</div>'+
-      '<div class="audit-table-wrap"><table class="audit-table"><thead><tr><th>Nutrition dimension</th><th>A / 10</th><th>B / 10</th><th>C / 10</th><th>D / 10</th></tr></thead><tbody>'+
-      metrics.map(r=>'<tr><th>'+r[0]+'</th>'+r.slice(1).map(n=>'<td>'+n+'</td>').join('')+'</tr>').join('')+
-      '</tbody></table></div><p class="audit-note">Source: V6/EVIDENCE.md. These equal-weight points are <strong>opinion-based</strong>, not calibrated against health outcomes. The rotation matters more than which bowl scores two points higher.</p>';
+      '<div class="audit-table-wrap"><table class="audit-table"><caption class="audit-note">Evidence-led comparison of the four original V6 lunches; qualitative descriptions, not rankings</caption><thead><tr><th scope="col">Dimension</th><th scope="col">A · Sardines</th><th scope="col">B · Salmon</th><th scope="col">C · Lentils</th><th scope="col">D · Black beans</th></tr></thead><tbody>'+
+      comparison.map(row=>'<tr><th scope="row">'+escape(row[0])+'</th>'+row[1].map(value=>'<td>'+escape(value)+'</td>').join('')+'</tr>').join('')+
+      '</tbody></table></div><p class="audit-note">Source: recipe ingredients, package-label caveats and <a href="https://github.com/joshualparris/HealthiestFood/blob/main/WHOLE_SITE_EVIDENCE_REVIEW_2026-10-17.md">the whole-site evidence review</a>. There is <strong>no validated longevity score</strong> or proof that one bowl extends life more than another. Whole-day diet and actual nutrient amounts still need checking.</p>';
   }
   const claimsRoot = document.getElementById("auditClaims");
   if(claimsRoot) claimsRoot.innerHTML = claims.map(claim=>
