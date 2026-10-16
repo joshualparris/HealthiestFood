@@ -57,40 +57,74 @@
    return {rows,knownPrice:rows.reduce((s,x)=>s+(x.price??0),0),unknown:rows.filter(x=>x.price===null).length,priced:rows.filter(x=>x.price!==null).length};
  }
  const STORAGE="good-food-planned-have-v1";
- let have={};try{if(typeof localStorage!=="undefined")have=JSON.parse(localStorage.getItem(STORAGE)||"{}")||{}}catch{have={};}
+ let have={};try{if(typeof localStorage!=="undefined"){const raw=JSON.parse(localStorage.getItem(STORAGE)||"{}");if(raw&&typeof raw==="object"&&!Array.isArray(raw))have=raw;}}catch{have={};}
  let mode="week",snapshot=null;
+ function safeAmount(value){
+  const n=Number(value);
+  return Number.isFinite(n)&&n>0?Math.min(n,1000000):0;
+ }
+ function reconcile(data,inventory={}){
+  const rows=data.rows.map(x=>{
+   const raw=inventory[x.key];
+   const owned=raw===true?x.amount:safeAmount(raw);
+   const toBuy=Math.max(0,Number((x.amount-owned).toFixed(4)));
+   const packsToBuy=x.map?Math.ceil((toBuy-1e-8)/x.map.pack):null;
+   const priceToBuy=x.map?Math.max(0,packsToBuy)*x.map.price:null;
+   return {...x,owned,toBuy,packsToBuy,priceToBuy};
+  });
+  return {rows,knownPrice:rows.reduce((sum,x)=>sum+(x.priceToBuy||0),0),
+   unknown:rows.filter(x=>x.toBuy>0&&x.priceToBuy===null).length,
+   itemsLeft:rows.filter(x=>x.toBuy>0).length};
+ }
+ function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(have));return true}catch{return false;}}
  function render(root,days,getSlots,recipes){
    const region=root.querySelector("#dynamicShop") || document.createElement("section");
    region.id="dynamicShop";region.className="dynamic-shop";
    if(!region.parentNode)root.append(region);
    const included=mode==="day"?[days[0]]:days;
-   const slots=included.flatMap(d=>getSlots(d));
-   const data=merge(slots,recipes);
+   const slots=included.flatMap(d=>getSlots(d).filter(s=>!s.done));
+   const merged=merge(slots,recipes);
+   // Migrate old boolean "already have everything" ticks to a measured quantity
+   // at the current planned amount, so later increases in portions still trigger buying.
+   let migrated=false;
+   for(const row of merged.rows){if(have[row.key]===true){have[row.key]=row.amount;migrated=true;}
+    else if(have[row.key]===false){have[row.key]=0;migrated=true;}}
+   if(migrated)persist();
+   const data=reconcile(merged,have);
    snapshot=data;
-   const hasHave=x=>!!have[x.key];
-   const remaining=data.rows.filter(x=>!hasHave(x));
-   const estimate=remaining.reduce((s,x)=>s+(x.price??0),0);
-   const noPrice=remaining.filter(x=>x.price===null).length;
-   const fishMealCount=slots.filter(s=>['a','b','di-salmon'].includes(s.recipeId)).length;
-   region.innerHTML='<div class="dynamic-shop-head"><span class="section-kicker">YOUR ACTUAL PLANNED MEALS</span><h2>Shopping for this '+mode+'</h2><p>Aggregated from the scheduled portions. This is separate from the fixed 20-lunch bulk basket. Select <strong>Already have</strong> to exclude pantry items.</p><div class="dynamic-shop-actions"><button type="button" data-shop-range="day" aria-pressed="'+(mode==="day")+'">Selected day</button><button type="button" data-shop-range="week" aria-pressed="'+(mode==="week")+'">Seven-day week</button><button type="button" id="copyPlannedShopping">Copy to clipboard ↗</button></div></div>'+
-   '<div class="dynamic-shop-stats"><strong>'+remaining.length+' ingredients left</strong><span>About $'+estimate.toFixed(2)+' in <em>priced matching packs only</em> · '+noPrice+' unpriced items · <strong>NOT your complete checkout total</strong></span></div>'+
-   '<div class="dynamic-shop-items">'+data.rows.map(x=>'<label class="dynamic-shop-line"><input type="checkbox" data-planned-have="'+esc(x.key)+'" '+(hasHave(x)?'checked':'')+'><span><strong>'+esc(x.name)+'</strong><small>Need: '+qty(x.amount)+' '+esc(x.unit)+(x.map?' · Buy '+x.packs+' pack'+(x.packs===1?'':'s')+' (~$'+x.price.toFixed(2)+')':' · No validated retail pack/price')+'</small></span><span class="dynamic-shop-have">Already have</span></label>').join("")+'</div>'+
-   '<p class="planner-fish-note">'+fishMealCount+' scheduled fish-containing meal'+(fishMealCount===1?'':'s')+' in this '+mode+'. This counts meal slots, not edible fish grams or portions consumed by one person. Heart-health recommendations concern the whole week, including food outside this plan; more fish is not automatically better.</p>'+ 
-   '<p class="dynamic-shop-warning">Price estimates are dated planning values, not live Dubbo stock or checkout. Pack conversions for canned beans use approximately 252 g drained per 420 g tin. Check product labels, use-by dates and equivalent substitutions. Cooking water, spices and fresh produce may be unpriced.</p>';
+   region.innerHTML='<div class="dynamic-shop-head"><span class="section-kicker">YOUR ACTUAL PLANNED MEALS</span><h2>Shopping for this '+mode+'</h2><p>Totals reflect scheduled portions not yet marked done. Enter how much is already in your pantry to calculate the remaining requirement. This remains separate from the fixed V6 20-lunch basket.</p><div class="dynamic-shop-actions"><button type="button" data-shop-range="day" aria-pressed="'+(mode==="day")+'">Selected day</button><button type="button" data-shop-range="week" aria-pressed="'+(mode==="week")+'">Seven-day week</button><button type="button" id="copyPlannedShopping">Copy to clipboard ↗</button></div></div>'+
+   '<div class="dynamic-shop-stats"><strong>'+data.itemsLeft+' ingredients left</strong><span>About $'+data.knownPrice.toFixed(2)+' in <em>matched retail packs only</em> · '+data.unknown+' unpriced items · <strong>NOT the complete checkout total</strong></span></div>'+
+   '<div class="dynamic-shop-items">'+data.rows.map(x=>'<div class="dynamic-shop-line"><label class="dynamic-shop-row-check"><input type="checkbox" data-planned-have="'+esc(x.key)+'" '+(x.owned>=x.amount?'checked':'')+' aria-label="Enough at home: '+esc(x.name)+'"><span><strong>'+esc(x.name)+'</strong><small>Required: '+qty(x.amount)+' '+esc(x.unit)+' · Still needed: '+qty(x.toBuy)+' '+esc(x.unit)+(x.map?' · Buy '+x.packsToBuy+' pack'+(x.packsToBuy===1?'':'s')+' (~$'+x.priceToBuy.toFixed(2)+')':' · Retail pack/price unverified')+'</small></span></label><label class="dynamic-shop-pantry">In pantry <input type="number" min="0" max="1000000" step="any" inputmode="decimal" data-pantry-amount="'+esc(x.key)+'" value="'+x.owned+'" aria-label="Quantity already in pantry for '+esc(x.name)+' in '+esc(x.unit)+'"><span>'+esc(x.unit||"items")+'</span></label></div>').join("")+'</div>'+
+   '<p class="dynamic-shop-warning">Partial pantry quantities reduce what you need to buy. Quantities are manual estimates, not tracked automatically when a meal is cooked. Buy counts round up to full packs; this estimate excludes products without a reliable mapping. All prices are dated planning allowances, not live Dubbo checkout or stock. Check labels, pack sizes and edible yields.</p>';
  }
  function copyList(){
    if(!snapshot)return "";
-   return "PLANNED FOOD SHOP — "+mode.toUpperCase()+"\nIndicative matched-pack costs only; unpriced foods also required.\n\n"+
-   snapshot.rows.filter(x=>!have[x.key]).map(x=>qty(x.amount)+" "+x.unit+" "+x.name+(x.map?" — "+x.packs+" pack(s), approx $"+x.price.toFixed(2):" — CHECK PACKAGE / PRICE")).join("\n")+
-   "\n\nNot an actual Woolworths Dubbo checkout.";
+   return "PLANNED FOOD SHOP — "+mode.toUpperCase()+"\nIndicative matching-pack prices only; unknown foods also required.\n\n"+
+   snapshot.rows.filter(x=>x.toBuy>0).map(x=>qty(x.toBuy)+" "+x.unit+" "+x.name+(x.map?" — "+x.packsToBuy+" pack(s), approx $"+x.priceToBuy.toFixed(2):" — CHECK RETAIL PACK AND PRICE")).join("\n")+
+   "\n\nNot a complete or live Woolworths Dubbo checkout.";
  }
  function handle(e,refresh){
-   const change=e.target.closest?.("[data-planned-have]");
-   if(change){have[change.dataset.plannedHave]=change.checked;try{localStorage.setItem(STORAGE,JSON.stringify(have));}catch{}refresh();return true;}
-   const button=e.target.closest?.("[data-shop-range]");
+   const target=e.target;
+   if(e.type==="change"&&target?.matches?.("[data-planned-have]")){
+    const key=target.dataset.plannedHave,row=snapshot?.rows.find(x=>x.key===key);
+    if(!row)return false;
+    have[key]=target.checked?row.amount:0;persist();refresh();return true;
+   }
+   if(e.type==="change"&&target?.matches?.("[data-pantry-amount]")){
+    const key=target.dataset.pantryAmount;
+    if(!snapshot?.rows.some(x=>x.key===key))return false;
+    have[key]=safeAmount(target.value);persist();refresh();return true;
+   }
+   if(e.type!=="click")return false;
+   const button=target.closest?.("[data-shop-range]");
    if(button){mode=button.dataset.shopRange;refresh();return true;}
-   if(e.target.closest?.("#copyPlannedShopping")){const content=copyList();if(navigator.clipboard?.writeText)navigator.clipboard.writeText(content);else{const ta=document.createElement("textarea");ta.value=content;document.body.append(ta);ta.select();document.execCommand("copy");ta.remove();}return true;}
+   if(target.closest?.("#copyPlannedShopping")){
+    const content=copyList();
+    if(navigator.clipboard?.writeText)navigator.clipboard.writeText(content);
+    else{const ta=document.createElement("textarea");ta.value=content;document.body.append(ta);ta.select();document.execCommand("copy");ta.remove();}
+    return true;
+   }
    return false;
  }
- return {merge,lookup,render,handle,mappings};
+ return {merge,lookup,reconcile,render,handle,mappings};
 });
