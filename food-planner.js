@@ -43,6 +43,16 @@ let active=today(),data=load(),lastAutoToday=today(),message="",shopChecks=loadS
 function saveShopChecks(){try{localStorage.setItem(SHOP_KEY,JSON.stringify(shopChecks));return true}catch{return false}}
 function slotsFor(day){return (Object.hasOwn(data,day)?data[day]:makeDefaults(day)).map(s=>({...s}));}
 function change(day,fn){const slots=slotsFor(day);fn(slots);data[day]=slots;const ok=save(data);message=ok?"Saved on this device":"Unable to save on this device (storage unavailable)";render();}
+function weeklyPattern(days){
+ let fishOccasions=0,lunchPortions=0,mainMeals=0;
+ const fishIds=new Set(["a","b","di-salmon"]);
+ for(const date of days){for(const slot of slotsFor(date)){
+  if(slot.type==="lunch")lunchPortions+=slot.portions;
+  if(slot.type==="lunch"||slot.type==="dinner")mainMeals++;
+  if(fishIds.has(slot.recipeId))fishOccasions++;
+ }}
+ return {fishOccasions,lunchPortions,mainMeals};
+}
 function shoppingRows(days){
  const all=new Map();
  for(const day of days){for(const slot of slotsFor(day)){
@@ -77,6 +87,7 @@ function render(){
  const now=today(),isToday=active===now,clock=timeInSydney();
  const weekStart=monday(active),week=Array.from({length:7},(_,i)=>shift(weekStart,i));
  const slots=slotsFor(active).sort((a,b)=>a.time.localeCompare(b.time)||a.id.localeCompare(b.id));
+ const pattern=weeklyPattern(week);
  const required=shoppingRows(week),checked=new Set(Array.isArray(shopChecks[weekStart])?shopChecks[weekStart]:[]);
  const checkedCount=required.filter(r=>checked.has(r.key)).length;
  const next=slots.find(s=>!s.done&&(isToday?s.time>=clock:true));
@@ -87,6 +98,7 @@ function render(){
  '<div class="planner-nav"><button type="button" data-planner="previous" aria-label="Previous day">←</button><label for="plannerDate">Choose date</label><input id="plannerDate" aria-label="Choose meal plan date" type="date" value="'+active+'"><button type="button" data-planner="next" aria-label="Next day">→</button><button type="button" data-planner="today" class="planner-today">Today</button></div></div>'+
  '<div class="planner-week" role="group" aria-label="Week of '+escape(format(weekStart))+'">'+week.map(d=>{const items=slotsFor(d);return '<button class="planner-weekday'+(d===active?" is-selected":"")+(d===now?" is-today":"")+'" type="button" data-plan-date="'+d+'" aria-pressed="'+(d===active?'true':'false')+'"><span>'+escape(format(d,{weekday:"short"}))+'</span><strong>'+escape(format(d,{day:"numeric"}))+'</strong><small>'+items.filter(s=>s.done).length+'/'+items.length+'</small></button>';}).join("")+'</div>'+
  '<div class="planner-day-summary"><div><strong>'+slots.filter(s=>s.done).length+' of '+slots.length+'</strong><span>meals marked done</span></div><div><strong>'+(next?escape(next.time):"—")+'</strong><span>'+(next?"next planned meal":"no upcoming meals")+'</span></div><div><strong>'+escape(format(active,{day:"numeric",month:"short"}))+'</strong><span>selected calendar day</span></div></div>'+
+ '<section class="planner-pattern" aria-label="Week dietary pattern guidance"><h3>Nutrition across this week</h3><p><strong>'+pattern.fishOccasions+' scheduled fish meal occasions</strong> across seven days. For context, the Heart Foundation suggests fish about 2–3 times weekly: roughly 150 g fresh fish or 100 g tinned per serve. Occasions here are <em>not</em> calculated fish serves or proof of DHA/EPA adequacy; check actual portion sizes and other meals. <a href="https://www.heartfoundation.org.au/blog/not-eating-enough-fish" target="_blank" rel="noopener noreferrer">Fish serve sizes ↗</a></p><p><strong>'+pattern.lunchPortions+' adult lunch portions</strong> scheduled this week. The original freezer shopping list makes 20 V6 portions; it does not cover an unlimited seven-day recurring schedule. Adjust portions and shopping to your actual freezer stock.</p><p><strong>Snacks are optional:</strong> keep them if useful for hunger, energy or nutrient needs; otherwise remove them. These times are convenient defaults, not an ideal lifespan-optimising fasting window. <a href="longevity.html#timing">See research on meal timing ↗</a></p></section>'+ 
  '<div class="planner-slots">'+(slots.length?slots.map(s=>{const r=recipeById(s.recipeId);return '<article class="planner-slot'+(s.done?" is-done":"")+'" data-slot-id="'+escape(s.id)+'"><div class="planner-slot-head"><span class="planner-slot-icon" aria-hidden="true">'+LABELS[s.type]+'</span><strong>'+TYPES[s.type]+'</strong><span class="planner-slot-status">'+badgeText(s,isToday,clock)+'</span></div><div class="planner-slot-fields"><label>Time<input type="time" data-slot-time="'+escape(s.id)+'" value="'+escape(s.time)+'"></label><label>Portions<input type="number" min="1" max="20" step="1" data-slot-portions="'+escape(s.id)+'" value="'+escape(s.portions)+'"></label><label>Meal<select data-slot-recipe="'+escape(s.id)+'">'+options(s.type,s.recipeId)+'</select></label></div><div class="planner-slot-actions"><button type="button" data-select="'+escape(s.recipeId)+'" class="planner-open">View recipe ↗</button><label class="planner-check"><input type="checkbox" data-slot-done="'+escape(s.id)+'"'+(s.done?" checked":"")+'> Done</label><button type="button" data-slot-remove="'+escape(s.id)+'" aria-label="Remove '+escape(TYPES[s.type])+' at '+escape(s.time)+'">Remove</button></div></article>';}).join(""):'<p>No meals scheduled. Add one below.</p>')+'</div>'+
  '<form class="planner-add" id="plannerAddForm"><h3>+ Schedule another meal</h3><div class="planner-add-fields"><label>Type<select id="plannerMealType">'+Object.entries(TYPES).map(([id,label])=>'<option value="'+id+'">'+label+'</option>').join("")+'</select></label><label>Meal<select id="plannerRecipe">'+options("breakfast","")+'</select></label><label>Time<input id="plannerTime" type="time" required value="08:00"></label><label>Portions<input type="number" min="1" max="20" step="1" id="plannerPortions" value="1" required></label><button class="btn btn-primary" type="submit">Add to '+escape(format(active,{weekday:"short",day:"numeric",month:"short"}))+'</button></div></form>'+
  '<details class="planner-week-shopping"><summary>Weekly shopping checklist · <span id="planShoppingProgress">'+checkedCount+'/'+required.length+' ticked</span></summary><p>Combined ingredient amounts for this week’s meals not marked done. This is <strong>not a priced Woolworths basket</strong>; identical ingredient names are merged, but differing product descriptions still need checking. Tick what you already have or buy. Quantities update when your meal plan changes.</p><div class="planner-shopping-items">'+required.map(row=>'<label><input type="checkbox" data-plan-shop="'+escape(row.key)+'"'+(checked.has(row.key)?' checked':'')+'><span><strong>'+escape((Math.round(row.amount*100)/100).toLocaleString("en-AU",{maximumFractionDigits:2})+' '+row.unit)+'</strong> '+escape(row.name)+'</span></label>').join("")+'</div></details>'+
@@ -138,7 +150,7 @@ function init(){
  // If user stays on this screen past Sydney midnight, move with the date only if they were following yesterday's today.
  window.setInterval(()=>{const n=today();if(n!==lastAutoToday){if(active===lastAutoToday)active=n;lastAutoToday=n;render();}else if(active===n&&root.closest(".view:not(.hidden)")){const clock=root.querySelector(".planner-description");if(clock&&clock.textContent.includes("Today")){const fresh="Today · local time "+timeInSydney();if(!clock.textContent.includes(fresh))render();}}},60000);
 }
-window.FoodPlannerCore={today,timeInSydney,validDate,validTime,shift,weekday,monday,makeDefaults,shoppingText};
+window.FoodPlannerCore={today,timeInSydney,validDate,validTime,shift,weekday,monday,makeDefaults,weeklyPattern,shoppingText};
 window.FoodPlanner={render,init,selectDate:changeDate};
 if(typeof document!=="undefined")init();
 })();
