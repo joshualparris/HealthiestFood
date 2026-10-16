@@ -546,3 +546,15 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
 .pantry-lot-caveat{border-top:1px solid var(--line);padding:12px 0 0;margin:18px 0 0}
 @media(max-width:900px){.pantry-lot-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.pantry-lot-manager{padding:15px;border-radius:17px;margin:24px 0}.pantry-lot-form{grid-template-columns:1fr;gap:10px;padding:12px}.pantry-lot-form label:first-child{grid-column:span 1}.pantry-lot-controls{display:grid;grid-template-columns:1fr 1fr}.pantry-lot-controls label{width:100%;grid-column:1/-1}.pantry-lot-controls button{width:100%}}
+
+
+.pantry-dinner-ideas{border:1px solid #d7e3d1;background:#f3f6ed;border-radius:15px;padding:15px;margin:20px 0}
+.pantry-dinner-ideas h3{font:600 23px var(--serif);margin:0 0 5px;color:var(--pine)}.pantry-dinner-ideas>p,.pantry-next-dates{font-size:12px;line-height:1.7;color:#536d5b}
+.pantry-dinner-ideas>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pantry-dinner-ideas article{display:flex;flex-direction:column;gap:5px;padding:12px;background:white;border:1px solid var(--line);border-radius:12px;min-width:0}
+.pantry-dinner-ideas article strong{font-size:14px;color:var(--pine)}
+.pantry-dinner-ideas article span{font-size:12px;color:#5f765f;font-weight:700}
+.pantry-dinner-ideas article small{font-size:11px;color:#5c715f;line-height:1.4}
+.pantry-dinner-ideas button{align-self:start;margin-top:6px;color:var(--pine);background:#e9f1e2;border:1px solid #c5d6bd;padding:9px 12px;border-radius:10px;min-height:43px;font-size:12px;font-weight:800}
+.pantry-next-dates{background:#f8f1e1;padding:11px 13px;border-radius:10px}
+@media(max-width:650px){.pantry-dinner-ideas>div{grid-template-columns:1fr}.pantry-dinner-ideas{padding:13px}}
