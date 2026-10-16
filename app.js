@@ -159,7 +159,7 @@ function openCook(id,stepIndex=0){
  const requested=id===selected?servings:state.cookPortions[id];
  const portions=Number.isInteger(requested)&&requested>=1&&requested<=20?requested:r.yield;
  state.cookPortions[id]=portions;save();
- cook={id,index:Math.min(Math.max(0,stepIndex),r.steps.length-1),portions};
+ cook={id,index:Math.min(Math.max(0,stepIndex),r.steps.length-1),portions,safetyChecked:[]};
  $("#cookOverlay").classList.remove("hidden");
  document.body.classList.add("modal-open");
  renderCook();
@@ -182,7 +182,7 @@ function renderCook(){
  const board='<section class="timer-dashboard hidden" id="timerDashboard" aria-label="Running, paused and finished cooking timers"></section>'+
  '<div class="cook-wake-control"><button type="button" id="cookWakeLock" aria-pressed="false">Keep screen awake</button><small id="cookWakeNote">Optional. This is not a background alarm.</small><a href="device-timer-check.html" target="_blank" rel="noopener noreferrer">Test this phone ↗</a></div>';
  if(cook.index>=r.steps.length){
-  $("#cookContent").innerHTML=h+p+board+'<div class="cook-complete"><div class="big-check">✓</div><h3>Something good is cooking.</h3><p>Chill safely, label your containers and enjoy the week ahead.</p><button id="finishCook" class="btn btn-primary">Finish and close ↗</button></div>';
+  $("#cookContent").innerHTML=h+p+board+'<div class="cook-complete"><h3>Nearly finished</h3><p>Complete these real-world food safety reminders before marking this batch done. You can close and return without claiming the food is finished.</p>'+window.FoodSafety.render(r,cook.safetyChecked)+'<button id="finishCook" class="btn btn-primary" disabled>Confirm checks and finish ↗</button></div>';
   renderTimerBoard();updateWakeButton();return;
  }
  const ready=Array.isArray(state.prepped[r.id])?state.prepped[r.id].filter(n=>Number.isInteger(n)&&n>=0&&n<r.ingredients.length):[];
@@ -229,13 +229,24 @@ document.addEventListener("click",e=>{
  if(e.target.closest("#timerReset")){const id=currentTimerId();if(id)handleTimerAction("reset",id);return}
  const timerButton=e.target.closest("[data-timer-action]");if(timerButton){handleTimerAction(timerButton.dataset.timerAction,timerButton.dataset.timerId);return}
  if(e.target.closest("#floatingTimers")){const first=Object.values(timers).sort((a,b)=>(a.status==="running"?0:a.status==="done"?1:2)-(b.status==="running"?0:b.status==="done"?1:2))[0];if(first)openCook(first.recipeId,first.stepIndex);return}
- if(e.target.closest("#finishCook")){if(cook&&!state.finished.includes(cook.id))state.finished.push(cook.id);save();closeCook();toast("Beautiful work. Your recipe is marked complete.");return}
+ if(e.target.closest("#finishCook")){if(!cook)return;const required=window.FoodSafety.checklist(recipe(cook.id));if(!required.every(x=>cook.safetyChecked.includes(x.id))){toast("Finish the food-safety checklist before marking the batch complete.");return;}if(!state.finished.includes(cook.id))state.finished.push(cook.id);save();closeCook();toast("Cook-up checklist acknowledged. Food safety depends on actual handling and temperatures.");return}
  if(e.target.closest("#copyShop")){copyShop();return}
  if(e.target.closest("#printShop")){window.print();return}
  if(e.target.closest("#resetProgress")){resetAll();return}
  const filter=e.target.closest("[data-filter]");if(filter){shopFilter=filter.dataset.filter;renderShop();}
 });
 document.addEventListener("change",e=>{
+ if(e.target.matches("[data-cook-safety]")&&cook){
+   const possible=window.FoodSafety.checklist(recipe(cook.id));const ids=new Set(possible.map(x=>x.id));
+   const selected=e.target.dataset.cookSafety;if(!ids.has(selected))return;
+   const next=new Set(cook.safetyChecked);
+   if(e.target.checked)next.add(selected);else next.delete(selected);
+   cook.safetyChecked=[...next];
+   const remaining=possible.filter(x=>!next.has(x.id)).length;
+   const status=$("#cookSafetyRemaining");if(status)status.textContent=remaining?remaining+" reminders not yet acknowledged":"All reminders acknowledged; use your own judgement about actual food safety.";
+   const done=$("#finishCook");if(done)done.disabled=remaining!==0;
+   return;
+ }
  if(e.target.matches("[data-prep-index]") && cook){
   const n=Number(e.target.dataset.prepIndex),r=recipe(cook.id);
   if(!Number.isInteger(n)||n<0||n>=r.ingredients.length)return;
