@@ -81,6 +81,38 @@ async function main(){
       await page.locator('[data-media-kind="all"]').click();
       assert.equal(await page.locator('#mediaResults .media-resource').count(),23);
     });
+    await check('embedded Cooking Lab and Longevity Guide display only one navigation bar and one scrollbar',async()=>{
+      const p=await browser.newPage({viewport:{width:390,height:844}});
+      const errors=[];p.on("pageerror",e=>errors.push(e.message));
+      await p.goto(base+"/#lab",{waitUntil:"domcontentloaded"});
+      await p.locator("#view-lab").waitFor({state:"visible"});
+      const lab=p.frameLocator("#foodLabFrame");
+      await lab.locator("html.embedded-site").waitFor();
+      await lab.locator("#cmChoices [data-cm-food]").first().waitFor();
+      assert.equal(await lab.locator(".site-header").isHidden(),true,"Inner Cooking Lab header must not repeat");
+      assert.equal(await lab.locator(".mobile-nav").isHidden(),true,"Inner Cooking Lab bottom nav must not repeat");
+      assert.equal(await p.locator(".mobile-nav").isVisible(),true,"Main app navigation must remain");
+      assert.equal(await p.locator("#view-lab .inapp-page-head").isHidden(),true,"Do not duplicate article heading outside frame");
+      await p.waitForFunction(()=>{
+        const f=document.querySelector("#foodLabFrame"),main=f?.contentDocument?.querySelector("main");
+        if(!main)return false;
+        const pageHeight=Math.ceil(main.getBoundingClientRect().bottom+f.contentWindow.scrollY+32);
+        return Math.abs(f.getBoundingClientRect().height-pageHeight)<50;
+      },null,{timeout:12000});
+      const iframeCss=await p.locator("#foodLabFrame").evaluate(f=>({border:getComputedStyle(f).borderTopWidth,radius:getComputedStyle(f).borderTopLeftRadius,width:f.getBoundingClientRect().width,viewport:innerWidth,scrolling:f.getAttribute("scrolling")}));
+      assert.equal(iframeCss.border,"0px");
+      assert.equal(iframeCss.radius,"0px");
+      assert.equal(iframeCss.scrolling,"no");
+      assert.ok(iframeCss.width>=iframeCss.viewport-3,JSON.stringify(iframeCss));
+      await p.evaluate(()=>location.hash="guide");
+      await p.locator("#view-guide").waitFor({state:"visible"});
+      const guide=p.frameLocator("#foodGuideFrame");
+      await guide.locator("html.embedded-site").waitFor();
+      assert.equal(await guide.locator(".site-header").isHidden(),true);
+      assert.equal(await p.locator(".mobile-nav").isVisible(),true);
+      assert.equal(errors.length,0,errors.join("; "));
+      await p.close();
+    });
     await check('ingredient-by-ingredient cooking lab filters and compares without claiming longevity scores',async()=>{
       const lab=await browser.newPage({viewport:{width:390,height:844}});
       const errors=[];lab.on('pageerror',e=>errors.push(e.message));
