@@ -13,7 +13,17 @@ if(!Array.isArray(state.checked))state.checked=[];if(!Array.isArray(state.days))
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}};
 const recipe=id=>R.find(r=>r.id===id)||R[0];
 let selected=recipe(state.selected).id,servings=5,search="",shopFilter="remaining";
-let cook=null,timerRemaining=0,timerRunning=false,timerInterval=null,timerDeadline=0;
+let cook=null;
+const T = window.FoodTimers;
+const TIMER_KEY="good-food-cook-timers-v1";
+let timers={};
+try { timers=T.clean(JSON.parse(localStorage.getItem(TIMER_KEY)||"{}")); }catch{timers={};}
+const firstTick=T.advance(timers,Date.now());
+timers=firstTick.timers;
+const pendingAlerts=new Set(firstTick.expired);
+const saveTimers=()=>{try{localStorage.setItem(TIMER_KEY,JSON.stringify(timers));}catch{}};
+saveTimers();
+let lastCookRecipe=null;
 let lastFocus=null, toastTimeout=null;
 function toast(message){const t=$("#toast"); t.textContent=message;t.classList.add("show");clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove("show"),3400);}
 function setRoute(route){const target=["home","recipes","plan","shop","science"].includes(route)?route:"home"; if(location.hash!== "#"+target){location.hash=target;return}renderView(target);}
@@ -54,24 +64,101 @@ function renderShop(){
 function renderSources(){
  $("#sourceList").innerHTML=D.sources.map(src=>'<article class="source-row"><div><span>'+escapeHTML(src.type)+'</span><h3>'+escapeHTML(src.title)+'</h3><p>'+escapeHTML(src.why)+'</p></div><a target="_blank" rel="noopener noreferrer" href="'+escapeHTML(src.url)+'">Read source ↗</a></article>').join("");
 }
-function timerClear(){clearInterval(timerInterval);timerInterval=null;timerRunning=false;}
-function timerShow(){const out=$("#timerClock");if(out)out.textContent=String(Math.floor(timerRemaining/60)).padStart(2,"0")+":"+String(timerRemaining%60).padStart(2,"0");const b=$("#timerToggle");if(b)b.textContent=timerRunning?"Pause timer":"Start timer";}
-function timerTick(){timerRemaining=Math.max(0,Math.ceil((timerDeadline-Date.now())/1000));timerShow();if(timerRemaining===0){timerClear();toast("Timer finished! Check the food is properly cooked.");timerShow();}}
-function timerStart(){if(timerRunning)return;timerRunning=true;timerDeadline=Date.now()+timerRemaining*1000;timerInterval=setInterval(timerTick,250);timerShow();}
-function timerPause(){if(!timerRunning)return;timerTick();timerClear();timerShow();}
-function timerReset(){timerClear();if(cook)timerRemaining=recipe(cook.id).steps[cook.index].minutes*60;timerShow();}
-function timerLoad(){timerClear();timerRemaining=recipe(cook.id).steps[cook.index]?.minutes*60||0;}
-function openCook(id){lastFocus=document.activeElement;cook={id,index:0};timerLoad();$("#cookOverlay").classList.remove("hidden");document.body.classList.add("modal-open");renderCook();}
-function closeCook(){timerClear();cook=null;$("#cookOverlay").classList.add("hidden");document.body.classList.remove("modal-open");if(lastFocus?.focus)lastFocus.focus();}
+// Independent step timers survive Next/Previous, modal close and page reload.
+function currentTimerId(){return cook ? T.idFor(cook.id,cook.index) : null;}
+function timerMetadata(id){
+ const [recipeId,si]=id.split(":"),stepIndex=Number(si),r=recipe(recipeId),s=r.steps[stepIndex];
+ return s ? {recipeId,stepIndex,title:s.title,durationSec:s.minutes*60}:null;
+}
+function updateTimerDisplays(){
+ const now=Date.now();
+ const id=currentTimerId(),t=id?timers[id]:null;
+ const out=$("#timerClock");
+ if(out){ const step=cook&&recipe(cook.id).steps[cook.index];
+   out.textContent=T.format(t?T.remaining(t,now):step.minutes*60);
+ }
+ const toggle=$("#timerToggle");
+ if(toggle){toggle.textContent=t?(t.status==="running"?"Pause timer":t.status==="done"?"Restart timer":"Resume timer"):"Start timer";}
+ const reset=$("#timerReset"); if(reset)reset.disabled=!t;
+ for(const el of $$("[data-live-timer]")){
+   const t=timers[el.dataset.liveTimer];
+   if(t)el.textContent=t.status==="done"?"00:00 · Done":T.format(T.remaining(t,now));
+ }
+ const floating=$("#floatingTimers");
+ if(floating){const total=Object.keys(timers).length;floating.classList.toggle("hidden",total===0||!!cook);
+  const count=$("#floatingTimerCount");if(count)count.textContent=String(total);
+ }
+}
+function renderTimerBoard(){
+ const panel=$("#timerDashboard");
+ if(!panel){updateTimerDisplays();return;}
+ const entries=Object.values(timers).sort((a,b)=>["running","done","paused"].indexOf(a.status)-["running","done","paused"].indexOf(b.status) || a.recipeId.localeCompare(b.recipeId) || a.stepIndex-b.stepIndex);
+ panel.classList.toggle("hidden",entries.length===0);
+ panel.innerHTML=entries.length?'<div class="timer-board-head"><strong>◷ Your cooking timers <span>'+entries.length+'</span></strong><small>Each keeps counting when you move to another step · Swipe to see all</small></div><div class="timer-cards">'+entries.map(t=>{
+   const name="Recipe "+t.recipeId.toUpperCase()+" · Step "+(t.stepIndex+1);
+   return '<div class="timer-tile '+t.status+'" role="group" aria-label="'+escapeHTML(name+" "+t.title)+'"><div class="timer-tile-name">'+escapeHTML(name)+'</div><strong>'+escapeHTML(t.title)+'</strong><div class="timer-tile-bottom"><span class="timer-tile-clock" data-live-timer="'+escapeHTML(t.id)+'">'+T.format(T.remaining(t,Date.now()))+'</span><div class="timer-tile-actions"><button type="button" data-timer-action="'+(t.status==="running"?"pause":"start")+'" data-timer-id="'+escapeHTML(t.id)+'" aria-label="'+(t.status==="running"?"Pause":t.status==="done"?"Restart":"Resume")+' '+escapeHTML(t.title)+'">'+(t.status==="running"?"Ⅱ":t.status==="done"?"↻":"▶")+'</button><button type="button" data-timer-action="reset" data-timer-id="'+escapeHTML(t.id)+'" title="Reset timer" aria-label="Reset '+escapeHTML(t.title)+'">↺</button><button type="button" data-timer-action="dismiss" data-timer-id="'+escapeHTML(t.id)+'" title="Remove timer" aria-label="Remove '+escapeHTML(t.title)+'">×</button></div></div></div>';
+ }).join("")+'</div><div class="timer-board-warning">These timers use real elapsed time. Phone lock-screen alarms are not guaranteed; use your phone Clock for unattended cooking.</div>':"";
+ updateTimerDisplays();
+}
+function handleTimerAction(action,id){
+ const meta=timerMetadata(id);
+ if(action==="dismiss"){timers=T.remove(timers,id);pendingAlerts.delete(id);}
+ else if(meta&&meta.durationSec>0){
+   if(action==="start") {timers=T.start(timers,id,meta,Date.now());pendingAlerts.delete(id);}
+   if(action==="pause")timers=T.pause(timers,id,Date.now());
+   if(action==="reset"){timers=T.reset(timers,id,Date.now());pendingAlerts.delete(id);}
+ }
+ saveTimers();renderTimerBoard();
+}
+function timerTick(){
+ const checked=T.advance(timers,Date.now());timers=checked.timers;
+ if(checked.expired.length){checked.expired.forEach(id=>pendingAlerts.add(id));saveTimers();renderTimerBoard();}
+ updateTimerDisplays();
+ if(!document.hidden&&pendingAlerts.size){
+  const labels=[...pendingAlerts].map(id=>timers[id]?.title||"Cooking timer");pendingAlerts.clear();
+  toast(labels.length===1?"Timer finished: "+labels[0]+". Check your food.":labels.length+" cooking timers finished. Check the timer panel.");
+ }
+}
+function openCook(id,stepIndex=0){
+ lastFocus=document.activeElement;lastCookRecipe=id;
+ const r=recipe(id);
+ cook={id,index:Math.min(Math.max(0,stepIndex),r.steps.length-1)};
+ $("#cookOverlay").classList.remove("hidden");
+ document.body.classList.add("modal-open");
+ renderCook();
+}
+function closeCook(){
+ cook=null;
+ $("#cookOverlay").classList.add("hidden");
+ document.body.classList.remove("modal-open");
+ // No timer cancellation: countdowns remain available from the floating badge.
+ updateTimerDisplays();
+ if(lastFocus?.focus)lastFocus.focus();
+}
 function renderCook(){
- if(!cook)return;const r=recipe(cook.id), step=r.steps[cook.index],last=cook.index===r.steps.length-1;
+ if(!cook)return;
+ const r=recipe(cook.id),step=r.steps[cook.index],last=cook.index===r.steps.length-1;
  const h='<header class="cook-header"><div><span>YOUR KITCHEN COMPANION · RECIPE '+r.id.toUpperCase()+'</span><h2 id="cookHeading">'+escapeHTML(r.name)+'</h2></div><button class="cook-close" id="closeCook" aria-label="Close cooking guide">×</button></header>';
  const p='<div class="cook-track" aria-label="Cooking progress"><div style="width:'+Math.round((cook.index+1)/r.steps.length*100)+'%"></div></div>';
- if(cook.index>=r.steps.length){$("#cookContent").innerHTML=h+p+'<div class="cook-complete"><div class="big-check">✓</div><span class="section-kicker">YOU DID IT</span><h3>Something good is cooking.</h3><p>Your five lunches are one step closer. Chill safely, label the containers, and enjoy the week ahead.</p><button id="finishCook" class="btn btn-primary">Finish and close ↗</button></div>';return;}
- $("#cookContent").innerHTML=h+p+'<div class="cook-body"><div class="cook-stepcount">STEP '+(cook.index+1)+' OF '+r.steps.length+'</div><h3>'+escapeHTML(step.title)+'</h3><p>'+escapeHTML(step.detail)+'</p><div class="cook-tip"><strong>✳</strong> <span>'+escapeHTML(step.tip)+'</span></div>'+(step.minutes?'<div class="cook-timer"><div class="timer-display" id="timerClock" aria-live="off">00:00</div><button class="timer-button" id="timerToggle">Start timer</button><button class="timer-button" id="timerReset">Reset</button><span style="font-size:11px;color:#6e8373">Guide only — check doneness and packet instructions.</span></div>':'<p class="evidence-chip" style="margin-top:20px">No countdown for this safety/finishing step.</p>')+'</div><footer class="cook-footer"><button class="btn btn-outline" id="prevStep" '+(cook.index===0?'disabled':'')+'>← Previous</button><button class="btn btn-primary" id="nextStep">'+(last?'Finish this batch ✓':'Next step →')+'</button></footer>';
- timerShow();$("#closeCook")?.focus();
+ const board='<section class="timer-dashboard hidden" id="timerDashboard" aria-label="Running, paused and finished cooking timers"></section>';
+ if(cook.index>=r.steps.length){
+  $("#cookContent").innerHTML=h+p+board+'<div class="cook-complete"><div class="big-check">✓</div><h3>Something good is cooking.</h3><p>Chill safely, label your containers and enjoy the week ahead.</p><button id="finishCook" class="btn btn-primary">Finish and close ↗</button></div>';
+  renderTimerBoard();return;
+ }
+ $("#cookContent").innerHTML=h+p+board+'<div class="cook-body"><div class="cook-stepcount">STEP '+(cook.index+1)+' OF '+r.steps.length+'</div><h3>'+escapeHTML(step.title)+'</h3><p>'+escapeHTML(step.detail)+'</p><div class="cook-tip"><strong>✳</strong><span>'+escapeHTML(step.tip)+'</span></div>'+(step.minutes?'<div class="cook-timer"><div class="timer-display" id="timerClock" aria-live="off">'+T.format(step.minutes*60)+'</div><button class="timer-button" id="timerToggle">Start timer</button><button class="timer-button" id="timerReset">Reset</button><span class="timer-safety">Timers continue independently when you press Next. Check doneness and packet instructions.</span></div>':'<p class="evidence-chip" style="margin-top:20px">No countdown for this safety/finishing step.</p>')+'</div><footer class="cook-footer"><button class="btn btn-outline" id="prevStep" '+(cook.index===0?'disabled':'')+'>← Previous</button><button class="btn btn-primary" id="nextStep">'+(last?'Finish this batch ✓':'Next step →')+'</button></footer>';
+ renderTimerBoard();
 }
-function stepChange(by){if(!cook)return;const n=cook.index+by;const r=recipe(cook.id);if(n<0||n>r.steps.length)return;cook.index=n;timerLoad();renderCook();}
+function stepChange(by){
+ if(!cook)return;
+ const n=cook.index+by,r=recipe(cook.id);
+ if(n<0||n>r.steps.length)return;
+ cook.index=n;
+ // Moving between steps does not modify other timers.
+ renderCook();
+}
+setInterval(timerTick,700);
+document.addEventListener("visibilitychange",timerTick);
+window.addEventListener("pageshow",timerTick);
 function copyShop(){
  const toBuy=D.shopping.filter((_,i)=>!state.checked.includes(i));
  const content="WOOLWORTHS V6 · TO BUY (estimates, not live Dubbo prices)\n\n"+toBuy.map(item=>item.buy+" × "+item.name+" — "+money(item.price)+"\nUse: "+item.use).join("\n\n")+"\n\nEstimate remaining: "+money(toBuy.reduce((s,i)=>s+i.price,0))+"\nCheck labels and current shelf prices.";
@@ -88,8 +175,10 @@ document.addEventListener("click",e=>{
  if(e.target.closest("#closeCook")){closeCook();return}
  if(e.target.closest("#nextStep")){stepChange(1);return}
  if(e.target.closest("#prevStep")){stepChange(-1);return}
- if(e.target.closest("#timerToggle")){if(timerRunning)timerPause();else timerStart();return}
- if(e.target.closest("#timerReset")){timerReset();return}
+ if(e.target.closest("#timerToggle")){const id=currentTimerId(),t=timers[id];if(id)handleTimerAction(t?.status==="running"?"pause":"start",id);return}
+ if(e.target.closest("#timerReset")){const id=currentTimerId();if(id)handleTimerAction("reset",id);return}
+ const timerButton=e.target.closest("[data-timer-action]");if(timerButton){handleTimerAction(timerButton.dataset.timerAction,timerButton.dataset.timerId);return}
+ if(e.target.closest("#floatingTimers")){const first=Object.values(timers).sort((a,b)=>(a.status==="running"?0:a.status==="done"?1:2)-(b.status==="running"?0:b.status==="done"?1:2))[0];if(first)openCook(first.recipeId,first.stepIndex);return}
  if(e.target.closest("#finishCook")){if(cook&&!state.finished.includes(cook.id))state.finished.push(cook.id);save();closeCook();toast("Beautiful work. Your recipe is marked complete.");return}
  if(e.target.closest("#copyShop")){copyShop();return}
  if(e.target.closest("#printShop")){window.print();return}
