@@ -34,3 +34,11 @@ test('mobile bar has evenly sized targets and unambiguous selected-state styles'
  assert.match(main,/b\.removeAttribute\("aria-current"\)/);
  assert.match(nav(read('cooking-methods.html')),/href="cooking-methods\.html" aria-label="Compare cooking methods" aria-current="page"/);
 });
+
+test('Cooking Methods hero back button has readable dark text on its light fill',()=>{
+ const html=read('cooking-methods.html');
+ const css=read('site.css');
+ assert.match(html,/<a class="btn btn-outline" href="index\.html#recipes">Back to recipes/);
+ assert.match(css,/\.cm-hero-links \.btn-outline\{background:#fffdf7;color:#173e33;/);
+ assert.doesNotMatch(css,/\.cm-hero-links \.btn-outline\{color:#fff;/);
+});
