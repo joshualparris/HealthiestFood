@@ -61,3 +61,15 @@ test('Planner shopping integration is implemented and label unknowns persist',()
  assert.ok(read('nutrition-coverage.js').includes('unknown, not zero'));
  assert.ok(html.includes('id="nutritionCoverage"'));
 });
+
+test('optional cook-up log is local only, escaped and connected to recipe view',()=>{
+ const trial=read('cook-trial.js'),app=read('app.js'),html=read('index.html');
+ assert.doesNotThrow(()=>new vm.Script(trial));
+ assert.match(trial,/localStorage\.setItem\(KEY/);
+ assert.match(trial,/Cooked date/);
+ assert.match(trial,/After freezing\/reheating/);
+ assert.match(trial,/esc\(value\.notes/);
+ assert.ok(app.includes('window.FoodTrial?.render(r)'));
+ assert.ok(app.includes('window.FoodTrial?.init()'));
+ assert.ok(html.indexOf('src="cook-trial.js"')<html.indexOf('src="app.js"'));
+});
