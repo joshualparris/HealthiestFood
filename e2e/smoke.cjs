@@ -61,6 +61,25 @@ async function main(){
       await page.locator('[data-media-kind="all"]').click();
       assert.equal(await page.locator('#mediaResults .media-resource').count(),23);
     });
+    if(!process.env.SMOKE_URL)await check('ingredient-by-ingredient cooking lab filters and compares without claiming longevity scores',async()=>{
+      const lab=await browser.newPage({viewport:{width:390,height:844}});
+      const errors=[];lab.on('pageerror',e=>errors.push(e.message));
+      await lab.goto(base+'/cooking-methods.html?food=egg',{waitUntil:'domcontentloaded'});
+      await lab.locator('#cmChoices [data-cm-food]').first().waitFor();
+      assert.ok((await lab.locator('#cmChoices [data-cm-food]').count())>=56);
+      assert.match(await lab.locator('#cmCoverage').innerText(),/132\/132/);
+      assert.match(await lab.locator('#cmDetail h2').innerText(),/Eggs/);
+      await lab.locator('#cmMethodA').selectOption('4');
+      assert.match(await lab.locator('.cm-compare-card').first().innerText(),/Lightly fry/);
+      await lab.locator('#cmSearch').fill('broccoli');
+      assert.ok(await lab.locator('[data-cm-food]').count()>=1);
+      await lab.locator('#cmCategory').selectOption('All');
+      await lab.locator('#cmSearch').fill('');
+      await lab.locator('#cmRecipe').selectOption('br-eggs');
+      assert.ok(await lab.locator('[data-cm-food]').count()>=4);
+      assert.equal(errors.length,0,errors.join(', '));
+      await lab.close();
+    });
     await check('17 recipes and category controls render',async()=>{
       await page.locator('.mobile-nav [data-goto="recipes"]').click();
       assert.equal(await page.locator('#recipeCards .recipe-card').count(),17);
