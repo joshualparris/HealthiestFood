@@ -379,7 +379,8 @@ async function main(){
       assert.match(roast,/Roast the carrots, capsicum and zucchini/);
       assert.match(roast,/loaded trays go into/);
       await page.locator('#nextStep').click();
-      const quinoa=await page.locator('#cookContent .cook-body>p').first().innerText();
+      const quinoa=await page.locator('#cookContent .cook-action-list').innerText();
+      assert.ok(await page.locator('#cookContent .cook-action-list > li').count()>=6,'Quinoa cooking actions should be numbered, not one paragraph');
       const quantities=quinoa.match(/Measure (\d+(?:\.\d+)?) g[\s\S]*?approximately (\d+(?:\.\d+)?) mL/);
       assert.ok(quantities,'Quinoa cooking step must state the current dry quantity and explicit water');
       assert.ok(Math.abs(Number(quantities[2])/Number(quantities[1])-2.8)<0.0001,'Water scales with the actual chosen portions');
@@ -389,6 +390,13 @@ async function main(){
       assert.match(quinoa,/5 minutes/);
       assert.match(quinoa,/BY VOLUME/);
       assert.match(await page.locator('.timer-purpose').innerText(),/gentle low simmer/);
+      await page.locator('#nextStep').click();
+      const sauce=page.locator('#cookContent .cook-action-list > li');
+      assert.ok(await sauce.count()>=4,'Chickpea-sauce instructions must be broken into numbered actions');
+      assert.match(await sauce.nth(0).innerText(),/100 g.*brown onion.*10 mL/);
+      assert.match(await sauce.nth(1).innerText(),/0.25 tsp black pepper/);
+      assert.match(await page.locator('#cookContent .cook-action-list').innerText(),/Simmer 8–10 minutes/);
+      await page.locator('#prevStep').click();
       await page.locator('#prevStep').click();
     });
     await check('two overlapping timers persist after page refresh',async()=>{
