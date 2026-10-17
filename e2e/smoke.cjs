@@ -78,7 +78,7 @@ async function main(){
         assert.match(await selected.locator('.ingredients-list').innerText(),/8 tins[\s\S]*sardines/);
         await selected.locator('button[data-servings="1"]').click();
         assert.equal((await selected.locator('.stepper output').innerText()).trim(),'6',width+' plus');
-        assert.match(await selected.locator('.ingredients-list').innerText(),/9\\.6 tins[\s\S]*sardines/);
+        assert.match(await selected.locator('.ingredients-list').innerText(),/9\.6 tins[\s\S]*sardines/);
         assert.match(await selected.locator('.ingredients-list').innerText(),/180 g[\s\S]*quinoa/);
         assert.match(await selected.locator('[data-add-to-shop="a"]').innerText(),/6 portions/);
         await selected.locator('button[data-servings="-1"]').click();
