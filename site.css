@@ -613,3 +613,21 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
 @media(max-width:800px){.evidence-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.evidence-status-grid{grid-template-columns:1fr}.evidence-recipe>summary{flex-direction:column;align-items:flex-start}.evidence-recipe>summary small{text-align:left}.evidence-recipe>details ul{columns:1}}
 @media print{.evidence-recipe{break-inside:avoid}.evidence-recipe:not([open]){display:none}.evidence-status-grid{display:grid;grid-template-columns:1fr 1fr}}
+
+
+/* Clear, action-specific cooking countdowns. A timer is a reminder, not a safety result. */
+.timer-purpose{background:#f3f7ee;border:1px solid #bfd1b6;border-left:5px solid #58845b;border-radius:15px;padding:20px 23px;margin:23px 0 10px;color:#183f32}
+.timer-purpose-kind{font-size:11px;line-height:1.5;font-weight:850;letter-spacing:1.1px;color:#426448}
+.timer-purpose h4{font-size:20px;line-height:1.3;margin:7px 0 13px;color:#173f33;font-weight:800}
+.timer-purpose p{font-size:14px;line-height:1.65;margin:7px 0;color:#2b5540}
+.timer-purpose p strong{color:#163d2d}
+.timer-purpose .cook-timer{margin:17px 0 8px;padding-top:15px;border-color:#bacfb7}
+.timer-purpose .timer-safety{font-size:12px;color:#43664b;margin-top:12px;line-height:1.65}
+.timer-tile>strong.timer-tile-purpose{white-space:normal;overflow:visible;text-overflow:clip;font-size:13px;line-height:1.4;display:block;margin:5px 0 8px;color:#194534}
+.timer-tile-cue{color:#365b45;font-size:11px;line-height:1.5;margin:0 0 12px}
+.timer-tile-cue b{color:#24523d}
+.timer-tile{min-width:275px;flex-basis:275px}
+.floating-timers{display:flex;align-items:center;gap:7px;max-width:min(90vw,345px);text-align:left;line-height:1.35;border-radius:17px}
+.floating-timers #floatingTimerSummary{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+@media(max-width:540px){.timer-purpose{margin:17px 0 8px;padding:16px}.timer-purpose h4{font-size:18px}.timer-purpose p{font-size:13px}.timer-tile{min-width:245px;flex-basis:245px}.floating-timers{max-width:calc(100vw - 26px)}}
+@media(prefers-contrast:more){.timer-purpose{background:#fff;border-color:#254b35;color:#173928}.timer-tile-cue{color:#183e30}}
