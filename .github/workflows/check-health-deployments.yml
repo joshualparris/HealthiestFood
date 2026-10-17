@@ -22,7 +22,8 @@ jobs:
             req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 (compatible; GoodFoodHealthLinks/1.0)"})
             try:
               with urllib.request.urlopen(req,timeout=12) as response:
-                html=response.read(40000).decode("utf-8","replace").lower()\n                m=re.search(r"<title[^>]*>(.*?)</title>",html,re.S|re.I)\n                title=re.sub(r"\\s+"," ",m.group(1)).strip()[:120] if m else ""
+                html=response.read(40000).decode("utf-8","replace").lower()
+                m=re.search(r"<title[^>]*>(.*?)</title>",html,re.S|re.I)\n                title=re.sub(r"\\s+"," ",m.group(1)).strip()[:120] if m else ""
                 markers=any(x in html for x in ["vercel authentication","deployment protection","sign in to vercel","vercel sso"])
                 status=response.status
                 print(json.dumps({"url":url,"status":status,"title":title,"final":response.url,"looks_login":markers}))
