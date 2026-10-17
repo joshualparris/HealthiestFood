@@ -103,6 +103,24 @@ async function main(){
         await p.close();
       }
     });
+    await check('all thirteen related health website links render in longevity guide on mobile and desktop',async()=>{
+      for(const width of [390,1280]){
+        const guide=await browser.newPage({viewport:{width,height:844}});
+        const errors=[];guide.on('pageerror',e=>errors.push(e.message));
+        await guide.goto(base+'/longevity.html',{waitUntil:'domcontentloaded'});
+        const links=guide.locator('#relatedHealthSites .related-actions a');
+        await links.first().waitFor({state:'visible',timeout:10000});
+        assert.equal(await guide.locator('#relatedHealthSites article').count(),8);
+        assert.equal(await links.count(),13);
+        assert.equal(await guide.locator('#relatedHealthSites .related-offline li a').count(),3);
+        const values=await links.evaluateAll(nodes=>nodes.map(el=>({url:el.href,target:el.target,rel:el.rel})));
+        assert.equal(new Set(values.map(x=>x.url)).size,13);
+        assert.ok(values.every(x=>x.url.startsWith('https://')&&x.target==='_blank'&&x.rel.includes('noopener')));
+        assert.equal(await guide.locator('nav.jump a[href="#your-health-sites"]').count(),1);
+        assert.equal(errors.length,0,errors.join("; "));
+        await guide.close();
+      }
+    });
     await check('canonical ingredient IDs connect all 17 meals without changing recipes',async()=>{
       const stats=await page.evaluate(()=>{
         const c=window.FoodIngredients,recipes=window.FOOD_DATA.recipes;
