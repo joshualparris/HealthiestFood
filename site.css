@@ -567,3 +567,14 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
 .homepage-bowl-photo{display:block;width:min(100%,570px);height:min(100%,520px);object-fit:contain;border-radius:26px;filter:drop-shadow(0 14px 22px rgba(9,35,29,.16))}
 @media(max-width:760px){.hero-art.hero-art-photo{height:400px;padding:5px 8px 14px}.homepage-bowl-photo{height:100%;max-width:440px;border-radius:23px}}
 @media(max-width:480px){.hero-art.hero-art-photo{height:356px}.homepage-bowl-photo{max-width:100%;border-radius:19px}}
+
+
+/* HF recipe-scale: actual 44 px touch targets and keyboard state, not tiny 27 px circles. */
+#recipeDetail .servings-box{align-items:center;flex-wrap:wrap;gap:14px}
+#recipeDetail .stepper{display:flex;align-items:center;gap:12px;flex-shrink:0}
+#recipeDetail .stepper button{width:46px;min-width:46px;height:46px;min-height:46px;border-radius:50%;font-size:26px;line-height:1;touch-action:manipulation;user-select:none;position:relative;z-index:1}
+#recipeDetail .stepper button:hover:not(:disabled){background:#d7e9c8}
+#recipeDetail .stepper button:disabled{opacity:.35;cursor:not-allowed}
+#recipeDetail .stepper button:focus-visible{outline:3px solid #2e7448;outline-offset:3px}
+#recipeDetail .stepper output{font-size:23px;font-variant-numeric:tabular-nums;min-width:30px;font-weight:800;text-align:center}
+@media(max-width:440px){#recipeDetail .servings-box{padding:12px;justify-content:space-between}#recipeDetail .stepper{gap:8px}}
