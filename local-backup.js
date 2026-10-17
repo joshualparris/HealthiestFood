@@ -100,8 +100,8 @@
        if(file.size>MAX_BYTES)throw Error("The file is larger than 1 MB.");
        const parsed=parse(await file.text());
        // Dry-run preview: display the record names, not their private values.
-       const names=Object.keys(parsed.records).sort().join("\\n• ");
-       const preview="Preview "+parsed.count+" app records from "+parsed.exportedAt+" ("+parsed.origin+").\\nIntegrity: "+(parsed.checksumState==="verified"?"checksum matches":"older backup without checksum verification")+".\\n• "+names+"\\n\\nImport replaces existing HealthiestFood data on THIS domain. Save a backup first. Continue?";
+       const names=Object.keys(parsed.records).sort().join("\n• ");
+       const preview="Preview "+parsed.count+" app records from "+parsed.exportedAt+" ("+parsed.origin+").\nIntegrity: "+(parsed.checksumState==="verified"?"checksum matches":"older backup without checksum verification")+".\n• "+names+"\n\nImport replaces existing HealthiestFood data on THIS domain. Save a backup first. Continue?";
        const proceed=confirm(preview);
        if(!proceed){announce("Import cancelled. No changes made.");return;}
        restore(localStorage,parsed,true);
