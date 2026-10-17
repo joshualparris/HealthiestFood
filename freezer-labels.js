@@ -17,7 +17,7 @@
    return parts.year+"-"+parts.month+"-"+parts.day;
  }
  function build(recipe,options){
-   if(!recipe||!IDs.includes(recipe.id))throw Error("This tool only supports the four freezer-tested-as-plans V6 lunches.");
+   if(!recipe||!IDs.includes(recipe.id))throw Error("This tool only supports the four planned V6 freezer lunches.");
    const count=Number(options.count);
    if(!Number.isInteger(count)||count<1||count>20)throw Error("Choose between 1 and 20 containers.");
    const cooked=String(options.cooked||""),frozen=String(options.frozen||"");
