@@ -641,3 +641,16 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
 .podcast-autoplay p{font-size:11px;color:#637665;line-height:1.5;margin:4px 0 0}
 .podcast-autoplay input:focus-visible{outline:3px solid #c08a46;outline-offset:3px}
 @media(max-width:540px){.podcast-autoplay{padding:9px 10px;margin:6px 0 11px}.podcast-autoplay label{font-size:12px}.podcast-autoplay p{font-size:10px}}
+
+
+/* Cooking actions must be readable while working with hands full in the kitchen.
+   Each stage has numbered, separate actions; full methods use the same presentation. */
+.method-action-list{list-style:none;counter-reset:method-action;display:grid;gap:10px;padding:0;margin:16px 0 22px;max-width:100%;min-width:0}
+.method-action-list>li{counter-increment:method-action;display:block;position:relative;padding:13px 16px 13px 54px;min-width:0;overflow-wrap:break-word;border:1px solid #dbe8d5;border-radius:13px;background:#f7faf3;color:#294a36;line-height:1.75;font-size:15px}
+.method-action-list>li::before{content:counter(method-action);position:absolute;left:13px;top:13px;display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:#dfead2;color:#204d37;font-size:13px;font-weight:850;line-height:1}
+.cook-action-list>li{font-size:16px;padding-top:15px;padding-bottom:15px}
+.method-action-preview{margin:10px 0 14px;gap:7px}
+.method-action-preview>li{font-size:12px;line-height:1.65;padding:9px 10px 9px 40px;background:#fafbf7}
+.method-action-preview>li::before{top:8px;left:8px;width:24px;height:24px;font-size:11px}
+@media(max-width:540px){.method-action-list{gap:9px}.method-action-list>li{padding:11px 12px 11px 45px;font-size:14px}.method-action-list>li::before{left:9px;top:10px;width:26px;height:26px}.cook-action-list>li{font-size:15px;line-height:1.75}.method-action-preview>li{font-size:12px;padding:8px 10px 8px 36px}.method-action-preview>li::before{left:7px;top:8px;width:22px;height:22px}}
+@media print{.method-action-list>li{break-inside:avoid;box-shadow:none}}
