@@ -195,12 +195,24 @@ function updateTimerDisplays(){
 function renderTimerBoard(){
  const panel=$("#timerDashboard");
  if(!panel){updateTimerDisplays();return;}
- const entries=Object.values(timers).sort((a,b)=>["running","done","paused"].indexOf(a.status)-["running","done","paused"].indexOf(b.status) || a.recipeId.localeCompare(b.recipeId) || a.stepIndex-b.stepIndex);
+ const entries=Object.values(timers).sort((a,b)=>["running","done","paused"].indexOf(a.status)-["running","done","paused"].indexOf(b.status)||a.recipeId.localeCompare(b.recipeId)||a.stepIndex-b.stepIndex);
  panel.classList.toggle("hidden",entries.length===0);
- panel.innerHTML=entries.length?'<div class="timer-board-head"><strong>◷ Your cooking timers <span>'+entries.length+'</span></strong><small>Each keeps counting when you move to another step · Swipe to see all</small></div><div class="timer-cards">'+entries.map(t=>{
-   const name="Recipe "+t.recipeId.toUpperCase()+" · Step "+(t.stepIndex+1);
-   return '<div class="timer-tile '+t.status+'" role="group" aria-label="'+escapeHTML(name+" "+t.title)+'"><div class="timer-tile-name">'+escapeHTML(name)+'</div><strong>'+escapeHTML(t.title)+'</strong><div class="timer-tile-bottom"><span class="timer-tile-clock" data-live-timer="'+escapeHTML(t.id)+'">'+T.format(T.remaining(t,Date.now()))+'</span><div class="timer-tile-actions"><button type="button" data-timer-action="'+(t.status==="running"?"pause":"start")+'" data-timer-id="'+escapeHTML(t.id)+'" aria-label="'+(t.status==="running"?"Pause":t.status==="done"?"Restart":"Resume")+' '+escapeHTML(t.title)+'">'+(t.status==="running"?"Ⅱ":t.status==="done"?"↻":"▶")+'</button><button type="button" data-timer-action="reset" data-timer-id="'+escapeHTML(t.id)+'" title="Reset timer" aria-label="Reset '+escapeHTML(t.title)+'">↺</button><button type="button" data-timer-action="dismiss" data-timer-id="'+escapeHTML(t.id)+'" title="Remove timer" aria-label="Remove '+escapeHTML(t.title)+'">×</button></div></div></div>';
- }).join("")+'</div><div class="timer-board-warning">These timers use real elapsed time. Phone lock-screen alarms are not guaranteed; use your phone Clock for unattended cooking.</div>':"";
+ panel.innerHTML=entries.length?'<div class="timer-board-head"><strong>◷ Your timers <span>'+entries.length+'</span></strong><small>Each timer keeps counting independently when you press Next.</small></div><div class="timer-cards">'+entries.map(t=>{
+  const m=timerMetadata(t.id);
+  const name="Recipe "+t.recipeId.toUpperCase()+" · Step "+(t.stepIndex+1);
+  const purpose=m?.purpose||t.title,check=m?.checkWhenDone||"Check the food or task; timing is not proof of completion.";
+  const isPrep=m?.kind==="prep";
+  const kind=isPrep?"Prep estimate":"Cooking reminder";
+  const action=t.status==="running"?"Pause":t.status==="done"?"Restart":"Resume";
+  return '<div class="timer-tile '+t.status+'" role="group" aria-label="'+escapeHTML(name+" "+purpose)+'">'+
+   '<div class="timer-tile-name">'+escapeHTML(name+" · "+kind)+'</div>'+
+   '<strong class="timer-tile-purpose">'+escapeHTML(purpose)+'</strong>'+
+   '<p class="timer-tile-cue"><b>When it rings:</b> '+escapeHTML(check)+'</p>'+
+   '<div class="timer-tile-bottom"><span class="timer-tile-clock" data-live-timer="'+escapeHTML(t.id)+'">'+T.format(T.remaining(t,Date.now()))+'</span>'+
+   '<div class="timer-tile-actions"><button type="button" data-timer-action="'+(t.status==="running"?"pause":"start")+'" data-timer-id="'+escapeHTML(t.id)+'" aria-label="'+escapeHTML(action+" "+purpose)+'">'+(t.status==="running"?"Ⅱ":t.status==="done"?"↻":"▶")+'</button>'+
+   '<button type="button" data-timer-action="reset" data-timer-id="'+escapeHTML(t.id)+'" title="Reset timer" aria-label="Reset '+escapeHTML(purpose)+'">↺</button>'+
+   '<button type="button" data-timer-action="dismiss" data-timer-id="'+escapeHTML(t.id)+'" title="Remove timer" aria-label="Remove '+escapeHTML(purpose)+'">×</button></div></div></div>';
+ }).join("")+'</div><div class="timer-board-warning">These are estimates, not proof of doneness. Browser lock-screen alarms are not guaranteed; use your phone Clock for unattended cooking.</div>':"";
  updateTimerDisplays();
 }
 function handleTimerAction(action,id){
@@ -218,8 +230,10 @@ function timerTick(){
  if(checked.expired.length){checked.expired.forEach(id=>pendingAlerts.add(id));saveTimers();renderTimerBoard();}
  updateTimerDisplays();
  if(!document.hidden&&pendingAlerts.size){
-  const labels=[...pendingAlerts].map(id=>timers[id]?.title||"Cooking timer");pendingAlerts.clear();
-  toast(labels.length===1?"Timer finished: "+labels[0]+". Check your food.":labels.length+" cooking timers finished. Check the timer panel.");
+  const ended=[...pendingAlerts].map(id=>timerMetadata(id)).filter(Boolean);pendingAlerts.clear();
+  const lead=ended[0];
+  toast(ended.length===1?"Reminder finished: "+lead.purpose+". "+lead.checkWhenDone:
+   ended.length+" reminders finished: "+ended.map(x=>x.purpose).join("; ")+". Open timer board to check each task.");
  }
 }
 function openCook(id,stepIndex=0){
