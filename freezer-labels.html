@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173e33">
+<title>Print freezer labels | Good Food, Long Game</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script src="site-data.js" defer></script>
+<script src="freezer-labels.js" defer></script>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#244536;background:#f8f9f0}
+*{box-sizing:border-box}body{margin:0}a{color:#316647}button,input,select{font:inherit}
+.top{background:#173e33;color:#f6f9e9;padding:35px max(20px,calc((100vw - 1050px)/2));}
+.top a{color:#d7ecbc;font-weight:700;text-decoration:none;font-size:13px}
+.top h1{font:600 clamp(34px,6vw,54px)/1.1 Georgia,serif;margin:20px 0 12px}
+.top p{max-width:740px;line-height:1.7;color:#c6d7c3}
+main{max-width:1100px;margin:0 auto;padding:25px 20px 70px}
+.panel{background:white;border:1px solid #d9e4d4;border-radius:18px;padding:22px;margin-bottom:18px}
+label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+.fields{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:12px;margin-bottom:13px}
+input,select{min-width:0;width:100%;border:1px solid #b5c9b6;border-radius:9px;padding:11px;background:white;color:#193d30}
+button{background:#173e33;color:white;border:0;border-radius:30px;padding:13px 24px;font-weight:800;cursor:pointer}
+button:hover{background:#35674d}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #ce9a53;outline-offset:2px}
+.note{font-size:12px;color:#657b68;line-height:1.7}
+#labelMessage{font-weight:700;font-size:13px;min-height:22px}
+.labels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.freezer-label{min-width:0;background:#fffefa;border:2px dashed #94a68d;padding:19px;border-radius:12px;break-inside:avoid;page-break-inside:avoid}
+.label-brand{display:flex;justify-content:space-between;color:#497553;letter-spacing:1px;font-weight:800;font-size:10px}
+.freezer-label h2{font:600 25px Georgia,serif;line-height:1.13;letter-spacing:-.4px;margin:12px 0}
+.label-dates{display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top:1px solid #dce5d8;border-bottom:1px solid #dce5d8;padding:9px 0;font-size:12px;color:#647568}
+.label-dates strong{display:block;color:#183d30;font-size:15px}
+.label-index{background:#e9f1dd;padding:7px 11px;border-radius:9px;display:inline-block;font-size:12px;font-weight:800}
+.label-instructions{font-size:12px;font-weight:700;line-height:1.55}
+.label-allergens,.label-note,.label-warning{font-size:10px;line-height:1.5;color:#5d6d61}
+.label-warning{border-top:1px solid #e1e9dd;padding-top:8px}
+@media(max-width:650px){.fields{grid-template-columns:1fr 1fr}.fields label:first-child{grid-column:1/-1}.labels{grid-template-columns:1fr}.top{padding:26px 20px}.freezer-label{padding:17px}}
+@media print{
+ @page{size:A4;margin:12mm}
+ :root{background:white}body{background:white;color:black}
+ .top,.panel,.note,.print-hidden{display:none!important}main{padding:0;max-width:none}
+ .labels{grid-template-columns:repeat(2,minmax(0,1fr));gap:4mm}
+ .freezer-label{border:1px dashed #596d59;border-radius:0;padding:5mm;min-height:79mm;color:#111}
+ .freezer-label h2{font-size:18pt}
+ .label-dates strong{font-size:12pt}
+ .label-index{padding:1mm 2mm}
+}
+</style>
+</head>
+<body>
+<header class="top"><a href="index.html#recipes">← Back to recipes</a><h1>Labels for your freezer.</h1><p>Print and cut individual container labels for the original four V6 freezer lunches. Choose your actual preparation and freezing dates, not assumed dates. A printed label never proves a meal was chilled or stored safely.</p></header>
+<main>
+<section class="panel">
+<form id="labelForm">
+<div class="fields">
+<label>Freezer recipe<select id="labelRecipe" name="recipe" required></select></label>
+<label>Containers<input type="number" name="count" min="1" max="20" step="1" value="5" required></label>
+<label>Actually cooked<input type="date" name="cooked" required></label>
+<label>Actually frozen<input type="date" name="frozen" required></label>
+</div>
+<label style="margin-bottom:15px">Optional note (up to 100 characters)<input type="text" name="note" maxlength="100" placeholder="For example: extra lemon, microwave test"></label>
+<button type="submit">Print or save labels as PDF <span aria-hidden="true">↗</span></button>
+<p class="note">Print using your browser, or choose “Save as PDF”. Labels list potentially relevant allergens by food family, but you must check actual product labels and cross-contact warnings. If any ingredient or cooked storage history is uncertain, do not assume the food is safe.</p>
+<p id="labelMessage" role="status" aria-live="polite"></p>
+</form>
+</section>
+<div id="labelPreview" class="labels" aria-label="Printable container label previews"></div>
+<p class="note print-hidden">Source: <a href="https://www.foodauthority.nsw.gov.au/consumer/food-extra-care/leftovers" target="_blank" rel="noopener noreferrer">NSW Food Authority leftover advice</a>. These are date and handling prompts, not an expiry or nutrient certificate. Your entries remain in this browser and are not submitted to us.</p>
+</main>
+<script>document.addEventListener("DOMContentLoaded",()=>window.FreezerLabels?.init());</script>
+</body></html>
