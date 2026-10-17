@@ -18,6 +18,7 @@ let selected=recipe(state.selected).id,servings=5,search="",shopFilter="remainin
 let cook=null;
 let recipeType="all";
 const T = window.FoodTimers;
+const TP=window.RecipeTimerPurposes;
 const TIMER_KEY="good-food-cook-timers-v1";
 let timers={};
 try { timers=T.clean(JSON.parse(localStorage.getItem(TIMER_KEY)||"{}")); }catch{timers={};}
@@ -155,8 +156,11 @@ function renderSources(){
 // Independent step timers survive Next/Previous, modal close and page reload.
 function currentTimerId(){return cook ? T.idFor(cook.id,cook.index) : null;}
 function timerMetadata(id){
- const [recipeId,si]=id.split(":"),stepIndex=Number(si),r=recipe(recipeId),s=r.steps[stepIndex];
- return s ? {recipeId,stepIndex,title:s.title,durationSec:s.minutes*60}:null;
+ if(!/^[a-z][a-z0-9-]*:[0-9]{1,2}$/.test(id))return null;
+ const [recipeId,si]=id.split(":"),stepIndex=Number(si),r=R.find(x=>x.id===recipeId);
+ if(!r||!r.steps[stepIndex])return null;
+ const purpose=TP.get(r,stepIndex);
+ return purpose?{...purpose,title:r.steps[stepIndex].title}:null;
 }
 function updateTimerDisplays(){
  const now=Date.now();
@@ -166,15 +170,26 @@ function updateTimerDisplays(){
    if(step)out.textContent=T.format(t?T.remaining(t,now):step.minutes*60);
  }
  const toggle=$("#timerToggle");
- if(toggle){toggle.textContent=t?(t.status==="running"?"Pause timer":t.status==="done"?"Restart timer":"Resume timer"):"Start timer";}
+ if(toggle&&cook){
+  const meta=timerMetadata(id),verb=t?(t.status==="running"?"Pause":t.status==="done"?"Restart":"Resume"):"Start";
+  toggle.textContent=verb+(meta?.kind==="prep"?" prep reminder":" cooking timer");
+  toggle.setAttribute("aria-label",verb+" "+(meta?.durationSec/60||"")+"-minute reminder: "+(meta?.purpose||"current step"));
+ }
  const reset=$("#timerReset"); if(reset)reset.disabled=!t;
  for(const el of $$("[data-live-timer]")){
    const t=timers[el.dataset.liveTimer];
    if(t)el.textContent=t.status==="done"?"00:00 · Done":T.format(T.remaining(t,now));
  }
  const floating=$("#floatingTimers");
- if(floating){const total=Object.keys(timers).length;floating.classList.toggle("hidden",total===0||!!cook);
+ if(floating){
+  const active=Object.values(timers),total=active.length;
+  floating.classList.toggle("hidden",total===0||!!cook);
   const count=$("#floatingTimerCount");if(count)count.textContent=String(total);
+  const closest=active.filter(t=>t.status==="running").sort((a,b)=>T.remaining(a,now)-T.remaining(b,now))[0]||active.find(t=>t.status==="done")||active[0];
+  const label=closest?(timerMetadata(closest.id)?.purpose||closest.title):"";
+  const summary=$("#floatingTimerSummary");
+  if(summary)summary.textContent=closest?"timer"+(total===1?"":"s")+" · "+label.slice(0,43):"timers";
+  floating.setAttribute("aria-label",total+" timer"+(total===1?"":"s")+". "+(label?"Next: "+label+". ":"")+"Open timer board.");
  }
 }
 function renderTimerBoard(){
