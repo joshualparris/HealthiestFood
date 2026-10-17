@@ -277,6 +277,21 @@ async function main(){
       await audioPage.locator('#podcastCompact').click();
       await audioPage.locator('#podcastSpeed').selectOption('1.25');
       assert.equal(await audioPage.evaluate(()=>document.querySelector('audio')?.playbackRate),1.25);
+      // Autoplay is opt-in: existing users are not started automatically.
+      assert.equal(await audioPage.locator('#podcastAutoplayNext').isChecked(),false);
+      await audioPage.locator('#podcastAutoplayNext').check();
+      assert.equal(await audioPage.evaluate(()=>window.FoodPodcastPlayer.state().autoplayNext),true);
+      assert.equal(await audioPage.evaluate(()=>JSON.parse(localStorage.getItem('good-food-podcast-resume-v1')).autoplayNext),true);
+      const nextId=await audioPage.evaluate(()=>window.FoodPodcastPlayer.nextInQueue('med'));
+      await audioPage.evaluate(()=>document.querySelector('audio').dispatchEvent(new Event('ended')));
+      await audioPage.waitForFunction(id=>window.FoodPodcastPlayer.state().episode===id,nextId,{timeout:10000});
+      assert.equal(await audioPage.locator('#podcastAutoplayNext').isChecked(),true);
+      // The queue must stop at the last playable episode rather than loop.
+      const last=await audioPage.evaluate(()=>window.FoodPodcastPlayer.order().at(-1).id);
+      await audioPage.evaluate(id=>window.FoodPodcastPlayer.playEpisode(id),last);
+      await audioPage.evaluate(()=>document.querySelector('audio').dispatchEvent(new Event('ended')));
+      assert.equal(await audioPage.evaluate(()=>window.FoodPodcastPlayer.state().episode),last);
+      assert.equal(await audioPage.evaluate(()=>window.FoodPodcastPlayer.state().playing),false);
       await audioPage.locator('#podcastStop').click();
       assert.equal(await audioPage.locator('#podcastPlayer').isHidden(),true);
       await audioPage.close();
