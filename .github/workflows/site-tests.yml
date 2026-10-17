@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'longevity.html'
       - 'site.css'
       - 'offline-ready.js'
       - 'service-worker.js'
       - 'manifest.webmanifest'
       - 'site-data.js'
+      - 'related-health-sites.js'
       - 'ingredient-catalogue.js'
       - 'app.js'
       - 'media-data.js'
@@ -43,11 +45,13 @@ on:
   pull_request:
     paths:
       - 'index.html'
+      - 'longevity.html'
       - 'site.css'
       - 'offline-ready.js'
       - 'service-worker.js'
       - 'manifest.webmanifest'
       - 'site-data.js'
+      - 'related-health-sites.js'
       - 'ingredient-catalogue.js'
       - 'app.js'
       - 'media-data.js'
