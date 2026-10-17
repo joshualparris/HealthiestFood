@@ -66,6 +66,20 @@ async function main(){
       assert.equal(destination.status(),200);
       assert.match(await destination.text(),/<title>[^<]*[Cc]ooking/i);
     });
+    if(!process.env.SMOKE_URL)await check('Science evidence register opens 17 recipe sources and exposes unknowns on mobile',async()=>{
+      await page.locator('.mobile-nav [data-goto="science"]').click();
+      await page.locator('#view-science').waitFor({state:'visible'});
+      const register=page.locator('#scienceEvidenceRegister');
+      assert.equal(await register.locator('.evidence-recipe').count(),17);
+      assert.equal(await register.locator('.evidence-status-item').count(),6);
+      await register.locator('.evidence-recipe').first().locator('summary').click();
+      const open=register.locator('.evidence-recipe[open]').first();
+      assert.ok(await open.locator('tbody tr').count()>3);
+      assert.match(await open.innerText(),/AFCD|Retail label|No modelled nutrient value/);
+      assert.match(await register.innerText(),/Not established/);
+      await page.locator('.mobile-nav [data-goto="home"]').click();
+      await page.locator('#view-home').waitFor({state:'visible'});
+    });
     await check('serving +/- really scales amounts, shopping quantity and cooking from phone and desktop',async()=>{
       for(const width of [390,1280]){
         const p=await browser.newPage({viewport:{width,height:844}});
