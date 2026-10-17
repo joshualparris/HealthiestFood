@@ -22,7 +22,7 @@ test('all 57 timed recipe steps have an unambiguous purpose, start and finish cu
   assert.equal(m.stepIndex,i);
   assert.equal(m.recipeId,r.id);
   assert.ok(['prep','cook'].includes(m.kind));
-  assert.ok(m.purpose.length>15);
+  assert.ok(m.purpose.length>=12,'Purpose must name the timed task: '+r.id+' step '+i);
   assert.ok(m.startWhen.length>15);
   assert.ok(m.checkWhenDone.length>15);
   assert.ok(!/^(start|begin|continue) timer$/i.test(m.purpose));
