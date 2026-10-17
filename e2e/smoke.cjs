@@ -347,12 +347,32 @@ async function main(){
       assert.equal(await ingredient.isChecked(),true);
       assert.match(await page.locator('.cook-prep summary').innerText(),/6 portions/);
     });
+    await check('57 explicitly explained recipe timers, including the screenshot 7-minute prep reminder',async()=>{
+      const result=await page.evaluate(()=>window.RecipeTimerPurposes.validate(window.FOOD_DATA.recipes));
+      assert.equal(result.timedSteps,57);
+      await page.locator('#prevStep').click();
+      const heading=page.locator('.timer-purpose');
+      assert.match(await heading.innerText(),/OPTIONAL PREPARATION REMINDER · 7 MINUTES/);
+      assert.match(await heading.innerText(),/Chop the carrots, capsicum and zucchini/);
+      assert.match(await heading.innerText(),/Start when:/);
+      assert.match(await heading.innerText(),/When it rings:/);
+      assert.match(await heading.innerText(),/oven is preheated separately/);
+      assert.match(await page.locator('#timerToggle').innerText(),/Start prep reminder/);
+      await page.locator('#nextStep').click();
+      const roast=await page.locator('.timer-purpose').innerText();
+      assert.match(roast,/COOKING REMINDER · 30 MINUTES/);
+      assert.match(roast,/Roast the carrots, capsicum and zucchini/);
+      assert.match(roast,/loaded trays go into/);
+    });
     await check('two overlapping timers persist after page refresh',async()=>{
       await page.locator('#prevStep').click();
       await page.locator('#timerToggle').click();
       await page.locator('#nextStep').click();
       await page.locator('#timerToggle').click();
       assert.equal(await page.locator('#timerDashboard .timer-tile').count(),2);
+      assert.match(await page.locator('#timerDashboard').innerText(),/Chop the carrots, capsicum and zucchini/);
+      assert.match(await page.locator('#timerDashboard').innerText(),/Roast the carrots, capsicum and zucchini/);
+      assert.match(await page.locator('#timerDashboard').innerText(),/When it rings:/);
       await page.reload({waitUntil:'domcontentloaded'});
       assert.equal(await page.locator('#floatingTimerCount').innerText(),'2');
       await page.locator('#floatingTimers').click();
