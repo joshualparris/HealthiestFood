@@ -13,6 +13,14 @@
  const SCHEMA="healthiestfood-local-backup-v1";
  const MAX_BYTES=1024*1024; // 1 MiB limit protects against accidental huge imports
  const KEY_RE=/^good-food-[a-z0-9_-]{1,80}$/;
+ // FNV-1a 32-bit protects against accidental file corruption only, NOT tampering.
+ function checksum(records){
+   const data=JSON.stringify(Object.entries(records).sort(([a],[b])=>a<b?-1:a>b?1:0));
+   let hash=2166136261;
+   for(let i=0;i<data.length;i++){hash=Math.imul(hash^data.charCodeAt(i),16777619)>>>0;}
+   return "fnv1a32:"+hash.toString(16).padStart(8,"0");
+ }
+
  function collect(storage){
    const records={};
    for(let i=0;i<storage.length;i++){
@@ -24,7 +32,8 @@
    return records;
  }
  function serialize(storage,origin="this browser"){
-   return JSON.stringify({schema:SCHEMA,exportedAt:new Date().toISOString(),origin,warning:"Private browser data; do not upload to public issue trackers.",records:collect(storage)},null,2);
+   const records=collect(storage);
+   return JSON.stringify({schema:SCHEMA,exportedAt:new Date().toISOString(),origin,recordCount:Object.keys(records).length,checksum:checksum(records),warning:"Private browser data. Integrity checksum detects accidental corruption only; it is not a signature or encryption.",records},null,2);
  }
  function parse(raw){
    if(typeof raw!=="string"||raw.length>MAX_BYTES)throw Error("Backup must be less than 1 MB.");
@@ -38,7 +47,10 @@
      if(typeof v!=="string"||v.length>MAX_BYTES||!(/^[\[{]/.test(v.trim())))throw Error("Record is not a valid saved-data string.");
      try{JSON.parse(v)}catch{throw Error("Record '"+k+"' is not valid JSON.");}
    }
-   return {records:obj.records,exportedAt:String(obj.exportedAt||"unknown"),count:keys.length};
+   if(obj.recordCount!==undefined&&obj.recordCount!==keys.length)throw Error("Backup record count does not match its contents.");
+   if(obj.checksum!==undefined&&obj.checksum!==checksum(obj.records))throw Error("Backup checksum mismatch. Do not import a modified or corrupted file.");
+   return {records:obj.records,exportedAt:String(obj.exportedAt||"unknown"),origin:String(obj.origin||"unknown").slice(0,100),count:keys.length,checksumState:obj.checksum?"verified":"legacy-unverified"};
+
  }
  function restore(storage, parsed, replace=false){
    // Storage is not transactional: stage new values, then delete stale app-owned
@@ -87,7 +99,10 @@
      try{
        if(file.size>MAX_BYTES)throw Error("The file is larger than 1 MB.");
        const parsed=parse(await file.text());
-       const proceed=confirm("Import "+parsed.count+" saved HealthiestFood data records from "+parsed.exportedAt+"? Existing meal plans, shopping progress, timers and cook-up notes on THIS host may be replaced. Save a backup first.");
+       // Dry-run preview: display the record names, not their private values.
+       const names=Object.keys(parsed.records).sort().join("\\n• ");
+       const preview="Preview "+parsed.count+" app records from "+parsed.exportedAt+" ("+parsed.origin+").\\nIntegrity: "+(parsed.checksumState==="verified"?"checksum matches":"older backup without checksum verification")+".\\n• "+names+"\\n\\nImport replaces existing HealthiestFood data on THIS domain. Save a backup first. Continue?";
+       const proceed=confirm(preview);
        if(!proceed){announce("Import cancelled. No changes made.");return;}
        restore(localStorage,parsed,true);
        announce("Backup imported. Reloading the page to read your restored plan.");
@@ -96,5 +111,5 @@
      finally{picker.value="";}
    });
  }
- return {PREFIX,SCHEMA,collect,serialize,parse,restore,init};
+ return {PREFIX,SCHEMA,collect,checksum,serialize,parse,restore,init};
 });
