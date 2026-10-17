@@ -70,3 +70,31 @@ test("No ABC audio downloads are placed in the offline cache",()=>{
  assert.ok(!sw.includes(".mp3"));
  assert.ok(read("site.css").includes(".podcast-player"));
 });
+
+
+test("Autoplay next is opt-in, follows curated playable order and stops after the last episode",()=>{
+ const ids=player.order().map(x=>x.id);
+ assert.equal(ids.length,16);
+ assert.equal(player.state().autoplayNext,false);
+ assert.equal(player.nextInQueue(ids[0]),ids[1]);
+ assert.equal(player.nextInQueue(ids[ids.length-2]),ids[ids.length-1]);
+ assert.equal(player.nextInQueue(ids[ids.length-1]),null);
+ assert.equal(player.nextInQueue("unknown"),null);
+ assert.equal(player.setAutoplayNext(true),true);
+ assert.equal(player.state().autoplayNext,true);
+ assert.equal(player.setAutoplayNext(false),false);
+ assert.equal(player.state().autoplayNext,false);
+});
+test("Next-episode preference is accessible, persisted, and only starts following a natural end",()=>{
+ const src=read("podcast-player.js");
+ assert.match(src,/autoplayNext:data.autoplayNext/);
+ assert.match(src,/saved\.autoplayNext===true/);
+ assert.match(src,/data\.autoplayNext\?nextInQueue\(finished\):null/);
+ assert.match(src,/startAtBeginning:true/);
+ assert.match(src,/id="podcastAutoplayNext"/);
+ assert.match(src,/type="checkbox"/);
+ assert.match(src,/Last podcast in this list/);
+ assert.match(src,/a\.addEventListener\("ended"/);
+ assert.match(read("index.html"),/Autoplay next podcast/);
+ assert.match(read("site.css"),/\.podcast-autoplay input:focus-visible/);
+});
