@@ -16,16 +16,16 @@ jobs:
           URLS_JSON: '["https://joshualparris.github.io/HealthiestPeople/","https://health-lens-rust.vercel.app/","https://heart-calm-vert.vercel.app/","https://cold-flu-app.vercel.app/","https://joshcoach.vercel.app/","https://hug-coach.vercel.app/","https://lifehubdashboard-fixed.vercel.app/","https://lifehubdashboard-one.vercel.app/","https://josh-hub-two.vercel.app/health","https://josh-hub-96no.vercel.app/health","https://joshhub-backup.onrender.com/health","https://ignite-us-app.vercel.app/","https://ignite-us-sage.vercel.app/","https://clearcore.vercel.app/","https://joshualparris.github.io/Sleepy/","https://josh-dashboard-black.vercel.app/app/dashboard.html","https://joshualparris.github.io/FaithHub/"]'
         run: |
           python - <<'PY'
-          import os,json,urllib.request,urllib.error,ssl
+          import os,json,re,urllib.request,urllib.error,ssl
           urls=json.loads(os.environ["URLS_JSON"])
           for url in urls:
             req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 (compatible; GoodFoodHealthLinks/1.0)"})
             try:
               with urllib.request.urlopen(req,timeout=12) as response:
-                html=response.read(5000).decode("utf-8","replace").lower()
+                html=response.read(40000).decode("utf-8","replace").lower()\n                m=re.search(r"<title[^>]*>(.*?)</title>",html,re.S|re.I)\n                title=re.sub(r"\\s+"," ",m.group(1)).strip()[:120] if m else ""
                 markers=any(x in html for x in ["vercel authentication","deployment protection","sign in to vercel","vercel sso"])
                 status=response.status
-                print(json.dumps({"url":url,"status":status,"final":response.url,"looks_login":markers}))
+                print(json.dumps({"url":url,"status":status,"title":title,"final":response.url,"looks_login":markers}))
             except urllib.error.HTTPError as err:
               print(json.dumps({"url":url,"status":err.code,"looks_login":err.code in (401,403)}))
             except Exception as e:
