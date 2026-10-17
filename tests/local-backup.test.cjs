@@ -51,3 +51,21 @@ test('Failed stale-key removal is covered by the import rollback',()=>{
  assert.equal(storage.getItem('good-food-new'),null);
  assert.equal(storage.getItem('other-service-token'),'leave');
 });
+
+test('Versioned backup includes reproducible checksum and record count',()=>{
+ const m=memory({'good-food-a':'{"a":1}','good-food-b':'{"b":2}'});
+ const raw=Data.serialize(m,'render.example'),obj=JSON.parse(raw),parsed=Data.parse(raw);
+ assert.equal(obj.recordCount,2);
+ assert.match(obj.checksum,/^fnv1a32:[0-9a-f]{8}$/);
+ assert.equal(parsed.checksumState,'verified');
+ assert.equal(parsed.origin,'render.example');
+ assert.equal(Data.checksum({'good-food-b':'{"b":2}','good-food-a':'{"a":1}'}),obj.checksum,'key order must not affect checksum');
+});
+test('Import detects a modified value and remains compatible with older backups',()=>{
+ const raw=Data.serialize(memory({'good-food-a':'{"a":1}'}));
+ const changed=JSON.parse(raw);
+ changed.records['good-food-a']='{"a":7}';
+ assert.throws(()=>Data.parse(JSON.stringify(changed)),/checksum mismatch/i);
+ const older=JSON.stringify({schema:Data.SCHEMA,records:{'good-food-a':'{"a":1}'},exportedAt:"2026-10-17T00:00:00Z"});
+ assert.equal(Data.parse(older).checksumState,'legacy-unverified');
+});
