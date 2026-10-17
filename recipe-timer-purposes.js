@@ -28,8 +28,8 @@
     [
       2,
       "Cook the dry quinoa",
-      "When the rinsed quinoa and measured water start cooking",
-      "Follow your packet; confirm water is absorbed, then rest covered for 5 minutes",
+      "After quinoa has boiled and you have reduced the covered saucepan to a gentle low simmer",
+      "Check absorption at 10–15 minutes (before timer ends), turn heat off once tender and rest covered 5 minutes; fluff. Stop early if dry.",
       "cook"
     ],
     [
@@ -125,8 +125,8 @@
     [
       0,
       "Cook the quinoa",
-      "When quinoa and measured water begin cooking",
-      "Follow packet instructions, confirm cooked, then rest covered for 5 minutes",
+      "After the quinoa and water boil and you reduce the covered saucepan to a gentle low simmer",
+      "Check water absorption at 10–15 minutes; if tender, turn heat off and stand covered 5 minutes. The reminder is not permission to let the pot boil dry.",
       "cook"
     ],
     [
@@ -353,8 +353,8 @@
     [
       1,
       "Cook the quinoa",
-      "When quinoa and measured water begin cooking",
-      "Quinoa is cooked per packet and water has been absorbed",
+      "After the quinoa and water boil and you reduce the covered saucepan to a gentle low simmer",
+      "Check at 10–15 minutes; remove from heat when the water absorbs, rest covered 5 minutes and fluff. Time is a guide, not a doneness guarantee.",
       "cook"
     ],
     [
