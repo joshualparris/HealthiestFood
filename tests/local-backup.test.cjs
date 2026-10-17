@@ -34,7 +34,7 @@ test('Import replacement leaves unrelated storage keys intact',()=>{
 test('Failed import set rolls back and leaves unrelated browser keys untouched',()=>{
  const base=memory({'other-service-token':'leave','good-food-existing':'{"count":8}'});
  let fail=true;
- const storage={...base,setItem(k,v){if(k==='good-food-new'&&fail){fail=false;throw new Error('quota')}base.setItem(k,v)}};
+ const storage={get length(){return base.length},key:i=>base.key(i),getItem:k=>base.getItem(k),setItem(k,v){if(k==='good-food-new'&&fail){fail=false;throw new Error('quota')}base.setItem(k,v)}};
  const incoming=Data.parse(JSON.stringify({schema:Data.SCHEMA,records:{'good-food-new':'{"count":9}'}}));
  assert.throws(()=>Data.restore(storage,incoming,true),/Import failed/);
  assert.equal(storage.getItem('good-food-existing'),'{"count":8}');
@@ -44,7 +44,7 @@ test('Failed import set rolls back and leaves unrelated browser keys untouched',
 test('Failed stale-key removal is covered by the import rollback',()=>{
  const base=memory({'other-service-token':'leave','good-food-old':'{"saved":true}'});
  let fail=true;
- const storage={...base,removeItem(k){if(k==='good-food-old'&&fail){fail=false;throw new Error('storage denial')}base.removeItem(k)}};
+ const storage={get length(){return base.length},key:i=>base.key(i),getItem:k=>base.getItem(k),setItem:(k,v)=>base.setItem(k,v),removeItem(k){if(k==='good-food-old'&&fail){fail=false;throw new Error('storage denial')}base.removeItem(k)}};
  const incoming=Data.parse(JSON.stringify({schema:Data.SCHEMA,records:{'good-food-new':'{"saved":false}'}}));
  assert.throws(()=>Data.restore(storage,incoming,true),/Import failed/);
  assert.equal(storage.getItem('good-food-old'),'{"saved":true}');
