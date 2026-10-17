@@ -37,6 +37,8 @@ on:
       - 'whole-day-data.js'
       - 'food-planner.js'
       - 'timers.js'
+      - 'recipe-methods.js'
+      - 'tests/browser-e2e.cjs'
       - 'e2e/**'
       - '.github/workflows/browser-smoke.yml'
   workflow_dispatch:
