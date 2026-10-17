@@ -75,7 +75,7 @@
   ],
   "di-salmon":[
    "Preheat the fan oven to 190°C. Cut {{3}} into even 2 cm pieces; toss with {{4}} and {{6}}. Roast in one layer for about 20–25 minutes or until tender.",
-   "Rinse {{1}} and cook with the water ratio and time on the quinoa packet (often 12–18 minutes). Rest covered for 5 minutes.",
+   "Measure {{1}} of dry quinoa. Rinse thoroughly under cold running water in a fine-mesh sieve, then drain. In a lidded saucepan combine quinoa with approximately {{water:250}} of fresh water for this selected batch (a 2:1 water-to-quinoa ratio BY VOLUME; the mL estimate uses roughly 180 g dry quinoa per Australian 250 mL cup). Bring to a boil, reduce immediately to low, cover and simmer gently for about 10–15 minutes until the water is absorbed. Turn off the heat; rest COVERED for 5 minutes, then fluff with a fork. Check the grains are tender and add a splash of hot water if still firm. Do not equate grams of dry quinoa with mL of water. Check your actual pack if its cooking directions differ.",
    "Put {{0}} in an ovenproof dish and bake at 190°C fan, usually 12–20 minutes depending on thickness. Verify the thickest centre reaches 63°C or follow stricter package instructions. Steam {{2}} for around 5–7 minutes until fully cooked.",
    "Divide salmon, cooked quinoa, broccoli and carrots equally into the selected portions. Squeeze juice from {{5}} over the plates and serve immediately; chill any leftovers promptly."
   ],
@@ -99,7 +99,7 @@
   "a":[
    "Preheat a fan oven to 190°C. Wash, trim and cut {{5}} into ~1 cm pieces, and {{6}} plus {{7}} into ~2 cm pieces. Keep ready-to-eat fruit and nuts separate from other prep.",
    "Toss the prepared carrots, capsicum and zucchini with {{10@0.6}}, {{13@0.5}} and {{14@0.5}}. Spread in a single layer across roomy trays; roast about 25–35 minutes, turning halfway, until tender.",
-   "Rinse {{2}}, cook using the quinoa packet's water ratio, then stand covered for 5 minutes and fluff.",
+   "Measure {{2}} of dry quinoa. Rinse thoroughly under cold running water in a fine-mesh sieve and drain. Add the quinoa and approximately {{water:420}} fresh water to a lidded saucepan (2 parts water per 1 part quinoa BY VOLUME; estimated using roughly 180 g dry quinoa per 250 mL Australian cup). Bring to the boil, immediately reduce to low, cover and simmer gently about 10–15 minutes until water is absorbed. Switch off the heat, rest COVERED for 5 minutes, then fluff with a fork. Taste a few grains: if firm, add a splash of hot water and cook slightly longer. These are in-app instructions, not confirmed directions from the Macro product's packaging; use any different instructions printed on your actual packet.",
    "Soften {{8}} in {{10@0.4}} for 6–8 minutes. Add {{11}}, {{13@0.5}}, {{14@0.5}}, {{15}} and {{16}} and stir 30 seconds. Add {{3}} and drained/rinsed {{1}}; add up to {{water:100}} extra water only if the sauce is too thick. Simmer 8–10 minutes.",
    "Cook {{4}} thoroughly to its packet directions. Wilt {{9}} into the hot vegetables, then fold in roasted vegetables, cooked quinoa and {{12}}.",
    "Drain {{0}} and weigh the edible sardines. Divide the cooked vegetable/grain base equally into your selected portions, then divide the drained fish equally by weight. Fractional tin counts require weighing the edible fish, not guessing a fraction of a can.",
@@ -122,7 +122,7 @@
    "Cool promptly, refrigerate/freeze within 2 hours and reheat once until steaming hot. At serving, top with {{18}}, {{19}} and {{20}}, shared evenly between portions."
   ],
   "d":[
-   "Rinse {{2}} and cook using the quinoa pack's water ratio; rest covered 5 minutes after cooking and fluff.",
+   "Measure {{2}} of dry quinoa. Rinse in a fine-mesh sieve under cold running water, then drain. Add quinoa and approximately {{water:420}} fresh water to a lidded saucepan, based on the standard 2:1 water-to-quinoa ratio BY VOLUME (roughly 180 g of dry quinoa per Australian 250 mL cup). Bring to the boil, reduce heat to low, cover and gently simmer 10–15 minutes until the water is absorbed. Remove from the heat; stand COVERED for 5 minutes and fluff with a fork. If still firm, add a splash of hot water and cook a little longer. Check your actual packet if its water ratio or timing differs.",
    "Cook {{8}} in {{9@0.6}} over medium heat for about 5 minutes. Add {{4}} and sauté for 6–8 minutes until much of the moisture evaporates.",
    "Add {{5}} and {{6}}, cooking about 5 minutes. Stir in {{10}}, {{11}}, {{12}}, {{13}} and {{14}} for 30 seconds.",
    "Add {{3}}, drained/rinsed {{1}} and diced {{0}}. If too thick, add up to {{water:100}} extra water (not a shopping item); simmer gently 10–12 minutes until hot throughout.",
