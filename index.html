@@ -25,6 +25,7 @@
   <script src="nutrient-ledger.js" defer></script>
   <script src="nutrition-coverage.js" defer></script>
   <script src="whole-day-analysis.js" defer></script>
+  <script src="science-evidence-register.js" defer></script>
   <script src="cook-trial.js" defer></script>
   <script src="food-safety.js" defer></script>
   <script src="food-handling-log.js" defer></script>
@@ -147,10 +148,11 @@
         <div class="science-tile"><span>04 / FREEZER SAFETY</span><h3>Cooling is part of cooking</h3><p>NSW guidance: shallow portions, fridge/freezer within two hours, rice stored refrigerated for no more than two days, and reheat leftovers until steaming hot.</p><a href="https://www.foodauthority.nsw.gov.au/consumer/food-extra-care/leftovers" target="_blank" rel="noopener noreferrer">NSW Food Authority ↗</a></div>
       </div>
       <section class="research-details" aria-label="Nutrition fact checks"><div class="section-heading"><div><span class="section-kicker">WHAT EACH LUNCH CONTRIBUTES</span><h2>Evidence-led <em>comparison.</em></h2></div></div><p class="audit-note">The original V6 versions used subjective /100 ratings. We no longer display them as a leaderboard because they cannot measure lifespan or show which meal is scientifically best. Compare ingredients, known label data and unresolved nutrient gaps instead.</p><details class="historical-scorecard"><summary>See historical subjective scores (not a health or longevity ranking)</summary><div id="auditScores" class="audit-scores"></div></details><div class="section-heading evidence-heading"><div><span class="section-kicker">CHECK THE CLAIMS</span><h2>What we <em>know.</em></h2></div></div><div id="auditClaims" class="audit-claims"></div><p class="audit-note">We have not verified a Dubbo Woolworths checkout, local shelf availability, whole-meal nutritional laboratory values, personal nutrient needs or any lifespan prediction. <a href="https://github.com/joshualparris/HealthiestFood/blob/main/SITE_FACT_CHECK.md" target="_blank" rel="noopener noreferrer">Read the full fact-check ledger ↗</a></p></section><div class="section-heading evidence-heading"><div><span class="section-kicker">TRACE EVERY CLAIM</span><h2>The source <em>library.</em></h2></div></div>
-      <section id="nutritionCoverage" aria-label="Verified nutrient coverage and uncertainties"></section>
+      <section id="scienceEvidenceRegister" aria-label="Evidence status and source traceability for each recipe"></section>
+      <section id="nutritionCoverage" aria-label="Retail-label nutrient coverage and uncertainties"></section>
       <section id="wholeDayReport" aria-label="Australian nutrient analysis of 17 recipes and 7-day menu"></section>
       <div id="sourceList" class="source-list"></div>
-      <div class="disclaimer">This site is general food information, not individual medical nutrition advice. Recipes are planned, not kitchen-tested or independently nutrient-analysed. Gluten-free suitability depends on current labels and cross-contact requirements. Price figures are not live retail quotes.</div>
+      <div class="disclaimer">This site is general food information, not individual medical nutrition advice. Some ingredients have AFCD3 generic nutrient estimates; recipes have not been independently tested as cooked meals or assessed for personal nutritional adequacy. Allergen suitability depends on current purchased labels and handling. Price figures are not live Dubbo retail quotes.</div>
     </section>
 
     <section id="view-media" class="view hidden section-shell view-body">
