@@ -378,6 +378,16 @@ async function main(){
       assert.match(roast,/COOKING REMINDER · 30 MINUTES/);
       assert.match(roast,/Roast the carrots, capsicum and zucchini/);
       assert.match(roast,/loaded trays go into/);
+      await page.locator('#nextStep').click();
+      const quinoa=await page.locator('#cookContent .cook-body>p').first().innerText();
+      assert.match(quinoa,/150 g/);
+      assert.match(quinoa,/420 mL/);
+      assert.match(quinoa,/low/);
+      assert.match(quinoa,/10–15 minutes/);
+      assert.match(quinoa,/5 minutes/);
+      assert.match(quinoa,/BY VOLUME/);
+      assert.match(await page.locator('.timer-purpose').innerText(),/gentle low simmer/);
+      await page.locator('#prevStep').click();
     });
     await check('two overlapping timers persist after page refresh',async()=>{
       await page.locator('#prevStep').click();
