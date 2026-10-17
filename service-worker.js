@@ -3,7 +3,7 @@
  * guidance as current. Cache only same-origin static assets, never personal data.
  * An offline copy is a convenience, NOT current supermarket/product information.
  */
-const CACHE_NAME="healthiestfood-shell-20261017-purpose-timers-v1";
+const CACHE_NAME="healthiestfood-shell-20261017-podcast-autoplay-v1";
 const ASSETS=[
  "./","./index.html","./longevity.html","./cooking-methods.html","./freezer-labels.html","./site.css","./site-data.js",
  "./whole-day-data.js","./ingredient-catalogue.js",
