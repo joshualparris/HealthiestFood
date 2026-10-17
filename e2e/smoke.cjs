@@ -75,15 +75,15 @@ async function main(){
         const selected=p.locator('#recipeDetail');
         // Default recipe A: 8 sardine tins and 150 g quinoa for 5 portions.
         assert.equal((await selected.locator('.stepper output').innerText()).trim(),'5');
-        assert.match(await selected.locator('.ingredients-list').innerText(),/8 tins[\\s\\S]*sardines/);
+        assert.match(await selected.locator('.ingredients-list').innerText(),/8 tins[\s\S]*sardines/);
         await selected.locator('button[data-servings="1"]').click();
         assert.equal((await selected.locator('.stepper output').innerText()).trim(),'6',width+' plus');
-        assert.match(await selected.locator('.ingredients-list').innerText(),/9\\.6 tins[\\s\\S]*sardines/);
-        assert.match(await selected.locator('.ingredients-list').innerText(),/180 g[\\s\\S]*quinoa/);
+        assert.match(await selected.locator('.ingredients-list').innerText(),/9\\.6 tins[\s\S]*sardines/);
+        assert.match(await selected.locator('.ingredients-list').innerText(),/180 g[\s\S]*quinoa/);
         assert.match(await selected.locator('[data-add-to-shop="a"]').innerText(),/6 portions/);
         await selected.locator('button[data-servings="-1"]').click();
         assert.equal((await selected.locator('.stepper output').innerText()).trim(),'5',width+' minus');
-        assert.match(await selected.locator('.ingredients-list').innerText(),/150 g[\\s\\S]*quinoa/);
+        assert.match(await selected.locator('.ingredients-list').innerText(),/150 g[\s\S]*quinoa/);
         assert.ok(await selected.locator('button[data-servings="1"]').evaluate(el=>el.getBoundingClientRect().width>=44),'touch target too small');
         assert.equal(errors.length,0,errors.join('; '));
         await p.close();
