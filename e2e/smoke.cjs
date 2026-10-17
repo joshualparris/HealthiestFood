@@ -72,7 +72,7 @@ async function main(){
       const register=page.locator('#scienceEvidenceRegister');
       assert.equal(await register.locator('.evidence-recipe').count(),17);
       assert.equal(await register.locator('.evidence-status-item').count(),6);
-      await register.locator('.evidence-recipe').first().locator('summary').click();
+      await register.locator('.evidence-recipe').first().locator(':scope > summary').click();
       const open=register.locator('.evidence-recipe[open]').first();
       assert.ok(await open.locator('tbody tr').count()>3);
       assert.match(await open.innerText(),/AFCD|Retail label|No modelled nutrient value/);
