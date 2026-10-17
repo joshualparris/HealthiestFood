@@ -393,8 +393,8 @@ async function main(){
       await page.locator('#nextStep').click();
       const sauce=page.locator('#cookContent .cook-action-list > li');
       assert.ok(await sauce.count()>=4,'Chickpea-sauce instructions must be broken into numbered actions');
-      assert.match(await sauce.nth(0).innerText(),/100 g.*brown onion.*10 mL/);
-      assert.match(await sauce.nth(1).innerText(),/0.25 tsp black pepper/);
+      assert.match(await sauce.nth(0).innerText(),/120 g.*brown onion.*12 mL/);
+      assert.match(await sauce.nth(1).innerText(),/0.3 tsp black pepper/);
       assert.match(await page.locator('#cookContent .cook-action-list').innerText(),/Simmer 8–10 minutes/);
       await page.locator('#prevStep').click();
       await page.locator('#prevStep').click();
