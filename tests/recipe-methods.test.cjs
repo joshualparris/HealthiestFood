@@ -76,7 +76,38 @@ test("recipe page loads method metadata before app and renders measured amounts 
  assert.ok(html.indexOf('src="whole-day-data.js"')<html.indexOf('src="recipe-methods.js"'));
  assert.ok(html.indexOf('src="recipe-methods.js"')<html.indexOf('src="app.js"'));
  assert.match(app,/RecipeMethods\.stage\(r,step,cook\.portions\)/);
- assert.match(app,/RecipeMethods\.describe\(r,step,cook\.portions\)/);
- assert.match(app,/RecipeMethods\.describe\(r,s,servings\)/);
+ assert.match(app,/RecipeMethods\.actions\(r,step,cook\.portions\)/);
+ assert.match(app,/RecipeMethods\.actions\(r,s,servings\)/);
+ assert.match(app,/class="method-action-list cook-action-list"/);
+ assert.match(css,/\.cook-action-list/);
  assert.match(css,/\.step-measures/);
+});
+
+
+test("all 17 recipes show each cooking stage as ordered actions without dropping scaled detail",()=>{
+ let stages=0,multi=0,lines=0;
+ for(const r of recipes)for(const step of r.steps)for(const portionCount of [1,r.yield,3]){
+  const full=methods.describe(r,step,portionCount);
+  const numbered=methods.actions(r,step,portionCount);
+  assert.ok(numbered.length>0,r.id+": empty step");
+  assert.equal(numbered.join(" ").replace(/\s+/g," "),full.replace(/\s+/g," "),r.id+": text changed or lost");
+  assert.ok(numbered.every(line=>line.trim()&&!/\{\{/.test(line)),r.id+": unresolved or empty line");
+  stages++;lines+=numbered.length;if(numbered.length>=2)multi++;
+ }
+ assert.equal(stages,63*3);
+ assert.ok(multi>=55*3,"Multi-action paragraphs must be visibly broken apart");
+ assert.ok(lines>175*3);
+});
+test("quinoa parenthesised ratios and 0.25 tsp quantities are not split incorrectly",()=>{
+ const recipe=get("a");
+ const quinoa=methods.actions(recipe,recipe.steps[2],5);
+ assert.ok(quinoa.some(a=>a.includes("BY VOLUME; estimated using roughly")),"Keep parenthesised aside intact");
+ assert.ok(quinoa.every(a=>!a.startsWith("estimated using")));
+ const sauce=methods.actions(recipe,recipe.steps[3],5);
+ assert.ok(sauce.length>=4);
+ assert.ok(sauce.some(a=>a.includes("0.25 tsp black pepper")));
+ assert.ok(!sauce.some(a=>a.startsWith("25 tsp")));
+ const code=read("app.js");
+ assert.ok(code.includes('<ol class="method-action-list cook-action-list"'),"Guided cooking must use an ordered list");
+ assert.ok(code.includes('<ol class="method-action-list method-action-preview"'),"Full recipe method must use an ordered list");
 });
