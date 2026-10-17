@@ -46,3 +46,9 @@ test("Label page has a usable print action and source-linked safety disclaimer",
  assert.match(html,/foodauthority\.nsw\.gov\.au/);
  assert.match(app,/freezer-labels\.html\?recipe=/);
 });
+
+test("Freezer-label page and script are included in the returning-user offline cache",()=>{
+ const sw=read("service-worker.js");
+ assert.match(sw,/"\.\/freezer-labels\.html"/);
+ assert.match(sw,/"\.\/freezer-labels\.js"/);
+});
