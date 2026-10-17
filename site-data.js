@@ -138,8 +138,8 @@ window.FOOD_DATA = {
         {
           "title": "Cook the quinoa",
           "minutes": 18,
-          "detail": "Rinse 150 g dry quinoa. Cook with water following packet instructions (often ~300 mL). Rest covered 5 minutes, then fluff.",
-          "tip": "Use the packet's water ratio rather than guessing from weight."
+          "detail": "Rinse 150 g dry quinoa thoroughly in a fine sieve. Add approximately 420 mL water to a lidded saucepan (2:1 water-to-quinoa BY VOLUME, approximate). Bring to the boil, reduce to low, cover and simmer about 10–15 min until water is absorbed. Stand covered off the heat 5 min, then fluff. Use actual pack directions if different.",
+          "tip": "Two parts water to one part quinoa refers to volume, NOT 150 g to 300 mL. The 420 mL water is an estimate for 150 g quinoa. Read the actual pack if different."
         },
         {
           "title": "Simmer the chickpea sauce",
@@ -587,7 +587,7 @@ window.FOOD_DATA = {
         {
           "title": "Cook the quinoa",
           "minutes": 18,
-          "detail": "Rinse 150 g quinoa, cook according to its packet water ratio, stand covered five minutes and fluff.",
+          "detail": "Rinse 150 g quinoa, then combine with approximately 420 mL water (2 parts water to 1 part quinoa by volume). Bring to the boil, reduce to low, cover and simmer 10–15 min until absorbed; rest covered off heat 5 min, then fluff. Follow actual pack directions if different.",
           "tip": "This grain is naturally gluten-free but check packaging if strict avoidance matters."
         },
         {
