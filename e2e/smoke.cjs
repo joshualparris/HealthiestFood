@@ -66,6 +66,29 @@ async function main(){
       assert.equal(destination.status(),200);
       assert.match(await destination.text(),/<title>[^<]*[Cc]ooking/i);
     });
+    await check('serving +/- really scales amounts, shopping quantity and cooking from phone and desktop',async()=>{
+      for(const width of [390,1280]){
+        const p=await browser.newPage({viewport:{width,height:844}});
+        const errors=[];p.on('pageerror',e=>errors.push(e.message));
+        await p.goto(base+'/#recipes',{waitUntil:'domcontentloaded'});
+        await p.locator('#view-recipes').waitFor({state:'visible'});
+        const selected=p.locator('#recipeDetail');
+        // Default recipe A: 8 sardine tins and 150 g quinoa for 5 portions.
+        assert.equal((await selected.locator('.stepper output').innerText()).trim(),'5');
+        assert.match(await selected.locator('.ingredients-list').innerText(),/8 tins[\\s\\S]*sardines/);
+        await selected.locator('button[data-servings="1"]').click();
+        assert.equal((await selected.locator('.stepper output').innerText()).trim(),'6',width+' plus');
+        assert.match(await selected.locator('.ingredients-list').innerText(),/9\\.6 tins[\\s\\S]*sardines/);
+        assert.match(await selected.locator('.ingredients-list').innerText(),/180 g[\\s\\S]*quinoa/);
+        assert.match(await selected.locator('[data-add-to-shop="a"]').innerText(),/6 portions/);
+        await selected.locator('button[data-servings="-1"]').click();
+        assert.equal((await selected.locator('.stepper output').innerText()).trim(),'5',width+' minus');
+        assert.match(await selected.locator('.ingredients-list').innerText(),/150 g[\\s\\S]*quinoa/);
+        assert.ok(await selected.locator('button[data-servings="1"]').evaluate(el=>el.getBoundingClientRect().width>=44),'touch target too small');
+        assert.equal(errors.length,0,errors.join('; '));
+        await p.close();
+      }
+    });
     await check('canonical ingredient IDs connect all 17 meals without changing recipes',async()=>{
       const stats=await page.evaluate(()=>{
         const c=window.FoodIngredients,recipes=window.FOOD_DATA.recipes;
