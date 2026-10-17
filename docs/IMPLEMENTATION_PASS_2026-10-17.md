@@ -45,7 +45,7 @@ The original 231-row audit is a dated snapshot, **not an automatically updated p
 
 - Automated axe-core scans cover 10 states: mobile home/recipes/planner/shopping/science/podcasts/longevity/cooking lab plus desktop home and shopping.
 - Uploads machine-readable evidence as a GitHub Actions artifact. Results identify violations and source nodes, rather than claiming a green unit-test run establishes WCAG.
-- The **initial scan found 19 serious/critical rule occurrences across ten states** and no JS runtime errors; rule occurrences can repeat across views and are not 19 independent bugs. Follow-up node-level investigation and fixes are required.
+- The **initial scan found 19 serious/critical rule occurrences across ten states** and no JS runtime errors. We addressed contrast, accessible-name mismatch and horizontally scrollable table keyboard access. **The subsequent 10-state scan at commit `2990bfdfd9d5cb317483105c442d12b979362e64` reported 0 axe-rule violations, 0 serious/critical violations and 0 JS runtime errors** ([successful workflow run](https://github.com/joshualparris/HealthiestFood/actions/runs/38984312769)). This is a scoped automated result only; cooking overlays, screen readers, large zoom, hardware and full WCAG 2.2 AA are *not* certified.
 - Axe coverage does **not** replace manual keyboard-only/screen-reader/touch-target, 200/400% zoom, OS colour/contrast checks, and hardware-device verification.
 
 ## Concrete remaining categories from the original 231
