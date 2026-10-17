@@ -380,7 +380,7 @@ async function main(){
       assert.match(roast,/loaded trays go into/);
       await page.locator('#nextStep').click();
       const quinoa=await page.locator('#cookContent .cook-body>p').first().innerText();
-      const quantities=quinoa.match(/Measure (\\d+(?:\\.\\d+)?) g[^.]*?approximately (\\d+(?:\\.\\d+)?) mL/);
+      const quantities=quinoa.match(/Measure (\d+(?:\.\d+)?) g[\s\S]*?approximately (\d+(?:\.\d+)?) mL/);
       assert.ok(quantities,'Quinoa cooking step must state the current dry quantity and explicit water');
       assert.ok(Math.abs(Number(quantities[2])/Number(quantities[1])-2.8)<0.0001,'Water scales with the actual chosen portions');
       assert.doesNotMatch(quinoa,/of dry quinoa of dry quinoa/);
