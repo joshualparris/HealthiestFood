@@ -160,8 +160,8 @@
    if(ch==="("){parenDepth++;continue;}
    if(ch===")"){parenDepth=Math.max(0,parenDepth-1);continue;}
    if(parenDepth||!/[.!?;]/.test(ch))continue;
-   if(ch==="."&&/(?:e\\.g|i\\.e|etc|Dr|Mr|Mrs|vs)$/i.test(source.slice(Math.max(start,i-9),i)))continue;
-   const match=/^\\s+[A-Za-z]/.exec(source.slice(i+1));
+   if(ch==="."&&/(?:e\.g|i\.e|etc|Dr|Mr|Mrs|vs)$/i.test(source.slice(Math.max(start,i-9),i)))continue;
+   const match=/^\s+[A-Za-z]/.exec(source.slice(i+1));
    if(!match)continue;
    const action=source.slice(start,i+1).trim();
    if(action)out.push(action);
