@@ -150,6 +150,28 @@
    return found.label;
   }).replace(/\{\{water:(\d+(?:\.\d+)?)\}\}/g,(all,mL)=>fmt(Number(mL)*amount)+" mL");
  }
+ // Turn each cooking stage into small sequential actions rather than a single dense paragraph.
+ // Only split at sentence/semicolon boundaries OUTSIDE parentheses, so decimal
+ // measurements, parenthesised ratios, warnings and quantity placeholders stay intact.
+ function splitActions(value){
+  const source=String(value).trim(),out=[];let start=0,parenDepth=0;
+  for(let i=0;i<source.length;i++){
+   const ch=source[i];
+   if(ch==="("){parenDepth++;continue;}
+   if(ch===")"){parenDepth=Math.max(0,parenDepth-1);continue;}
+   if(parenDepth||!/[.!?;]/.test(ch))continue;
+   if(ch==="."&&/(?:e\\.g|i\\.e|etc|Dr|Mr|Mrs|vs)$/i.test(source.slice(Math.max(start,i-9),i)))continue;
+   const match=/^\\s+[A-Za-z]/.exec(source.slice(i+1));
+   if(!match)continue;
+   const action=source.slice(start,i+1).trim();
+   if(action)out.push(action);
+   start=i+match[0].length;
+  }
+  const last=source.slice(start).trim();
+  if(last)out.push(last);
+  return out;
+ }
+ function actions(recipe,step,portions){return splitActions(describe(recipe,step,portions));}
  function validate(recipe){
   const stages=uses[recipe.id],texts=method[recipe.id];
   if(!stages||!texts||stages.length!==recipe.steps.length||texts.length!==recipe.steps.length)throw Error(recipe.id+": missing step plan");
@@ -174,5 +196,5 @@
   for(const r of recipes){validate(r);r.steps.forEach((s,i)=>{s.uses=uses[r.id][i];s.detail=method[r.id][i];});}
   return recipes;
  }
- return {apply,stage,describe,validate,uses,method};
+ return {apply,stage,describe,actions,splitActions,validate,uses,method};
 });
