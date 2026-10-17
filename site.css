@@ -578,3 +578,38 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
 #recipeDetail .stepper button:focus-visible{outline:3px solid #2e7448;outline-offset:3px}
 #recipeDetail .stepper output{font-size:23px;font-variant-numeric:tabular-nums;min-width:30px;font-weight:800;text-align:center}
 @media(max-width:440px){#recipeDetail .servings-box{padding:12px;justify-content:space-between}#recipeDetail .stepper{gap:8px}}
+
+
+/* Evidence status: source matches are not declarations of verified meals. */
+#scienceEvidenceRegister{margin:34px 0 45px;scroll-margin-top:100px}
+#scienceEvidenceRegister>.page-head h2{font:500 clamp(29px,4.3vw,48px)/1.15 var(--serif);letter-spacing:-1px;color:var(--pine);margin:12px 0}
+#scienceEvidenceRegister>.page-head p{max-width:860px}
+.evidence-status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.evidence-status-item{background:#f8faf4;border:1px solid #d6e2d3;padding:17px 19px;border-radius:16px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.evidence-status-item strong{font-weight:800;font-size:14px;line-height:1.4;color:#183f2e}
+.evidence-status-item span{font-size:11px;font-weight:800;color:#53735a;letter-spacing:.2px}
+.evidence-status-item p{font-size:12px;color:#576e5c;line-height:1.65;margin:4px 0;flex:1}
+.evidence-status-item a{font-size:12px;font-weight:700;color:#285c42}
+.evidence-summary-line{padding:15px 17px;border-radius:14px;background:#e9f1e2;color:#315643;line-height:1.65;font-size:13px;margin:19px 0}
+.evidence-register-recipes{margin-top:30px}
+.evidence-register-recipes h3{font:500 30px var(--serif);color:var(--pine);margin:0 0 7px}
+.evidence-register-recipes>p,.evidence-register-caveat{font-size:13px;line-height:1.75;color:#5b7160}
+.evidence-recipe{border:1px solid #d8e4d4;border-radius:13px;background:#fffefa;margin:8px 0;overflow:hidden}
+.evidence-recipe>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px;cursor:pointer;color:var(--pine);font-weight:750}
+.evidence-recipe>summary>span{min-width:0;overflow-wrap:anywhere}
+.evidence-recipe>summary small{font-size:11px;line-height:1.5;color:#587460;text-align:right;flex:0 0 auto;font-weight:650}
+.evidence-recipe[open]{padding-bottom:13px}
+.evidence-recipe[open]>summary{border-bottom:1px solid #e0e8df}
+.evidence-recipe>p,.evidence-recipe>details{font-size:12px;line-height:1.65;color:#536d5b;margin:13px 16px}
+.evidence-recipe .whole-day-scroll{margin:8px 14px;overflow-x:auto}
+.evidence-recipe table{border-collapse:collapse;min-width:690px;width:100%;font-size:12px;line-height:1.5}
+.evidence-recipe th,.evidence-recipe td{padding:9px 10px;border-bottom:1px solid #e8eee6;text-align:left;vertical-align:top}
+.evidence-recipe thead th{color:#254e37;background:#f3f7f0}
+.evidence-recipe tbody th{font-weight:700;color:#254e37;min-width:145px}
+.evidence-recipe>details{padding:9px;background:#f5f9f3;border-radius:8px}
+.evidence-recipe>details summary{cursor:pointer;font-weight:800}
+.evidence-recipe>details ul{columns:2;margin:10px 0}
+.evidence-register-caveat{border-top:1px solid #dbe7d7;padding-top:13px}
+@media(max-width:800px){.evidence-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.evidence-status-grid{grid-template-columns:1fr}.evidence-recipe>summary{flex-direction:column;align-items:flex-start}.evidence-recipe>summary small{text-align:left}.evidence-recipe>details ul{columns:1}}
+@media print{.evidence-recipe{break-inside:avoid}.evidence-recipe:not([open]){display:none}.evidence-status-grid{display:grid;grid-template-columns:1fr 1fr}}
