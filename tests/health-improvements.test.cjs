@@ -59,7 +59,7 @@ test('Planner shopping integration is implemented and label unknowns persist',()
  assert.ok(planner.includes('window.FoodShopping.render('));
  assert.ok(planner.includes('window.FoodShopping?.handle('));
  assert.ok(app.includes('window.FoodNutrition?.render()'));
- assert.ok(app.includes('window.RecipeMethods.describe(r,step,cook.portions)'));
+ assert.ok(app.includes('window.RecipeMethods.actions(r,step,cook.portions)'));
  assert.ok(app.includes('window.RecipeMethods.stage(r,step,cook.portions)'));
  assert.ok(read('nutrition-coverage.js').includes('unknown, not zero'));
  assert.ok(html.includes('id="nutritionCoverage"'));
