@@ -26,7 +26,8 @@ async function main(){
   assert.equal(await page.locator('.stepper output').innerText(),'6');
   await page.locator('[data-start="a"]').click();
   await page.locator('#nextStep').click();
-  assert.match(await page.locator('.cook-body>p').innerText(),/18 mL/);
+  assert.match(await page.locator('.cook-action-list').innerText(),/18 mL/);
+  assert.ok(await page.locator('.cook-action-list > li').count()>=3,'Guided actions should be individually numbered');
   await page.locator('#timerToggle').click();
   await page.locator('#nextStep').click();
   await page.locator('#timerToggle').click();
