@@ -1,5 +1,13 @@
 # HealthiestFood
 
+## Central Health Hub
+
+**[Open the interactive health website hub](https://healthiest-food.vercel.app/health-hub.html)** · [Verified 13 Nov 2026 health site inventory](docs/HEALTH_HUB_INVENTORY_2026-11-13.md) · [Catalogue source](health-hub-data.js)
+
+Search 22 health, recovery, movement, food, research, spiritual and wellbeing experiences with category filters, availability labels, saved favourites, and 33 direct links including alternate and historical deployments. Publicly available, sign-in-only, historical and source-only projects are separately labelled. Update link checks rather than assuming a Vercel READY deployment implies unauthenticated public access.
+
+
+
 ## Further implementation of the 231-item backlog (17 October 2026)
 
 **[Open the new evidence-based implementation report](docs/IMPLEMENTATION_PASS_2026-10-17.md)** · [Full 231-item acceptance audit](docs/REPOSITORY_ACCEPTANCE_AUDIT_2026-10-17.md) · [Original acceptance criteria](docs/IMPROVEMENT_BACKLOG_2026-10-17.csv).
