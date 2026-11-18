@@ -277,3 +277,23 @@ test("Browser music loader reads streamed Drive scan counts",async()=>{
  assert.equal(result.tracks.length,1);
  assert.equal(music._data.musicProgress.songsFound,942);
 });
+
+test("Browser music loading merges Cloudflare cursor pages and deduplicates songs",async()=>{
+ const response=json=>({ok:true,status:200,headers:new Headers({"content-type":"application/json"}),json:async()=>json});
+ const first=response({pageMode:"cursor",configured:true,signedIn:true,tracks:[{id:"a",title:"A"}],nextCursor:"cursor-2",done:false,foldersScanned:20,songsFound:1});
+ let calls=0;
+ const previous=global.fetch;
+ global.fetch=async (url,options)=>{
+  calls++;
+  assert.equal(url,"/api/music/tracks?mode=page");
+  assert.equal(options.method,"POST");
+  assert.equal(JSON.parse(options.body).cursor,"cursor-2");
+  return response({pageMode:"cursor",configured:true,signedIn:true,tracks:[{id:"a",title:"A"},{id:"b",title:"B"}],nextCursor:null,done:true,foldersScanned:40,songsFound:3,truncated:false});
+ };
+ try{
+  const result=await music.readMusicResponse(first);
+  assert.deepEqual(result.tracks.map(x=>x.id),["a","b"]);
+  assert.equal(calls,1);
+  assert.equal(music._data.musicProgress.foldersScanned,40);
+ }finally{global.fetch=previous;}
+});
