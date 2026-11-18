@@ -8,7 +8,7 @@ const Tags=w?.FoodMusicTags||(typeof module==="object"&&module.exports?require("
 const TAG_STORE="good-food-music-tags-v1";
 const STORE="good-food-music-v1";
 const esc=x=>String(x).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch]));
-const data={tracks:[],queue:[],index:-1,status:"idle",message:"",shuffle:false,playing:false,filter:"",sort:"title",group:"none",visible:200,tags:{},scanning:false,scanDone:0,scanTotal:0,scanGeneration:0,scanAbort:null,loadAbort:null,loadTimer:null,loadStarted:0,loadDuration:0,loadGeneration:0,loadLog:[],loadNotice:0,justSignedIn:false,audio:null,root:null,mini:null};
+const data={tracks:[],queue:[],index:-1,status:"idle",message:"",shuffle:false,playing:false,filter:"",sort:"title",group:"none",visible:200,tags:{},scanning:false,scanDone:0,scanTotal:0,scanGeneration:0,scanAbort:null,musicProgress:null,loadAbort:null,loadTimer:null,loadStarted:0,loadDuration:0,loadGeneration:0,loadLog:[],loadNotice:0,justSignedIn:false,audio:null,root:null,mini:null};
 const MESSAGES={
  not_configured:"Music isn't set up on this site yet. It needs Google sign-in settings on the Vercel project.",
  offline_host:"Drive music only works on the main Vercel site, because it needs the private streaming service.",
@@ -123,7 +123,7 @@ function loadingHtml(){
   '<h3 id="musicLoadTitle">Loading your music…</h3>'+
   '<p>Connecting to Google Drive and building your song library. Large folders can take a little longer.</p>'+
   '<div class="music-load-bar" role="progressbar" aria-label="Loading music from Google Drive" aria-valuetext="Loading; exact percentage is not available yet"><span></span></div>'+
-  '<div class="music-load-meta"><span id="musicLoadElapsed">0s elapsed</span><span>Waiting for Google Drive</span></div>'+
+  '<div class="music-load-meta"><span id="musicLoadElapsed">0s elapsed</span><span id="musicLoadPhase" aria-live="polite">Waiting for Google Drive</span></div>'+
   '<details class="music-load-details"><summary>Show loading details</summary><ol id="musicLoadLog"></ol></details>'+
   '<button type="button" class="btn btn-outline" data-music="retry">↻ Retry loading</button></section>';
 }
@@ -145,6 +145,46 @@ function loadTick(){
   data.loadNotice=2;loadLog("This is taking longer than usual. You can retry without signing in again.");
  }
 }
+
+async function readMusicResponse(response) {
+ const type=response.headers.get("content-type")||"";
+ if(type.includes("application/json"))return response.json();
+ if(!type.includes("application/x-ndjson")||!response.body||typeof response.body.getReader!=="function")
+  throw new Error("Music service did not return a supported response");
+ const reader=response.body.getReader(),decoder=new TextDecoder();
+ let buffer="",result=null,lastReport=0;
+ function handle(line) {
+  if(!line.trim())return;
+  const item=JSON.parse(line);
+  if(item.type==="error")throw Object.assign(new Error("Drive listing failed"),{musicCode:item.error});
+  if(item.type==="complete"){result=item;return;}
+  if(item.type==="progress"){
+   data.musicProgress=item;
+   const label=data.root?.querySelector("#musicLoadPhase");
+   if(label)label.textContent=item.songsFound+" songs found · "+item.foldersScanned+" folders checked";
+   const meter=data.root?.querySelector(".music-load-bar");
+   if(meter)meter.setAttribute("aria-valuetext",item.songsFound+" songs found in "+item.foldersScanned+" folders");
+   if(item.foldersScanned===1||item.foldersScanned-lastReport>=64){
+    lastReport=item.foldersScanned;
+    loadLog("Checked "+item.foldersScanned+" folders; found "+item.songsFound+" songs so far.");
+   }
+  }
+ }
+ try{
+  while(true){
+   const chunk=await reader.read();
+   if(chunk.done)break;
+   buffer+=decoder.decode(chunk.value,{stream:true});
+   let pos;
+   while((pos=buffer.indexOf("\n"))>=0){handle(buffer.slice(0,pos));buffer=buffer.slice(pos+1);}
+  }
+  buffer+=decoder.decode();
+  if(buffer.trim())handle(buffer);
+ }finally{try{reader.releaseLock();}catch{}}
+ if(!result)throw new Error("Music scan finished without a completed list");
+ return result;
+}
+
 async function load(){
  data.loadGeneration++;
  const generation=data.loadGeneration;
@@ -152,7 +192,7 @@ async function load(){
  if(data.loadTimer)clearInterval(data.loadTimer);
  const controller=new AbortController();
  data.loadAbort=controller;
- data.loadStarted=Date.now();data.loadDuration=0;data.loadNotice=0;data.loadLog=[];
+ data.loadStarted=Date.now();data.loadDuration=0;data.loadNotice=0;data.loadLog=[];data.musicProgress=null;
  const signInNotice=data.status==="idle"?data.message:"";
  data.message=signInNotice;data.status="loading";
  sync();
@@ -160,16 +200,11 @@ async function load(){
  data.justSignedIn=false;
  data.loadTimer=setInterval(loadTick,1000);
  // Google Drive can be slow with many nested folders, but should not hang forever.
- const timeout=setTimeout(()=>controller.abort(),90000);
+ const timeout=setTimeout(()=>controller.abort(),180000);
  try{
-  const r=await fetch("/api/music/tracks",{credentials:"same-origin",headers:{Accept:"application/json"},signal:controller.signal});
+  const r=await fetch("/api/music/tracks?stream=1",{credentials:"same-origin",headers:{Accept:"application/x-ndjson, application/json"},signal:controller.signal});
   if(generation!==data.loadGeneration)return;
-  const type=r.headers.get("content-type")||"";
-  if(!type.includes("application/json")){
-   data.status="unavailable";data.message=MESSAGES.offline_host;
-   loadLog("The music service did not return JSON. Please try the main Vercel site.");return;
-  }
-  const body=await r.json();
+  const body=await readMusicResponse(r);
   if(generation!==data.loadGeneration)return;
   if(!r.ok&&!body.error)throw Error("Music service returned HTTP "+r.status);
   if(!body.configured){data.status="unavailable";data.message=MESSAGES.not_configured;loadLog("Music sign-in is not configured on the server.");}
@@ -181,14 +216,14 @@ async function load(){
    data.tracks=tracks;data.truncated=!!body.truncated;
    const valid=new Map(data.tracks.map(t=>[t.id,t.size]));
    for(const [key,entry] of Object.entries(data.tags))if(valid.get(key)!==entry.size)delete data.tags[key];
-   data.message=body.missingFolders>0?"One of your music folders couldn't be opened with this Google account, so its songs aren't listed.":"";
+   data.message=body.missingFolders>0?"One of your music folders could not be opened with this Google account.":body.skippedFolders>0?body.skippedFolders+" subfolders could not be opened; some songs may be missing.":"";
    data.status="ready";
   }
  }catch(e){
   if(generation!==data.loadGeneration)return;
   data.status="error";
-  data.message=e?.name==="AbortError"?"Google Drive took too long to respond. Please retry loading your songs.":"Couldn't contact the music service. Check your internet connection and try again.";
-  loadLog(e?.name==="AbortError"?"Music request timed out after 90 seconds.":"Music request failed before the song list was available.");
+  data.message=e?.name==="AbortError"?"Google Drive took too long to respond. Please retry loading your songs.":e?.musicCode?MESSAGES[e.musicCode]||MESSAGES.drive_error:"Couldn't contact the music service. Check your internet connection and try again.";
+  loadLog(e?.name==="AbortError"?"Music request timed out after 180 seconds.":"Music request failed before the song list was available.");
  }finally{
   clearTimeout(timeout);
   if(generation===data.loadGeneration){
@@ -284,5 +319,5 @@ function mount(){
 }
 if(w&&w.document){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount);else mount();}
 const pause=()=>data.audio?.pause();
-return {mount,load,loadingHtml,pause,playTrack,playAll,playGroup,next,prev,toggle,setShuffle,setSort,setGroup,scanTags,stopScan,shuffled,filtered,sorted,groups,listHtml,streamUrl,state:()=>({status:data.status,tracks:data.tracks.length,index:data.index,shuffle:data.shuffle,sort:data.sort,group:data.group,scanning:data.scanning,playing:data.playing,current:current()}),_data:data};
+return {mount,load,loadingHtml,readMusicResponse,pause,playTrack,playAll,playGroup,next,prev,toggle,setShuffle,setSort,setGroup,scanTags,stopScan,shuffled,filtered,sorted,groups,listHtml,streamUrl,state:()=>({status:data.status,tracks:data.tracks.length,index:data.index,shuffle:data.shuffle,sort:data.sort,group:data.group,scanning:data.scanning,playing:data.playing,current:current()}),_data:data};
 });
