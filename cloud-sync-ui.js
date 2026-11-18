@@ -7,7 +7,11 @@ async function boot(){
  if(!$("cloudSyncRoot"))return;
  const config=window.FOOD_CLOUD_CONFIG,api=window.FoodCloudSync,backup=window.FoodDataBackup;
  const status=s=>{if($("cloudSyncStatus"))$("cloudSyncStatus").textContent=s;};
- if(!api?.validConfig(config)){status("Cloud sync is not configured. A dedicated HealthiestFood project is not yet active. All records stay on this device; no data are uploaded.");return;}
+ if(!api?.validConfig(config)){status("Cloud sync is not configured. All records stay on this device; no data are uploaded.");return;}
+ if(location.origin!==config.allowedOrigin||location.pathname!==config.allowedPath){
+  status("Cloud sync is only enabled on the canonical HealthiestFood GitHub Pages site. Use that site to avoid separate browser data and callback origins.");
+  return;
+ }
  // A fixed version is loaded only for an explicitly configured HTTPS project.
  if(!window.supabase?.createClient){
   try{await new Promise((resolve,reject)=>{
@@ -22,6 +26,8 @@ async function boot(){
   global:{headers:{"X-Client-Info":"HealthiestFood-SmartKitchen"}}
  });
  const bridge=api.make(client,backup,localStorage);
+ $("cloudLogin").disabled=!$("cloudRedirectConfirmed")?.checked;
+ $("cloudRedirectConfirmed")?.addEventListener("change",()=>{$("cloudLogin").disabled=!$("cloudRedirectConfirmed").checked;});
  $("cloudSyncControls").hidden=false;
  let signedIn=false;
  async function refresh(){
@@ -32,6 +38,7 @@ async function boot(){
  }
  $("cloudLogin").addEventListener("click",async()=>{
   const email=$("cloudEmail").value.trim().slice(0,200);
+  if(!$("cloudRedirectConfirmed")?.checked){status("Confirm the Auth Site URL and redirect allowlist first.");return;}
   if(!confirm("Request a HealthiestFood magic-link sign-in email? This does not upload your pantry."))return;
   try{const result=await bridge.signIn(email,location.origin+location.pathname);
    status(result.reason);}catch(e){status("Sign-in request failed: "+e.message);}

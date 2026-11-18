@@ -1,0 +1,31 @@
+name: Verify HealthiestFood cloud backend
+on:
+  pull_request:
+    paths:
+      - 'cloud-*.js'
+      - 'smart-kitchen.html'
+      - 'tests/cloud-sync.test.cjs'
+      - 'e2e/cloud-backend-check.cjs'
+      - '.github/workflows/cloud-backend-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'cloud-*.js'
+      - 'smart-kitchen.html'
+      - 'e2e/cloud-backend-check.cjs'
+      - '.github/workflows/cloud-backend-check.yml'
+permissions:
+  contents: read
+jobs:
+  public-api-isolation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Assert public API cannot read or write private snapshots, and verify SDK URL
+        run: node e2e/cloud-backend-check.cjs
+      - name: Run account-conflict unit tests
+        run: node --test tests/cloud-sync.test.cjs

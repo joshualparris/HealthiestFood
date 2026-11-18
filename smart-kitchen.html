@@ -235,6 +235,8 @@ hr{border:0;border-top:1px solid #e1eae2;margin:20px 0}
 <h3>Private cloud sync</h3>
 <p id="cloudSyncStatus" role="status">Cloud backend not configured. Your data remain private in this browser.</p>
 <div id="cloudSyncControls" hidden>
+<p class="warning"><strong>One-time authentication setup:</strong> The dedicated database and owner-only permissions are configured. Supabase's email sign-in redirect settings must be set before login can be confirmed. In <a href="https://supabase.com/dashboard/project/rtlnwqdovacxyjwfcgxf/auth/url-configuration" target="_blank" rel="noopener noreferrer">Authentication → URL Configuration</a>, set <strong>Site URL</strong> to <code>https://joshualparris.github.io/HealthiestFood/smart-kitchen.html</code>, and add that exact address to <strong>Redirect URLs</strong>. This setting is not available through the connected Supabase admin tools and has not yet been verified.</p>
+<label class="row"><input id="cloudRedirectConfirmed" type="checkbox"> <span>I have configured and saved the two Auth URL settings above.</span></label>
 <label>Account email <input id="cloudEmail" type="email" autocomplete="email" placeholder="Your email address"></label>
 <div class="actions">
 <button id="cloudLogin">Email me a sign-in link</button>
