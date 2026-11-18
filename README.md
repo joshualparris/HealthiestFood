@@ -223,3 +223,18 @@ The [original October 20-lunch concept](LATEST_20_LUNCH_CONCEPT.md) is retained 
 - **[V3: nutrition evidence and 10-metric audit](V3_NUTRITION_EVIDENCE_AND_SCORES.md)** — explicitly subjective scores, source links, known gaps, label-based protein subtotal and food safety.
 
 **Relative to V2:** improves fruit/topping variety, buying accuracy, calcium-label clarity and verification detail. No scientific evidence proves this exact recipe increases lifespan over V2, and a perfect-health “100/100” label would be misleading. Older versions and cooked-batch documentation remain preserved.
+
+## Music while cooking (Google Drive)
+
+The Media tab has a **Music while cooking** player that streams MP3s from your own Google Drive, using the same design as JoshBooksOnline: Google sign-in on the server, an email allowlist, and a `/api/music/stream` proxy that forwards byte ranges with your Drive token. Nothing is copied to the site. It works only on the Vercel deployment; GitHub Pages and Render show a short notice instead.
+
+Set these Vercel environment variables (Production), then redeploy:
+
+| Variable | Value |
+| --- | --- |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | A Google OAuth "Web application" client. Add `https://<your-domain>/api/music/callback` as an authorised redirect URI. |
+| `ALLOWED_GOOGLE_EMAILS` | Comma-separated Google accounts allowed to listen. Empty means nobody can sign in. |
+| `MUSIC_SESSION_SECRET` | 32+ random characters; encrypts the sign-in cookie. Changing it signs everyone out. |
+| `MUSIC_FOLDER_ID` (optional) | The Drive folder to play. Subfolders are included. Defaults to the starred "Music" folder. |
+
+The app asks for read-only Drive access (`drive.readonly`), and the stream endpoint refuses anything that is not audio.

@@ -668,3 +668,40 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
   .hero-actions .hero-secondary{display:none}
 }
 
+
+/* Inline text in flex notes stays one paragraph instead of splitting into columns. */
+.wellbeing-note>.note-text{font-size:inherit;color:inherit;line-height:inherit}
+
+/* Music while cooking (Google Drive via /api/music) */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.music-cooking{margin:24px 0 28px;padding:22px;border:1px solid #b8cfaf;border-radius:19px;background:#fffdf7;color:var(--pine)}
+.music-cooking-head h2{margin:.2em 0 .3em}
+.music-cooking .btn{min-height:44px}
+.music-message{margin:10px 0;padding:10px 12px;border-radius:12px;background:#fff4dc;border:1px solid #e9cf95}
+.music-message[hidden]{display:none}
+.music-toolbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:10px}
+.music-shuffle{display:inline-flex;gap:6px;align-items:center;min-height:44px;cursor:pointer}
+.music-shuffle input{width:20px;height:20px;accent-color:#236345}
+.music-search{flex:1 1 220px}
+.music-search input{width:100%;min-height:44px;padding:8px 12px;border:1px solid #b8cfaf;border-radius:12px;font:inherit}
+.music-count,.music-empty{margin:10px 0 6px;font-size:.95rem;opacity:.85}
+.music-list{list-style:none;margin:0;padding:0;max-height:min(60vh,520px);overflow:auto;border-top:1px solid #e3eadf}
+.music-track{display:flex;flex-direction:column;align-items:flex-start;width:100%;min-height:48px;padding:8px 10px;border:0;border-bottom:1px solid #e3eadf;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.music-track:hover,.music-track:focus-visible{background:#eef5ea}
+.music-track.is-current{background:#e2efdc;font-weight:600}
+.music-track-album{font-size:.82rem;opacity:.75}
+.music-mini[hidden]{display:none!important}
+.music-mini{position:fixed;z-index:119;left:20px;bottom:16px;display:flex;align-items:center;gap:6px;max-width:min(420px,calc(100vw - 24px));padding:6px 8px;background:#fffdf7;border:1px solid #b8cfaf;border-radius:16px;box-shadow:0 12px 45px #142e2450;color:var(--pine)}
+.music-mini button{flex:0 0 auto;min-width:44px;min-height:44px;border:0;background:none;color:inherit;font:inherit;font-size:1.1rem;cursor:pointer;border-radius:10px}
+.music-mini button:focus-visible{outline:3px solid #236345}
+.music-mini .music-mini-title{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1 1 auto;overflow:hidden;font-size:.9rem;text-align:left}
+.music-mini-title strong{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.music-mini-title span{font-size:.75rem;opacity:.75}
+.music-mini-icon{font-size:1.2rem;padding:0 4px}
+body.podcast-active .music-mini{display:none}
+body.music-active{padding-bottom:80px}
+@media (max-width:800px){
+ .music-mini{left:8px;right:8px;max-width:none;bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+ body.music-active{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+ .music-cooking{padding:16px}
+}
