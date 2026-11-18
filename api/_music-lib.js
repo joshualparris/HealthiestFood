@@ -117,15 +117,19 @@ async function folderName(accessToken, id) {
 }
 
 /* Breadth-first walk of every music folder (Drive v3 only supports direct `in parents`).
+ * Each library has its own queue and the walk takes turns between them, so a library with
+ * hundreds of subfolders cannot use up the folder budget before the other is reached.
  * Each track's album is its folder path, starting with the library folder's own name,
  * so searching a folder name narrows the list. A file shared into both libraries appears once. */
 async function listTracks(accessToken, rootIds, limits = { folders: 300, tracks: 4000 }) {
   const roots = [].concat(rootIds);
   const names = await Promise.all(roots.map(id => folderName(accessToken, id)));
-  const queue = roots.map((id, i) => ({ id, path: names[i] })), tracks = [], seen = new Set(), seenFolders = new Set(roots);
+  const queues = roots.map((id, i) => [{ id, path: names[i] }]), tracks = [], seen = new Set(), seenFolders = new Set(roots);
   let missing = 0;
-  let visited = 0;
-  while (queue.length && visited < limits.folders && tracks.length < limits.tracks) {
+  let visited = 0, turn = 0;
+  while (queues.some(q => q.length) && visited < limits.folders && tracks.length < limits.tracks) {
+    while (!queues[turn % queues.length].length) turn++;
+    const queue = queues[turn++ % queues.length];
     const folder = queue.shift(); visited++;
     let pageToken = "";
     do {
@@ -149,7 +153,7 @@ async function listTracks(accessToken, rootIds, limits = { folders: 300, tracks:
     } while (pageToken && tracks.length < limits.tracks);
   }
   if (missing === roots.length) throw Object.assign(new Error("No music folder reachable"), { status: 404 });
-  return { tracks, truncated: queue.length > 0 || tracks.length >= limits.tracks, missingFolders: missing };
+  return { tracks, truncated: queues.some(q => q.length) || tracks.length >= limits.tracks, missingFolders: missing };
 }
 
 /* Clamp a browser Range header to a bounded chunk. Returns the upstream Range value. */
