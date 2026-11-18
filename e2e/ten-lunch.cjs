@@ -19,8 +19,9 @@ const server=http.createServer(async(req,res)=>{
  }catch{res.writeHead(404);res.end('Not found');}
 });
 async function run(){
- await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
- const base='http://127.0.0.1:'+server.address().port;
+ const remote=process.env.SMOKE_URL?.replace(/\/$/,'');
+ if(!remote)await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ const base=remote||'http://127.0.0.1:'+server.address().port;
  const engine=({chromium,firefox,webkit})[process.env.BROWSER_ENGINE||'chromium'];
  if(!engine)throw Error('Unknown BROWSER_ENGINE');
  const browser=await engine.launch();
@@ -71,6 +72,6 @@ async function run(){
   assert.equal(await p.frameLocator('#foodOtherFrame').locator('#shopList .ingredient').count(),21);
   assert.deepEqual(errors,[]);
   await context.close();process.stdout.write('PASS embedded in-app route\n');
- }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
+ }finally{await browser.close();if(server.listening)await new Promise(resolve=>server.close(resolve));}
 }
-run().catch(e=>{console.error(e.stack||e);process.exitCode=1;server.close();});
+run().catch(e=>{console.error(e.stack||e);process.exitCode=1;if(server.listening)server.close();});
