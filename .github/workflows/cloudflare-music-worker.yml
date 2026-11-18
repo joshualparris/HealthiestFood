@@ -1,0 +1,22 @@
+name: Independent Cloudflare Drive music backup
+on:
+  pull_request:
+    paths: ['cloudflare-music-worker.mjs','tests/cloudflare-music-worker.test.mjs','.github/workflows/cloudflare-music-worker.yml']
+  push:
+    branches: [main]
+    paths: ['cloudflare-music-worker.mjs','tests/cloudflare-music-worker.test.mjs','.github/workflows/cloudflare-music-worker.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test independent Cloudflare Google Drive music API
+        run: node --test tests/cloudflare-music-worker.test.mjs
+      - name: Verify existing music player and API contracts
+        run: node --test tests/music-cooking.test.cjs tests/music-tags.test.cjs
