@@ -38,7 +38,7 @@ test('past-use-by stock is flagged and sorted after potentially usable food',()=
  assert.equal(list[1].priority,'DO_NOT_USE');
 });
 test('7-day menu is complete, budget reports price unknowns without guessing',()=>{
- const sandbox={window:{}};vm.runInNewContext(read('site-data.js'),sandbox);
+ const sandbox={window:{}};vm.runInNewContext(read('site-data.js'),sandbox);vm.runInNewContext(read('whole-day-data.js'),sandbox);
  const D=sandbox.window.FOOD_DATA;const menu=C.createMenu(D.recipes,7,'2026-11-18');
  assert.equal(menu.length,7);assert.equal(menu[0].slots.length,3);
  assert.equal(menu[6].date,'2026-11-24');
