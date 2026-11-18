@@ -51,6 +51,11 @@ jobs:
         env:
           SMOKE_URL: ${{ matrix.backup.url }}
         run: node e2e/smart-kitchen.cjs
+      - name: Verify Connected Kitchen V2 on published GitHub Pages
+        if: matrix.backup.name == 'GitHub-Pages'
+        env:
+          SMOKE_URL: ${{ matrix.backup.url }}
+        run: node e2e/workflow-v2.cjs
       - name: Report verified backup
         if: success()
         run: echo "PASS ${{ matrix.backup.name }} — ${{ matrix.backup.url }}"
