@@ -1,0 +1,33 @@
+name: Verify old-iPad cooking on live Vercel
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ten-lunch-cook.html'
+      - 'ten-lunch-planner.js'
+      - 'ten-lunch-legacy.js'
+      - 'e2e/ten-lunch.cjs'
+      - '.github/workflows/vercel-ipad-live.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-site:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and an ES5 syntax parser
+        run: |
+          npm install --no-save playwright@1.56.1 acorn@8.15.0
+          npx playwright install --with-deps chromium
+      - name: Confirm old-iPad fallback parses as ECMAScript 5
+        run: node -e "require('acorn').parse(require('fs').readFileSync('ten-lunch-legacy.js','utf8'), {ecmaVersion:5})"
+      - name: Test the actual Vercel cooking experience with modern JS blocked
+        env:
+          SMOKE_URL: https://healthiest-food.vercel.app
+          BROWSER_ENGINE: chromium
+        run: node e2e/ten-lunch.cjs
