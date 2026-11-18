@@ -151,7 +151,7 @@ function exportCalendar(menu,recipes){
    const r=dict.get(s.recipeId);if(!r||!/^([01]\d|2[0-3]):[0-5]\d$/.test(s.time))continue;
    const [h,m]=s.time.split(":").map(Number),end=String((h+(m+45>=60?1:0))%24).padStart(2,"0")+String((m+45)%60).padStart(2,"0");
    const start=s.time.replace(":","")+"00";
-   lines.push("BEGIN:VEVENT","UID:"+day+"-"+s.type+"-"+s.recipeId+"@healthiestfood.local","DTSTAMP:20261118T000000Z",
+   lines.push("BEGIN:VEVENT","UID:"+day+"-"+s.type+"-"+s.recipeId+"@healthiestfood.local","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}Z$/,"Z"),
    "DTSTART;TZID=Australia/Sydney:"+day+"T"+start,"DTEND;TZID=Australia/Sydney:"+day+"T"+end+"00",
    "SUMMARY:"+escapeIcs(r.name),"DESCRIPTION:"+escapeIcs(s.portions+" portion(s) planned in HealthiestFood. This event is an export, not live sync."),"END:VEVENT");
   }
@@ -161,7 +161,7 @@ function exportCalendar(menu,recipes){
 }
 function normalizePreset(p,valid){
  const name=clean(p?.name).slice(0,80);
- const recipes=Array.isArray(p?.recipes)?p.recipes.filter(x=>valid.has(x.id)&&Number.isInteger(x.portions)&&x.portions>=1&&x.portions<=30).slice(0,20):[];
+ const recipes=Array.isArray(p?.recipes)?p.recipes.filter(x=>valid.has(x.id)&&Number.isInteger(x.portions)&&x.portions>=1&&x.portions<=30).slice(0,42):[];
  return name&&recipes.length?{name,recipes,createdAt:typeof p.createdAt==="string"?p.createdAt:""}:null;
 }
 return {ALIASES,SWAPS,escape,clean,dateISO,addDays,parseReceipt,swap,findRecipeObjects,normaliseRecipe,extractRecipe,expiring,mealSuggestions,createMenu,estimatePlan,exportCalendar,normalizePreset};
