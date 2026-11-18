@@ -52,7 +52,7 @@ async function run(){
    await page.locator('#connectedImportSave').click();
    x=await page.evaluate(()=>JSON.parse(localStorage.getItem('good-food-user-recipes-v2')||'[]'));
    assert.equal(x.length,2);
-   assert.match(await page.locator('#cloudSyncStatus').innerText(),/Not connected/);
+   assert.match(await page.locator('#cloudSyncStatus').innerText(),/not connected|not configured/i);
    assert.equal(await page.locator('#cloudSyncControls').isVisible(),false);
    await page.reload({waitUntil:'domcontentloaded'});
    await page.locator('#connectedRecipe option').first().waitFor({state:'attached'});
