@@ -45,7 +45,13 @@ hr{border:0;border-top:1px solid #e1eae2;margin:20px 0}
 <script src="ten-lunch-planner.js" defer></script>
 <script src="local-backup.js" defer></script>
 <script src="smart-kitchen-core.js" defer></script>
+<script src="workflow-v2-core.js" defer></script>
+<script src="user-recipes.js" defer></script>
 <script src="smart-kitchen.js" defer></script>
+<script src="workflow-v2-ui.js" defer></script>
+<script src="cloud-config.js" defer></script>
+<script src="cloud-sync.js" defer></script>
+<script src="cloud-sync-ui.js" defer></script>
 <script src="iframe-route-bridge.js" defer></script>
 </head>
 <body>
@@ -181,6 +187,67 @@ hr{border:0;border-top:1px solid #e1eae2;margin:20px 0}
 <div id="freezerStock" class="output" role="status">No portions recorded.</div>
 </section>
 
+<section id="connected" class="card">
+<h2>8 · Connected kitchen improvements</h2>
+<p>Optimise your week from what you really have, use foods approaching their dates first, save reviewed recipes into the main app and organise your own Dubbo supermarket aisles.</p>
+<p class="warning">All prices are estimates, and expiry dates are not evidence of food safety. The planner never uses food recorded past its use-by date, and you approve any replacement of existing meals.</p>
+<div class="grid2">
+<div>
+<h3>Pantry-first week planner</h3>
+<label>Starting date <input id="connectedStart" type="date"></label>
+<label>Budget goal (AUD) <input id="connectedBudget" type="number" min="10" max="2000" step="1" value="100"></label>
+<button id="connectedOptimise" class="primary">Find best 7-day plan</button>
+</div><div>
+<h3>Use-first items and suggestions</h3>
+<div id="connectedUseFirst" class="output">Reviewing your dated pantry…</div>
+</div></div>
+<div id="connectedPlanPreview" class="output">No optimised week yet.</div>
+<div class="actions"><button id="connectedSave" disabled>Approve and save to existing planner</button><button id="connectedAisles" disabled>Set aisles for this shopping list</button></div>
+<div id="connectedAisleEditor" class="output" hidden></div>
+<hr>
+<h3>Apply a verified ingredient swap to a recipe</h3>
+<div class="grid3">
+<label>Original recipe <select id="connectedRecipe"></select></label>
+<label>Ingredient <select id="connectedIngredient"></select></label>
+<label>Replacement <select id="connectedReplacement"></select></label>
+</div>
+<div class="actions"><button id="connectedSwapPreview" class="primary">Preview changed recipe and shopping</button><button id="connectedSwapSave" disabled>Save reviewed adaptation</button></div>
+<div id="connectedSwapResult" class="output">Choose a recipe and ingredient. All cooking instructions still need checking for changed timings and safety.</div>
+<hr>
+<h3>Promote a reviewed imported recipe</h3>
+<p class="muted">Imported text remains separate until it contains measurable quantities and actual cooking steps. Review the source and allergens before promoting it to your main recipe library.</p>
+<div class="grid3">
+<label>Reviewed import <select id="connectedImport"></select></label>
+<label>Recipe type <select id="connectedImportType"><option value="dinner">Dinner</option><option value="lunch">Lunch</option><option value="breakfast">Breakfast</option><option value="snack">Snack</option></select></label>
+<label>Servings <input id="connectedImportServes" type="number" min="1" max="30" step="1" value="4"></label>
+</div>
+<div class="actions"><button id="connectedImportReview">Check ingredients for main app</button><button id="connectedImportSave" disabled>Add reviewed recipe to main planner</button></div>
+<div id="connectedImportResult" class="output">No import reviewed.</div>
+<hr>
+<h3>Personalised supermarket aisle numbers</h3>
+<p class="muted">Enter observed aisle numbers beside individual products. These are not official Woolworths Dubbo store maps or real-time stock locations.</p>
+<div id="connectedShopAisles" class="output">Generate a week to see the associated shopping list.</div>
+<hr>
+<h3>Nutrition and sync readiness</h3>
+<p><strong>Micronutrients:</strong> the existing scientific model has incomplete data for many actual products. No recipe will be labelled complete unless calcium, iodine, vitamin D and other nutrients are properly calculated from verified labels and AFCD3.</p>
+<p><strong>Private cloud sync:</strong> not connected to a dedicated project yet. The safe database schema and integration are prepared separately. Existing browser data remains local until you sign in and explicitly choose to upload or download it.</p>
+<div id="cloudSyncRoot" class="notice">
+<h3>Private cloud sync</h3>
+<p id="cloudSyncStatus" role="status">Cloud backend not configured. Your data remain private in this browser.</p>
+<div id="cloudSyncControls" hidden>
+<label>Account email <input id="cloudEmail" type="email" autocomplete="email" placeholder="Your email address"></label>
+<div class="actions">
+<button id="cloudLogin">Email me a sign-in link</button>
+<button id="cloudInspect">Compare local and cloud copies</button>
+<button id="cloudPush">Upload my local copy</button>
+<button id="cloudPull">Download cloud copy</button>
+<button id="cloudSignOut">Sign out</button>
+</div>
+<p class="muted">Upload and download require confirmation. Cloud changes are never silently merged, and a conflict prevents stale overwrite. Your local records remain on this device until you explicitly replace them.</p>
+</div>
+</div>
+<p id="connectedStatus" class="muted" role="status"></p>
+</section>
 <section id="sharing" class="card">
 <h2>7 · Share safely and check nutrition</h2>
 <div class="grid2">

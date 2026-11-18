@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'smart-kitchen*.js'
+      - 'workflow-v2*.js'
+      - 'user-recipes.js'
+      - 'cloud-*.js'
+      - 'e2e/workflow-v2.cjs'
       - 'smart-kitchen.html'
       - 'ten-lunch-planner.js'
       - 'e2e/smart-kitchen.cjs'
@@ -13,6 +17,10 @@ on:
     branches: [main]
     paths:
       - 'smart-kitchen*.js'
+      - 'workflow-v2*.js'
+      - 'user-recipes.js'
+      - 'cloud-*.js'
+      - 'e2e/workflow-v2.cjs'
       - 'smart-kitchen.html'
       - 'ten-lunch-planner.js'
       - 'e2e/smart-kitchen.cjs'
@@ -35,4 +43,6 @@ jobs:
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
       - name: Test Smart Kitchen mobile, desktop and in-app navigation
-        run: node e2e/smart-kitchen.cjs
+        run: |
+          node e2e/smart-kitchen.cjs
+          node e2e/workflow-v2.cjs

@@ -3,9 +3,9 @@
  * guidance as current. Cache only same-origin static assets, never personal data.
  * An offline copy is a convenience, NOT current supermarket/product information.
  */
-const CACHE_NAME="healthiestfood-shell-20261118-music-v1";
+const CACHE_NAME="healthiestfood-shell-20261118-connected-kitchen-v2-music";
 const ASSETS=[
- "./","./index.html","./smart-kitchen.html","./smart-kitchen-core.js","./smart-kitchen.js","./ten-lunch-cook.html","./ten-lunch-planner.js","./longevity.html","./cooking-methods.html","./freezer-labels.html","./site.css","./site-data.js",
+ "./","./index.html","./workflow-v2-core.js","./workflow-v2-ui.js","./user-recipes.js","./cloud-config.js","./cloud-sync.js","./cloud-sync-ui.js","./smart-kitchen.html","./smart-kitchen-core.js","./smart-kitchen.js","./ten-lunch-cook.html","./ten-lunch-planner.js","./longevity.html","./cooking-methods.html","./freezer-labels.html","./site.css","./site-data.js",
  "./whole-day-data.js","./ingredient-catalogue.js",
  "./br-oats.webp","./br-eggs.webp","./br-smoothie.webp","./br-toast.webp","./di-lentil.webp","./di-chicken.webp","./di-chilli.webp","./di-stirfry.webp","./di-salmon.webp","./sn-hummus.webp",
  "./a.webp","./b.webp","./c.webp","./d.webp","./sn-apple.webp","./sn-eggs.webp","./sn-berries.webp",
