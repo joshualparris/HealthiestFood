@@ -61,7 +61,7 @@ function updatePosition(){
 function rememberPosition(){if(!data.audio||!data.episode)return;const t=data.audio.currentTime;if(Number.isFinite(t)&&t>=0)data.positions[data.episode]=Math.round(t);persist();}
 function makeAudio(){
  const a=new Audio();a.preload="metadata";a.playsInline=true;a.setAttribute("aria-hidden","true");
- a.addEventListener("play",()=>{data.playing=true;data.error="";sync();try{navigator.mediaSession.playbackState="playing";}catch{}});
+ a.addEventListener("play",()=>{data.playing=true;data.error="";w?.FoodMusic?.pause?.();sync();try{navigator.mediaSession.playbackState="playing";}catch{}});
  a.addEventListener("pause",()=>{data.playing=false;if(a.ended&&data.episode){data.positions[data.episode]=0;persist();}else rememberPosition();sync();try{navigator.mediaSession.playbackState="paused";}catch{}});
  a.addEventListener("timeupdate",()=>{sync();if(Math.floor(a.currentTime)%10===0&&Math.floor(a.currentTime)!==data.lastSaved){data.lastSaved=Math.floor(a.currentTime);rememberPosition()}});
  a.addEventListener("loadedmetadata",()=>{

@@ -38,6 +38,7 @@
   <script src="media-data.js" defer></script>
   <script src="podcast-streams.js" defer></script>
   <script src="podcast-player.js" defer></script>
+  <script src="music-cooking.js" defer></script>
   <script src="media-library.js" defer></script>
   <script src="app-pages.js" defer></script>
   <script src="app.js" defer></script>
@@ -105,8 +106,8 @@
 
     <section id="view-recipes" class="view hidden section-shell view-body">
       <div class="page-head"><span class="section-kicker">YOUR RECIPE COLLECTION</span><h1>Good food for <em>every day.</em></h1><p>Choose a breakfast, lunch, dinner or snack. Four original freezer lunches plus adult portion suggestions adapted from historical household recipes.</p></div>
-      <section class="wellbeing-note"><strong>Cooking ten work lunches?</strong> Use the <a href="ten-lunch-cook.html">new 5+5 shop-to-freezer guide</a> to check your basket, cook in the right order, and print labels. Your progress stays on this device.</section>
-      <p class="wellbeing-note"><strong>New:</strong> <a href="smart-kitchen.html">Scan groceries, import recipes, use dated pantry stock and plan a week in Smart Kitchen ↗</a>. No new account required.</p><div class="meal-filters" role="group" aria-label="Filter recipes by meal type"><button type="button" data-recipe-type="all" class="is-active" aria-pressed="true">All meals</button><button type="button" data-recipe-type="breakfast">Breakfasts</button><button type="button" data-recipe-type="lunch">Lunches</button><button type="button" data-recipe-type="dinner">Dinners</button><button type="button" data-recipe-type="snack">Snacks</button></div>
+      <section class="wellbeing-note"><p><strong>Cooking ten work lunches?</strong> Use the <a href="ten-lunch-cook.html">new 5+5 shop-to-freezer guide</a> to check your basket, cook in the right order, and print labels. Your progress stays on this device. Want a soundtrack? <a href="#media">Play music while cooking</a>.</p></section>
+      <p class="wellbeing-note"><span class="note-text"><strong>New:</strong> <a href="smart-kitchen.html">Scan groceries, import recipes, use dated pantry stock and plan a week in Smart Kitchen ↗</a>. No new account required.</span></p><div class="meal-filters" role="group" aria-label="Filter recipes by meal type"><button type="button" data-recipe-type="all" class="is-active" aria-pressed="true">All meals</button><button type="button" data-recipe-type="breakfast">Breakfasts</button><button type="button" data-recipe-type="lunch">Lunches</button><button type="button" data-recipe-type="dinner">Dinners</button><button type="button" data-recipe-type="snack">Snacks</button></div>
       <div class="recipe-grid" id="recipeCards"></div>
       <div class="recipe-detail" id="recipeDetail"></div>
     </section>
@@ -124,9 +125,9 @@
 
     <section id="view-shop" class="view hidden section-shell view-body">
       <div class="page-head"><span class="section-kicker">A SMARTER SUPERMARKET RUN</span><h1>Everything in <em>one basket.</em></h1><p>Select exactly the meals you want to make and how many portions. Your shopping list will combine overlapping ingredients and subtract what you already have. You can also shop from your <button type="button" data-goto="plan" class="inline-plan-link">dated meal plan</button>.</p></div>
-      <p class="wellbeing-note"><strong>Just returned from Woolworths?</strong> <a href="ten-lunch-cook.html">Check what you bought and start the ten-lunch cook-up →</a> Supports measured quantities, basket-photo hints and clear cooling steps.</p>
+      <p class="wellbeing-note"><span class="note-text"><strong>Just returned from Woolworths?</strong> <a href="ten-lunch-cook.html">Check what you bought and start the ten-lunch cook-up →</a> Supports measured quantities, basket-photo hints and clear cooling steps.</span></p>
       <p class="verify-shop-note"><a href="product-check.html">Check exact Woolworths Dubbo products, record local prices and stock ↗</a> · <a href="device-timer-check.html">Test timers on your phone ↗</a></p>
-      <p class="wellbeing-note"><a href="smart-kitchen.html">Open Smart Kitchen ↗</a> for barcode lookup, a photo/text checker, pantry use-first suggestions and suggested weekly plans. All recognised products require your confirmation.</p><section id="customShopping" class="custom-shopping" aria-label="Choose recipes and create a personal shopping list"></section>
+      <p class="wellbeing-note"><span class="note-text"><a href="smart-kitchen.html">Open Smart Kitchen ↗</a> for barcode lookup, a photo/text checker, pantry use-first suggestions and suggested weekly plans. All recognised products require your confirmation.</span></p><section id="customShopping" class="custom-shopping" aria-label="Choose recipes and create a personal shopping list"></section>
       <section id="pantryLotManager" class="pantry-lot-manager" aria-label="Dated individual pantry packs and leftovers"></section>
       <details id="legacyV6Shop" class="legacy-basket"><summary>Original V6 full 20-lunch basket — $256.43 historical estimate</summary><p>This archived basket buys ingredients for all four five-portion freezer lunch batches. You do <strong>not</strong> need this entire basket to make one or two recipes. Use the custom list above for smaller shops.</p>
       <div class="shop-summary">
@@ -164,8 +165,13 @@
       <div class="page-head">
         <span class="section-kicker">LISTEN · WATCH · CHECK THE EVIDENCE</span>
         <h1>Learn the <em>why.</em></h1>
-        <p>Listen to ABC podcasts without leaving the app. Play, pause, skip, change speed and keep listening while browsing your recipes or research. Official videos and original research remain linked to publishers.</p>
+        <p>Play your own music while you cook, or listen to ABC podcasts without leaving the app. Play, pause, skip, change speed and keep listening while browsing your recipes or research. Official videos and original research remain linked to publishers.</p>
       </div>
+      <section id="musicCooking" class="music-cooking" aria-labelledby="musicCookingHeading">
+        <div class="music-cooking-head"><span class="section-kicker">MUSIC WHILE COOKING</span><h2 id="musicCookingHeading">Your songs, <em>in the kitchen.</em></h2><p>Play your own music from Google Drive while you cook. It keeps playing when you switch to a recipe, your timers or the shopping list. Starting a song pauses any podcast, and starting a podcast pauses the music.</p></div>
+        <p id="musicMessage" class="music-message" role="status" hidden></p>
+        <div id="musicBody" class="music-body"></div>
+      </section>
       <div class="media-guide-intro">
         <div><strong>Hear the explanation</strong><p>Listen to the episode or watch the official video. Play the ABC podcasts directly here using the publisher’s official audio streams. Videos open at their publishers. Podcasts start only when you press Play; you can optionally enable autoplay of the next episode in the player. Nothing is downloaded to this site.</p></div>
         <div><strong>Check the actual evidence</strong><p>Each entry separately links to official dietary guidance or primary research and explains what the recording <em>doesn't</em> prove.</p></div>
@@ -200,13 +206,14 @@
   <footer class="site-footer"><div class="footer-inner"><div><strong>good food<span>.</span></strong><p>Made for the long game. Rooted in evidence, grounded in real life.</p></div><div><a href="#science">Sources & safety</a><a href="#media">Podcasts & videos</a><a href="cooking-methods.html">Cooking methods ↗</a><a href="ten-lunch-cook.html">Cook 10 lunches ↗</a><a href="smart-kitchen.html">Smart Kitchen ↗</a><a href="longevity.html">Longevity guide ↗</a><a href="health-hub.html">My health hub ↗</a><a href="https://github.com/joshualparris/HealthiestFood" target="_blank" rel="noopener noreferrer">GitHub ↗</a><small>V6 · Updated 16 Oct 2026 · All prices indicative</small></div></div></footer>
   <nav class="mobile-nav" aria-label="Mobile navigation">
     <button type="button" data-goto="home" aria-label="Home" title="Home"><span aria-hidden="true">⌂</span><small class="nav-label" aria-hidden="true">Home</small></button>
-    <button type="button" data-goto="recipes" aria-label="Recipes and cooking" title="Cook"><span aria-hidden="true">♨</span><small class="nav-label" aria-hidden="true">Cook</small></button>
-    <button type="button" data-goto="plan" aria-label="Meal planner" title="Plan"><span aria-hidden="true">▦</span><small class="nav-label" aria-hidden="true">Plan</small></button>
-    <button type="button" data-goto="shop" aria-label="Shopping list" title="Shop"><span aria-hidden="true">☑</span><small class="nav-label" aria-hidden="true">Shop</small></button>
-    <button type="button" data-goto="science" aria-label="Nutrition research" title="Learn"><span aria-hidden="true">✧</span><small class="nav-label" aria-hidden="true">Learn</small></button>
-    <button type="button" data-goto="media" aria-label="Podcasts and videos" title="Media"><span aria-hidden="true">♫</span><small class="nav-label" aria-hidden="true">Media</small></button>
-    <a class="cm-mobile-link" href="cooking-methods.html" aria-label="Compare cooking methods" title="Methods"><svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.9a4 4 0 0 1 .4-7.9 5.5 5.5 0 0 1 10.2 0 4 4 0 0 1 1.4 7.9V21H6Z"/><path d="M6 17h12"/></svg><small class="nav-label" aria-hidden="true">Methods</small></a>
+    <button type="button" data-goto="recipes" aria-label="Cook: recipes and cooking" title="Cook"><span aria-hidden="true">♨</span><small class="nav-label" aria-hidden="true">Cook</small></button>
+    <button type="button" data-goto="plan" aria-label="Plan: meal planner" title="Plan"><span aria-hidden="true">▦</span><small class="nav-label" aria-hidden="true">Plan</small></button>
+    <button type="button" data-goto="shop" aria-label="Shop: shopping list" title="Shop"><span aria-hidden="true">☑</span><small class="nav-label" aria-hidden="true">Shop</small></button>
+    <button type="button" data-goto="science" aria-label="Learn: nutrition research" title="Learn"><span aria-hidden="true">✧</span><small class="nav-label" aria-hidden="true">Learn</small></button>
+    <button type="button" data-goto="media" aria-label="Media: podcasts, videos and music" title="Media"><span aria-hidden="true">♫</span><small class="nav-label" aria-hidden="true">Media</small></button>
+    <a class="cm-mobile-link" href="cooking-methods.html" aria-label="Methods: compare cooking methods" title="Methods"><svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.9a4 4 0 0 1 .4-7.9 5.5 5.5 0 0 1 10.2 0 4 4 0 0 1 1.4 7.9V21H6Z"/><path d="M6 17h12"/></svg><small class="nav-label" aria-hidden="true">Methods</small></a>
   </nav>
+  <aside id="musicMini" class="music-mini" aria-label="Music while cooking player" hidden><span class="music-mini-icon" aria-hidden="true">♪</span><button type="button" class="music-mini-title" data-music="open" aria-label="Open the music list"><strong id="musicNowTitle">Music</strong><span>Music while cooking</span></button><button type="button" data-music="prev" aria-label="Previous song">⏮</button><button type="button" id="musicToggle" data-music="toggle" aria-label="Play music" aria-pressed="false">▶</button><button type="button" data-music="next" aria-label="Next song">⏭</button></aside>
   <button id="floatingTimers" class="floating-timers hidden" type="button" aria-label="Open cooking countdown timers">◷ <span id="floatingTimerCount">0</span> <span id="floatingTimerSummary">timers</span></button>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
