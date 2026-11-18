@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#143d33">
+<meta name="description" content="Check your Woolworths basket, then cook and safely freeze ten dairy-free lunches in one guided session.">
+<title>Cook 10 lunches · Good Food, Long Game</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f7f8f4;color:#213b32}
+*{box-sizing:border-box}body{margin:0}a{color:#176950}header{background:#143d33;color:white;padding:15px max(20px,calc((100% - 960px)/2));display:flex;justify-content:space-between;gap:12px;align-items:center}header a{color:#fff;text-decoration:none;font-weight:700}header span{font-size:.8rem;opacity:.85}
+main{max-width:960px;margin:auto;padding:clamp(16px,4vw,32px)}.eyebrow{text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:#31725d;font-size:.72rem}
+h1{font-family:Georgia,serif;font-size:clamp(2rem,5vw,3.4rem);letter-spacing:-.03em;line-height:1.12;margin:.5rem 0}.lead{font-size:1.07rem;line-height:1.55;max-width:750px;color:#52665c}
+h2{font-family:Georgia,serif;font-size:1.5rem;margin:20px 0 10px}h3{margin:8px 0;font-size:1.08rem}
+.card{background:#fff;border:1px solid #e0e9e0;border-radius:18px;box-shadow:0 3px 14px #143d3309;padding:20px;margin:16px 0}
+.note{background:#edf5ee;border-left:4px solid #549477;padding:13px 16px;border-radius:6px;line-height:1.5}
+.warning{background:#fff5e5;border-left:4px solid #ab7133;padding:12px 16px;border-radius:6px;line-height:1.55}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:sticky;top:0;z-index:2;background:#f7f8f4;padding:10px 0}
+button,.button{font:inherit;cursor:pointer;border:2px solid #b7d0c1;border-radius:11px;padding:12px 16px;background:#fff;color:#153b2e;font-weight:650;min-height:46px}
+button:hover{background:#ebf4ee}button[aria-selected=true],button.primary{background:#146549;color:#fff;border-color:#146549}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #d99536;outline-offset:3px}
+button.secondary{background:#edf5ef} .actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.actions button{flex:1 1 auto}
+.stat{font-size:.88rem;color:#485d52;margin:12px 0 5px}progress{width:100%;height:14px;accent-color:#287753}
+.ingredient{border-top:1px solid #edf0ed;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:14px 0}
+.ingredient strong{font-size:1rem}.ingredient p{color:#52675e;font-size:.87rem;margin:5px 0}.ingredient small{font-size:.78rem;color:#785921;display:block}
+.ingredient label{font-size:.77rem;color:#435b51;text-align:right;font-weight:600}.ingredient .value{display:block;margin-top:5px;font-size:.85rem}
+.ingredient input{width:80px;min-height:44px;font:inherit;font-size:1.05rem;text-align:center;border-radius:9px;border:1px solid #92b09f;padding:6px;color:#143d33;background:#fff}
+.ingredient output{grid-column:1/-1;justify-self:start;font-size:.78rem;border-radius:30px;padding:3px 9px;font-weight:650}
+.missing{background:#fff3df;color:#84571b}.enough{background:#e4f5e9;color:#165c3d}
+.phase{border-bottom:1px solid #e1e9e0;padding-bottom:17px}.phase:last-child{border:0}
+.phase>p{color:#556b61;line-height:1.55}.step{display:flex;gap:14px;align-items:flex-start;border-radius:12px;padding:15px 12px;margin:8px 0;background:#f2f7f3;line-height:1.5;cursor:pointer}
+.step input{flex:none;width:23px;height:23px;accent-color:#237a57;margin:2px 0 0}.step.is-done{background:#e3f3e9}.step.is-done span{text-decoration:line-through;opacity:.69}
+.recipe-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.recipe{background:#f5f8f4;border-radius:12px;padding:14px}.recipe b{font-size:1.05rem}.recipe p{color:#566b60;line-height:1.45}.recipe ul{padding-left:20px;line-height:1.75}
+.labelgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.f-label{border:1px dashed #777;border-radius:8px;padding:9px;font-size:.85rem;background:white;min-height:78px}.f-label strong{display:block}
+footer{max-width:960px;margin:auto;padding:20px;color:#627369;font-size:.8rem;line-height:1.6}
+[hidden]{display:none!important}
+@media(max-width:650px){.recipe-grid{grid-template-columns:1fr}.ingredient{grid-template-columns:1fr}.ingredient label{text-align:left}.tabs button{padding:8px 5px;font-size:.82rem}.card{padding:15px}header{padding:14px}}
+@media print{header,.tabs,.no-print,#pane-shop,#pane-cook,footer{display:none!important}body{background:white}main{max-width:none;padding:0}.card{padding:0;box-shadow:none;border:0}#pane-finish{display:block!important}.labelgrid{grid-template-columns:repeat(2,1fr);gap:10px}.f-label{break-inside:avoid;min-height:95px}.print-instructions{display:none!important}}
+</style>
+<script src="ten-lunch-planner.js" defer></script>
+<script src="iframe-route-bridge.js" defer></script>
+</head>
+<body>
+<header><a href="index.html#home" aria-label="Back to Good Food home">✳ good food<span> · the long game</span></a><a href="index.html#recipes">All recipes ↗</a></header>
+<main>
+ <p class="eyebrow">SHOP → COOK → FREEZE · 10 DAIRY-FREE LUNCHES</p>
+ <h1 id="pageTitle" tabindex="-1">Your ten-lunch cook-up.</h1>
+ <p class="lead">Two complementary batches. Five salmon, lentil and quinoa bowls plus five tofu, chickpea and brown rice curries. Check what you really have, then follow the steps without hunting between recipes.</p>
+ <div class="note">Based on your 18 November Woolworths shopping photos and the <a href="https://github.com/joshualparris/HealthiestFood/blob/main/docs/WOOLWORTHS_DUBBO_FREEZER_LUNCH_RESEARCH_2026-11-18.md">research recipe</a>. Photo hints are <strong>not</strong> proof of quantities or purchases. Enter the amounts you actually have. Everything stays on this device.</div>
+ <p id="counts" class="stat" role="status" aria-live="polite"></p><progress id="progress" max="18" value="0" aria-label="Cooking steps completed"></progress>
+ <div class="tabs" role="tablist" aria-label="Cook-up stages">
+  <button id="tab-shop" role="tab" aria-controls="pane-shop" aria-selected="true" data-tab="shop">1 · Check basket</button>
+  <button id="tab-cook" role="tab" aria-controls="pane-cook" aria-selected="false" data-tab="cook">2 · Cook</button>
+  <button id="tab-finish" role="tab" aria-controls="pane-finish" aria-selected="false" data-tab="finish">3 · Freeze & labels</button>
+ </div>
+ <section id="pane-shop" class="card" role="tabpanel" aria-labelledby="tab-shop">
+  <h2>What's in your basket?</h2>
+  <p class="lead">Enter how much you have in the box beside each ingredient. The app calculates what's still missing. It won't silently assume that one photographed tin means two.</p>
+  <div id="shopList"></div>
+  <p id="shortList" class="warning" aria-live="polite"></p>
+  <div class="actions"><button id="copyMissing" class="secondary">Copy missing ingredients</button><button class="primary" data-tab="cook">I'm home · start cooking →</button></div>
+  <p><small>Cross-contact matters if you avoid traces of dairy: examine the red lentils, curry spice blend and tofu packaging. Purchased pack sizes may be larger than the amounts used.</small></p>
+ </section>
+ <section id="pane-cook" class="card" role="tabpanel" aria-labelledby="tab-cook" hidden>
+  <h2>One calm cooking sequence</h2>
+  <p class="warning">Before starting: clear enough fridge space for ten shallow containers. If not, cook just five tonight and the other five on another day. A ticked box is only a checklist, not a temperature measurement.</p>
+  <div class="recipe-grid">
+   <div class="recipe"><h3>A · 5 salmon bowls</h3><p>Cooked from 150 g dry quinoa + 150 g lentils, two 415 g salmon tins, 400 g broccoli, 200 g greens, 250 g carrot, 150 g onion, 200 g capsicum, 400 g passata, 20 mL oil, 10 g garlic, 30 mL lemon juice and spices.</p></div>
+   <div class="recipe"><h3>B · 5 tofu curries</h3><p>200 g dry brown rice + 150 g dry lentils, 450 g tofu, one chickpea tin, 400 g prepared pumpkin, 300 g broccoli, 200 g greens, 200 g carrot, 200 g onion, 300 g passata, 20 mL oil, 10 g garlic, 30 mL lemon juice and spices.</p></div>
+  </div>
+  <div id="steps"></div>
+  <div class="actions"><button data-tab="shop">← Recheck ingredients</button><button class="primary" data-tab="finish">Show freezer labels →</button></div>
+ </section>
+ <section id="pane-finish" class="card" role="tabpanel" aria-labelledby="tab-finish" hidden>
+  <h2>Label and store your lunches</h2>
+  <p id="doneSummary" class="note" aria-live="polite"></p>
+  <div class="warning print-instructions"><strong>Safety:</strong> promptly divide and chill cooked food in shallow portions, refrigerate within two hours, and freeze after chilling. Keep the fridge at 5°C or below and freezer around −18°C. Reheat until steaming hot throughout; stir to avoid cold spots. Do not use this checklist to override actual temperature checks or the <a href="https://www.foodauthority.nsw.gov.au/consumer/food-extra-care/leftovers">NSW Food Authority leftovers guidance</a>.</div>
+  <div class="labelgrid" id="freezerLabels">
+   <div class="f-label"><strong>A1 · Salmon quinoa bowl</strong>Made: <span class="labelDate"></span><p>Contains fish · Reheat until steaming hot</p></div>
+   <div class="f-label"><strong>A2 · Salmon quinoa bowl</strong>Made: <span class="labelDate"></span><p>Contains fish · Reheat until steaming hot</p></div>
+   <div class="f-label"><strong>A3 · Salmon quinoa bowl</strong>Made: <span class="labelDate"></span><p>Contains fish · Reheat until steaming hot</p></div>
+   <div class="f-label"><strong>A4 · Salmon quinoa bowl</strong>Made: <span class="labelDate"></span><p>Contains fish · Reheat until steaming hot</p></div>
+   <div class="f-label"><strong>A5 · Salmon quinoa bowl</strong>Made: <span class="labelDate"></span><p>Contains fish · Reheat until steaming hot</p></div>
+   <div class="f-label"><strong>B1 · Tofu chickpea curry</strong>Made: <span class="labelDate"></span><p>Contains soy · Reheat until steaming hot</p></div>
+   <div class="f-label"><strong>B2 · Tofu chickpea curry</strong>Made: <span class="labelDate"></span><p>Contains soy · Reheat until steaming hot</p></div>
+   <div class="f-label"><strong>B3 · Tofu chickpea curry</strong>Made: <span class="labelDate"></span><p>Contains soy · Reheat until steaming hot</p></div>
+   <div class="f-label"><strong>B4 · Tofu chickpea curry</strong>Made: <span class="labelDate"></span><p>Contains soy · Reheat until steaming hot</p></div>
+   <div class="f-label"><strong>B5 · Tofu chickpea curry</strong>Made: <span class="labelDate"></span><p>Contains soy · Reheat until steaming hot</p></div>
+  </div>
+  <div class="actions no-print"><button id="printLabels" class="primary">Print ten labels</button><button data-tab="cook">← Back to cooking</button></div>
+ </section>
+ <div class="actions no-print"><button id="resetSession">Reset this cook-up (asks first)</button><a class="button" href="index.html#home">Back to HealthiestFood</a></div>
+</main>
+<footer>Shopping quantities and food-composition figures are estimates, not validated live Woolworths stock or nutrition lab results. Browser-local progress is not automatically synchronised across devices or different domains. <a href="https://github.com/joshualparris/HealthiestFood/blob/main/docs/WOOLWORTHS_DUBBO_FREEZER_LUNCH_RESEARCH_2026-11-18.md">Sources and limitations</a>.</footer>
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+ const date=new Intl.DateTimeFormat("en-AU",{timeZone:"Australia/Sydney",day:"2-digit",month:"short",year:"numeric"}).format(new Date());
+ document.querySelectorAll(".labelDate").forEach(el=>el.textContent=date);
+});
+</script>
+</body>
+</html>
