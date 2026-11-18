@@ -222,3 +222,58 @@ test("Static backup explains streaming limitation and offers a working-site link
  assert.match(source,/https:\/\/healthiest-food\.vercel\.app\/#media/);
  assert.match(source,/data\.message===MESSAGES\.offline_host/);
 });
+
+test("JoshBooks-style 322 artist folders are all discovered with bounded parallelism",async()=>{
+ const n=322,listing={[ROOT_A]:[],[ROOT_B]:[]};
+ for(let i=0;i<n;i++){
+  const id="folder"+String(i).padStart(10,"0");
+  listing[ROOT_A].push(dir(id,"Artist "+i));
+  listing[id]=[song("track"+String(i).padStart(10,"0"),"Song "+i+".mp3")];
+ }
+ const m=driveMock(listing);let active=0,peak=0;const progress=[];
+ await withFetch(async(url,opts)=>{
+  if(new URL(url).searchParams.has("q")){
+   active++;peak=Math.max(active,peak);
+   await new Promise(resolve=>setTimeout(resolve,1));
+   try{return m.fn(url,opts);}finally{active--;}
+  }
+  return m.fn(url,opts);
+ },async()=>{
+  const result=await L.listTracks("token",[ROOT_A,ROOT_B],undefined,p=>progress.push(p));
+  assert.equal(result.tracks.length,n);
+  assert.equal(result.truncated,false);
+  assert.equal(result.foldersScanned,n+2);
+  assert.ok(peak>1&&peak<=16,"parallel Drive requests were not bounded: "+peak);
+  assert.equal(progress.at(-1).songsFound,n);
+ });
+});
+
+test("Music listing stream emits live counts and a complete playlist with server-only credentials",async()=>{
+ const m=driveMock({[ROOT_A]:[dir("folderAAAAAAAA","Choir")],folderAAAAAAAA:[song("songBBBBBBBBBB","Oceans.mp3")],[ROOT_B]:[song("songCCCCCCCCCC","Halo.m4a")]});
+ const r=mockRes();r.writableEnded=false;r.chunks=[];
+ r.write=function(chunk){this.chunks.push(chunk);return true;};
+ const oldEnd=r.end;
+ r.end=function(chunk){if(chunk)this.write(chunk);this.writableEnded=true;oldEnd.call(this,this.chunks.join(""));};
+ await withFetch(m.fn,()=>tracks(req("/api/music/tracks?stream=1",{cookie:sessionCookie()}),r));
+ assert.match(r.headers["content-type"],/application\/x-ndjson/);
+ assert.equal(r.headers["cache-control"],"private, no-store");
+ const events=r.chunks.join("").trim().split("\n").map(x=>JSON.parse(x));
+ assert.equal(events[0].type,"start");
+ assert.ok(events.some(x=>x.type==="progress"&&x.songsFound>0));
+ assert.equal(events.at(-1).type,"complete");
+ assert.deepEqual(events.at(-1).tracks.map(x=>x.title),["Halo","Oceans"]);
+ assert.ok(!r.body.includes("Bearer live"));
+});
+
+test("Browser music loader reads streamed Drive scan counts",async()=>{
+ const encoder=new TextEncoder();
+ const events=[
+  {type:"start"},
+  {type:"progress",foldersScanned:16,foldersQueued:970,songsFound:942},
+  {type:"complete",configured:true,signedIn:true,tracks:[{id:"song",title:"Song"}],truncated:false}
+ ];
+ const body=new ReadableStream({start(controller){for(const evt of events)controller.enqueue(encoder.encode(JSON.stringify(evt)+"\n"));controller.close();}});
+ const result=await music.readMusicResponse({headers:new Headers({"content-type":"application/x-ndjson"}),body});
+ assert.equal(result.tracks.length,1);
+ assert.equal(music._data.musicProgress.songsFound,942);
+});
