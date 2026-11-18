@@ -247,7 +247,8 @@ function sync(){
     const target=body.querySelector("#musicList"),scroll=target.querySelector(".music-browse-scroll"),position=scroll?.scrollTop||0;
     target.innerHTML=listHtml();
     const nextScroll=target.querySelector(".music-browse-scroll");if(nextScroll)nextScroll.scrollTop=position;
-   }else if(data.status==="error"||data.status==="unavailable")body.innerHTML='<div class="music-load-error"><h3>Couldn\'t load your music</h3><p>You can try again without changing your Google sign-in.</p><button type="button" class="btn btn-primary" data-music="retry">↻ Retry loading</button><details class="music-load-details"><summary>Show loading details</summary><ol>'+data.loadLog.map(item=>'<li><time>'+item.elapsed+'s</time> '+esc(item.message)+'</li>').join("")+'</ol></details></div>';
+   }else if(data.status==="unavailable"&&data.message===MESSAGES.offline_host)body.innerHTML='<div class="music-load-error"><h3>Drive music needs its private streaming service</h3><p>This backup can still show recipes, but the Google Drive library is currently hosted on the main site.</p><a class="btn btn-primary" href="https://healthiest-food.vercel.app/#media">Open Drive music on the main site</a></div>';
+   else if(data.status==="error"||data.status==="unavailable")body.innerHTML='<div class="music-load-error"><h3>Couldn\'t load your music</h3><p>You can try again without changing your Google sign-in.</p><button type="button" class="btn btn-primary" data-music="retry">↻ Retry loading</button><details class="music-load-details"><summary>Show loading details</summary><ol>'+data.loadLog.map(item=>'<li><time>'+item.elapsed+'s</time> '+esc(item.message)+'</li>').join("")+'</ol></details></div>';
    else body.innerHTML="";
   }
   const msg=box.querySelector("#musicMessage");if(msg){msg.textContent=data.message;msg.hidden=!data.message;}

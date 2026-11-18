@@ -215,3 +215,10 @@ test("A failed Google sign-in notice stays visible when the library is signed ou
   assert.equal(music._data.message,"Sign-in was cancelled.");
  }finally{music._data.message=previous;}
 });
+
+test("Static backup explains streaming limitation and offers a working-site link",()=>{
+ const source=read("music-cooking.js");
+ assert.match(source,/Drive music needs its private streaming service/);
+ assert.match(source,/https:\/\/healthiest-food\.vercel\.app\/#media/);
+ assert.match(source,/data\.message===MESSAGES\.offline_host/);
+});
