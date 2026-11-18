@@ -43,7 +43,7 @@ async function main(){
   assert.ok(loaded,"Local site unavailable");
   await page.locator("#musicLoadTitle").waitFor();
   assert.equal(await page.locator(".music-load-bar").getAttribute("aria-valuenow"),null);
-  assert.match(await page.locator("#musicLoadLog").innerText(),/Connecting to the music service/);
+  assert.match(await page.locator("#musicLoadLog").textContent(),/Connecting to the music service/);
   await page.locator("#musicSort").waitFor();
   assert.equal(await page.locator("[data-music-track]").count(),4);
   assert.equal(streams,0,"Opening the library should not fetch music tags");
