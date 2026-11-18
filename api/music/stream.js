@@ -10,9 +10,12 @@ module.exports = async (req, res) => {
   if (!range) { res.statusCode = 416; return res.end(); }
   const s = await L.session(req, res, cfg);
   if (!s) return L.json(res, 401, { error: "sign_in_required" });
-  const upstream = await fetch("https://www.googleapis.com/drive/v3/files/" + encodeURIComponent(id) + "?alt=media&supportsAllDrives=true", {
-    headers: { Authorization: "Bearer " + s.at, Range: range }
-  });
+  let upstream;
+  try {
+    upstream = await fetch("https://www.googleapis.com/drive/v3/files/" + encodeURIComponent(id) + "?alt=media&supportsAllDrives=true", {
+      headers: { Authorization: "Bearer " + s.at, Range: range }
+    });
+  } catch { return L.json(res, 502, { error: "drive_unreachable" }); }
   if (!upstream.ok) { res.statusCode = upstream.status === 416 ? 416 : upstream.status === 404 ? 404 : 502; return res.end(); }
   const type = String(upstream.headers.get("content-type") || "");
   // Only proxy audio: this endpoint must not become a general Drive download link.

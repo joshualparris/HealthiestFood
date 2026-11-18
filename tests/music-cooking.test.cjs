@@ -105,6 +105,13 @@ test("Stream forwards a clamped Range with the user's token and refuses non-audi
  });
 });
 
+test("Stream reports Drive network failures as 502 instead of crashing",async()=>{
+ await withFetch(async()=>{throw new Error("offline")},async()=>{
+  const r=mockRes();await stream(req("/api/music/stream?id=1EJMB8Vtm180c_ODspX_fwKiMfrr7Muoq",{cookie:sessionCookie()}),r);
+  assert.equal(r.statusCode,502);
+ });
+});
+
 test("Stream requires sign-in and a valid file id",async()=>{
  const a=mockRes();await stream(req("/api/music/stream?id=1EJMB8Vtm180c_ODspX_fwKiMfrr7Muoq"),a);assert.equal(a.statusCode,401);
  const b=mockRes();await stream(req("/api/music/stream?id=../../etc",{cookie:sessionCookie()}),b);assert.equal(b.statusCode,400);
