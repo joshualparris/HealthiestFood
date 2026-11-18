@@ -4,10 +4,12 @@ on:
     branches: [main]
     paths:
       - 'tests/cloudflare-music-live.test.mjs'
+      - 'tests/music-backup-route.test.mjs'
       - '.github/workflows/cloudflare-music-live.yml'
   pull_request:
     paths:
       - 'tests/cloudflare-music-live.test.mjs'
+      - 'tests/music-backup-route.test.mjs'
       - '.github/workflows/cloudflare-music-live.yml'
   workflow_dispatch:
 permissions:
