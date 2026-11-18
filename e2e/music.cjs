@@ -32,7 +32,7 @@ async function main(){
   const page=await browser.newPage({viewport:{width:1280,height:850},serviceWorkers:"block"});
   const errors=[];page.on("pageerror",e=>errors.push(e.message));
   let streams=0;
-  await page.route("**/api/music/tracks",async route=>{await pause(700);return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({configured:true,signedIn:true,tracks})});});
+  await page.route("**/api/music/tracks**",async route=>{await pause(700);return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({configured:true,signedIn:true,tracks})});});
   await page.route("**/api/music/stream?**",route=>{
    streams++;
    const id=new URL(route.request().url()).searchParams.get("id");
