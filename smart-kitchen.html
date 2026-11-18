@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#143d33">
+<meta name="description" content="HealthiestFood smart grocery scanner, pantry-first meal planning and hands-free batch-cooking assistant.">
+<title>Smart Kitchen | HealthiestFood</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#173e30;background:#f7faf6}
+*{box-sizing:border-box}body{margin:0;font-size:16px;line-height:1.55}
+header{background:#143d33;padding:16px max(20px,calc((100% - 1020px)/2));color:white;display:flex;justify-content:space-between;align-items:center;gap:18px}
+header a{color:white;text-decoration:none;font-weight:700}header small{opacity:.86}a{color:#176349}
+main{max-width:1020px;margin:auto;padding:20px clamp(15px,4vw,32px)}
+h1{font:700 clamp(2.15rem,4.4vw,3.2rem)/1.13 Georgia,serif;margin:14px 0}h2{font:700 1.75rem/1.15 Georgia,serif;margin:4px 0 16px}h3{font-size:1.1rem;margin:15px 0 6px}
+.lead{color:#526a60;max-width:780px;font-size:1.08rem}.muted{color:#5a7065;font-size:.9rem}
+.card{background:white;border:1px solid #dce8df;border-radius:17px;margin:20px 0;padding:clamp(16px,3vw,26px);box-shadow:0 3px 12px #123b2609}
+section.card:target{outline:3px solid #87b49d}.notice{background:#eff7ef;border-left:4px solid #2c7a56;padding:12px 14px;border-radius:7px}
+.warning{background:#fff4e3;border-left:4px solid #ac7728;padding:12px 14px;border-radius:7px}
+button,input,textarea,select{font:inherit}input,textarea,select{width:100%;min-height:44px;padding:10px;border:1px solid #9ab4a5;border-radius:10px;background:#fff;color:#163d2c}
+textarea{min-height:110px;resize:vertical}label{display:block;font-weight:650;font-size:.94rem;margin:8px 0}label>small{font-weight:400;display:block}
+button,.button{background:#fff;color:#15563c;border:2px solid #b8d2c3;border-radius:10px;min-height:46px;padding:11px 15px;font-weight:680;cursor:pointer}
+button:hover,.button:hover{background:#eff7f0}button.primary,.button.primary{background:#176647;color:#fff;border-color:#176647}
+button[disabled]{opacity:.52;cursor:not-allowed}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #e39e38;outline-offset:2px}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:13px 0}.actions>button{flex:0 1 auto}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+nav.jump{display:flex;gap:7px;overflow:auto;margin:20px 0;scroll-snap-type:x mandatory}nav.jump a{white-space:nowrap;padding:9px 12px;border-radius:25px;background:#e4f1e9;color:#154e35;font-size:.86rem;text-decoration:none;scroll-snap-align:start}
+.output{white-space:pre-wrap;overflow-wrap:anywhere;padding:14px;background:#f4f7f4;border-radius:10px;border:1px solid #e1eae4;font:inherit;line-height:1.6;min-height:55px}
+.entry{border-top:1px solid #e0e8e1;padding:12px 0}.entry:first-child{border-top:0}.entry strong{display:block}.entry small{display:block;color:#667a70}
+.row{display:flex;gap:12px;align-items:center}.row>input[type=checkbox]{width:22px;height:22px;min-height:22px;flex:none}
+.kpi{padding:13px;border-radius:12px;background:#f0f6f0}.kpi b{font-size:1.4rem}
+video{width:100%;max-height:270px;border-radius:12px;background:#12221d;object-fit:cover}
+.step{font-size:1.24rem;line-height:1.6;background:#ebf5ef;padding:20px;border-radius:15px;min-height:120px}
+footer{max-width:1020px;margin:auto;color:#65796e;padding:15px 20px 35px;font-size:.83rem}
+hr{border:0;border-top:1px solid #e1eae2;margin:20px 0}
+@media(max-width:680px){.grid2,.grid3{grid-template-columns:1fr}.actions button{flex:1 1 100%}main{padding:15px}header{padding:13px}}
+</style>
+<script src="site-data.js" defer></script>
+<script src="nutrient-ledger.js" defer></script>
+<script src="ingredient-catalogue.js" defer></script>
+<script src="food-shopping.js" defer></script>
+<script src="pantry-lots.js" defer></script>
+<script src="timers.js" defer></script>
+<script src="ten-lunch-planner.js" defer></script>
+<script src="local-backup.js" defer></script>
+<script src="smart-kitchen-core.js" defer></script>
+<script src="smart-kitchen.js" defer></script>
+<script src="iframe-route-bridge.js" defer></script>
+</head>
+<body>
+<header><a href="index.html#home">✳ good food <small>· smart kitchen</small></a><a href="ten-lunch-cook.html">Cook 10 lunches ↗</a></header>
+<main id="main">
+<p class="muted">LOCAL-FIRST · DUBBO · YOUR CHOICES STAY IN CONTROL</p>
+<h1>Shop, cook and use up what you've got.</h1>
+<p class="lead">Scan products, review photo text, find meals from your recorded pantry, make a weekly plan, and cook hands-free. Recognition is a suggestion, never proof of food safety or a Woolworths price.</p>
+<p class="notice">Your grocery photos and saved plans stay in this browser unless <strong>you</strong> choose to query Open Food Facts, use a device speech service, download a backup or share a file. Optical character recognition downloads its engine and language files to run in the browser. Check every product label yourself.</p>
+<nav class="jump" aria-label="Smart Kitchen sections">
+<a href="#scan">Scan groceries</a><a href="#pantry">Use it up</a><a href="#planner">Weekly menu</a><a href="#import">Import recipes</a><a href="#cooking">Hands-free cook</a><a href="#freezer">Freezer stock</a><a href="#sharing">Share & sync</a>
+</nav>
+
+<section id="scan" class="card">
+<h2>1 · Smart grocery scanner</h2>
+<div class="grid2">
+<div>
+<h3>Receipt or basket photo</h3>
+<label>Choose a photo <small>Camera or existing JPG/PNG/WebP, maximum 15 MB. Text recognition requires an online download the first time.</small><input id="groceryPhoto" type="file" accept="image/png,image/jpeg,image/webp" capture="environment"></label>
+<div class="actions"><button id="recognisePhoto" class="primary">Read text on this device</button></div>
+<p id="photoStatus" class="muted" role="status">No photograph processed.</p>
+<label>Detected or pasted receipt text <textarea id="groceryText" placeholder="Or paste receipt text here. Correct misread product names before searching."></textarea></label>
+<button id="detectProducts">Find possible ingredients</button>
+</div>
+<div>
+<h3>Review before adding anything</h3>
+<p class="muted">A keyword match does not prove the brand, weight or amount bought. Enter quantities in the cook-up or pantry after checking labels.</p>
+<div id="detectedProducts" class="output" role="status">No suggestions yet.</div>
+<div class="actions"><button id="copyDetected">Copy ingredient suggestions</button><a href="ten-lunch-cook.html" class="button">Check ten-lunch quantities ↗</a></div>
+</div>
+</div>
+<hr>
+<h3>Scan or enter a barcode</h3>
+<div class="grid2">
+<div>
+<video id="barcodeVideo" playsinline muted hidden aria-label="Barcode camera preview"></video>
+<div class="actions"><button id="startBarcode">Start camera scan</button><button id="stopBarcode">Stop camera</button></div>
+<label>Barcode (8–14 digits) <input id="barcode" inputmode="numeric" maxlength="14" placeholder="Type code if scanning isn't supported"></label>
+<button id="lookupBarcode" class="primary">Look up product with my permission</button>
+<p class="muted">Queries Open Food Facts only when you select lookup. Community information may be incomplete, stale or wrong, especially for Australian product variants.</p>
+</div>
+<div>
+<p id="barcodeInfo" class="output" role="status">No product looked up.</p>
+<label>Confirm product category <select id="recognisedLotKey"></select></label>
+<div class="grid2">
+<label>Quantity owned <input id="recognisedLotQuantity" type="number" step=".01" min=".01" max="100000" value="1"></label>
+<label>Storage <select id="recognisedLotStorage"><option value="pantry">Pantry</option><option value="fridge">Fridge</option><option value="freezer">Freezer</option></select></label>
+</div>
+<label>Printed use-by date, if any <input id="recognisedLotDate" type="date"></label>
+<button id="saveRecognisedLot">Add confirmed pack to dated pantry</button>
+<p id="lotStatus" class="muted" role="status">Nothing added to inventory.</p>
+</div>
+</div>
+</section>
+
+<section id="pantry" class="card">
+<h2>2 · Use-first pantry and ingredient swaps</h2>
+<p class="muted">Uses your existing dated pantry lots and original shopping reconciliation. Products past their use-by are flagged, not suggested for cooking. Date alone never proves safety.</p>
+<div class="grid2">
+<div><h3>Check these packs first</h3><div id="expiringPacks" class="output">Reading your saved pantry…</div></div>
+<div><h3>Meals requiring the least shopping</h3><div id="mealSuggestions" class="output">Loading meal suggestions…</div><button id="refreshPantry">Refresh from existing pantry</button></div>
+</div>
+<h3>Substitute an ingredient</h3>
+<div class="grid3"><label>Ingredient <select id="swapOriginal"></select></label><label>Alternative <select id="swapAlternative"></select></label><label>Amount (g) <input id="swapGrams" type="number" min="1" max="100000" value="200"></label></div>
+<button id="calculateSwap">Check swap</button><p id="swapResult" class="output" role="status">Choose a substitute; nutrition and cooking may change.</p>
+</section>
+
+<section id="planner" class="card">
+<h2>3 · Automatic weekly plan and budget</h2>
+<p>Generate a suggested seven-day plan using your <strong>existing 17 recipes</strong>. Save only after approving the days, so existing plans aren't silently overwritten.</p>
+<div class="grid3">
+<label>Start date <input id="planStart" type="date"></label>
+<label>Maximum intended checkout budget (AUD) <input id="planBudget" type="number" min="1" max="1000" step="1" value="100"></label>
+<label>Store aisle layout <select id="aisleLayout"><option value="original">App categories</option><option value="produce-first">Fresh produce first</option><option value="frozen-first">Chilled & frozen first</option></select></label>
+</div>
+<div class="actions"><button id="suggestMenu" class="primary">Generate 7-day meal ideas</button><button id="saveToCalendar" disabled>Save to my in-app planner</button><button id="downloadIcs" disabled>Export calendar .ics</button></div>
+<p class="warning" id="budgetStatus">Store-specific prices and stock are not live. A historical-price subtotal cannot prove a budget will be met.</p>
+<div id="menuPreview" class="output">No plan generated yet.</div>
+<hr>
+<h3>Reusable menus</h3>
+<div class="grid2">
+<label>Save this combination as <input id="presetName" maxlength="80" placeholder="e.g. Family freezer week"></label>
+<label>Saved menus <select id="presetPicker"><option value="">Choose saved menu</option></select></label>
+</div>
+<div class="actions"><button id="savePreset">Save current menu</button><button id="loadPreset">Load saved menu</button><button id="applyShopping">Send menu to existing shopping list</button></div>
+<p id="presetStatus" class="muted" role="status"></p>
+</section>
+
+<section id="import" class="card">
+<h2>4 · Import recipes, including social captions</h2>
+<p>Paste a recipe's copied text, JSON-LD or page HTML. Structured <code>schema.org/Recipe</code> data is extracted when available. Social videos need an accompanying caption or transcript: a link alone doesn't expose the recipe.</p>
+<label>Source URL (reference only) <input id="recipeSource" type="url" placeholder="https://example.com/recipe"></label>
+<label>Recipe text / instructions / copied HTML <textarea id="recipePaste" rows="8" placeholder="Recipe name&#10;Ingredients&#10;400 g chickpeas&#10;...&#10;Method&#10;1. Cook..."></textarea></label>
+<div class="actions"><button id="extractRecipe" class="primary">Extract editable recipe</button><button id="tryRecipeUrl">Try public URL import</button></div>
+<div id="recipePreview" class="output" role="status">Nothing imported yet.</div>
+<div class="actions"><button id="saveImportedRecipe" disabled>Save approved recipe locally</button></div>
+<h3>Saved imported recipes</h3><div id="importedRecipes" class="output"></div>
+<p class="muted">URL fetching can be blocked by the publisher's browser restrictions. Imported recipes stay in this Smart Kitchen collection until validated for the main planner and nutrition engine.</p>
+</section>
+
+<section id="cooking" class="card">
+<h2>5 · Hands-free cooking assistant</h2>
+<p class="muted">Uses the 18 steps in your ten-lunch guide. Speech commands depend on your browser and may use the phone's speech recognition service. Always check cooking doneness, temperatures and cooling yourself.</p>
+<div class="grid2">
+<div>
+<p id="stepPosition" class="muted">Step 1</p><div id="currentCookStep" class="step">Loading cooking steps…</div>
+<div class="actions"><button id="previousStep">← Previous</button><button id="nextStep" class="primary">Next →</button><button id="readStep">Read aloud</button></div>
+<div class="actions"><button id="voiceStart">Voice commands (opt-in)</button><button id="voiceStop">Stop listening</button><button id="keepScreenOn">Keep screen awake</button></div>
+<p id="voiceStatus" class="muted" role="status">Voice listening off. Say “next step”, “previous step”, “repeat” or “start ten minute timer” when enabled.</p>
+</div>
+<div>
+<h3>Multiple independent timers</h3>
+<div class="grid2">
+<label>Timer name <input id="timerName" maxlength="60" value="Rice"></label>
+<label>Minutes <input id="timerMinutes" type="number" min="1" max="240" value="25"></label>
+</div>
+<button id="startTimer" class="primary">Start timer</button>
+<div id="smartTimers" class="output" aria-live="polite">No timers running.</div>
+<p class="warning">Timers are reminders, not proof that food is cooked or cooled safely. Screen wake locks and voice recognition depend on browser permissions and may stop when the device locks.</p>
+</div>
+</div>
+</section>
+
+<section id="freezer" class="card">
+<h2>6 · Freezer portions and waste reduction</h2>
+<p>Record your real cooled and frozen portions. This is separate from the guided checkbox progress: nothing is marked as cooked just because a recipe was planned.</p>
+<div class="grid3">
+<label>Recipe <select id="freezerRecipe"><option value="Salmon lentil quinoa bowls">Salmon lentil quinoa bowls</option><option value="Tofu chickpea curry bowls">Tofu chickpea curry bowls</option></select></label>
+<label>Portions actually frozen <input id="freezerPortions" type="number" min="1" max="50" value="5"></label>
+<label>Date cooked <input id="freezerDate" type="date"></label>
+</div>
+<div class="actions"><button id="addFreezer" class="primary">Record frozen portions</button><button id="exportFreezer">Copy freezer inventory</button></div>
+<div id="freezerStock" class="output" role="status">No portions recorded.</div>
+</section>
+
+<section id="sharing" class="card">
+<h2>7 · Share safely and check nutrition</h2>
+<div class="grid2">
+<div>
+<h3>Send to another device or family member</h3>
+<p>Export your own HealthiestFood data and use Android Share or a downloaded file to transfer it. Sharing a file is not automatic cloud synchronisation.</p>
+<div class="actions"><button id="shareBackup" class="primary">Share private backup</button><button id="downloadBackup">Download backup</button></div>
+<p class="muted">Backups can contain your pantry and meal-planning details. Only share with people you trust.</p>
+</div>
+<div>
+<h3>Evidence-based nutrition review</h3>
+<p>Your existing AFCD3 nutrient model provides partial estimates and flags unknown nutrients. It cannot yet establish complete iodine, calcium or vitamin D adequacy for these exact meals.</p>
+<p><a href="index.html#science">Open current nutrient evidence ↗</a> · <a href="product-check.html">Check Woolworths labels ↗</a></p>
+<h3>Appliance control</h3><p class="muted">No compatible oven or appliance connection is configured. Remote control is intentionally disabled rather than sending unverified cooking commands.</p>
+</div>
+</div>
+<p id="shareStatus" class="muted" role="status"></p>
+</section>
+</main>
+<footer>HealthiestFood · Privacy-first assistance, not medical advice, not a food-safety certification. <a href="https://github.com/joshualparris/HealthiestFood">Source and issue tracker</a>.</footer>
+</body>
+</html>
