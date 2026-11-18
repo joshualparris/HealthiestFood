@@ -705,3 +705,17 @@ body.music-active{padding-bottom:80px}
  body.music-active{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
  .music-cooking{padding:16px}
 }
+
+/* Music library: touch-friendly metadata sorting and large-library browsing. */
+.music-sort{display:flex;flex-direction:column;gap:3px;font-size:.76rem;font-weight:700;white-space:nowrap;color:var(--pine)}
+.music-sort select{min-width:126px;min-height:44px;padding:8px 30px 8px 10px;border:1px solid #b8cfaf;border-radius:12px;background:#fffdf7;color:var(--pine);font:inherit;font-size:.9rem}
+.music-scan-note{font-size:.82rem;line-height:1.5;color:#496c53;margin:12px 0 4px}
+.music-toolbar #musicScan:disabled{opacity:.65;cursor:not-allowed}
+.music-browse-scroll{max-height:min(60vh,580px);overflow-y:auto;overscroll-behavior:contain;border:1px solid #e3eadf;border-radius:12px}
+.music-browse-scroll .music-list{max-height:none;overflow:visible;border-top:0}
+.music-group-heading{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:10px;background:#eaf1e3;border-top:1px solid #d6e5d0;padding:8px 10px}
+.music-group-heading h3{margin:0;font-size:.97rem;overflow-wrap:anywhere}
+.music-group-heading small{font-weight:400}
+.music-group-heading button{border:1px solid #b8cfaf;background:#fffdf7;border-radius:8px;padding:7px 10px;font-size:.77rem;font-weight:700;color:var(--pine);min-height:36px;flex-shrink:0}
+.music-more{margin-top:12px}
+@media (max-width:600px){.music-sort{flex:1 1 calc(50% - 10px)}.music-sort select{width:100%}.music-toolbar #musicScan{width:100%}.music-group-heading button{min-height:44px}}

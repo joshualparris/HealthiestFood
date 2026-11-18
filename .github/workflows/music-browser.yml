@@ -1,0 +1,41 @@
+name: Music library browser checks
+
+on:
+  pull_request:
+    paths:
+      - 'music-cooking.js'
+      - 'music-tags.js'
+      - 'index.html'
+      - 'site.css'
+      - 'service-worker.js'
+      - 'e2e/music.cjs'
+      - '.github/workflows/music-browser.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'music-cooking.js'
+      - 'music-tags.js'
+      - 'index.html'
+      - 'site.css'
+      - 'service-worker.js'
+      - 'e2e/music.cjs'
+      - '.github/workflows/music-browser.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  browse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium for Playwright
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Exercise music sorting and progressive metadata lookup
+        run: node e2e/music.cjs
