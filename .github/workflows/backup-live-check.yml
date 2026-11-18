@@ -40,6 +40,12 @@ jobs:
           BROWSER_ENGINE: chromium
           SMOKE_URL: ${{ matrix.backup.url }}
         run: node e2e/smoke.cjs
+      - name: Verify new ten-lunch guide on published GitHub Pages URL
+        if: matrix.backup.name == 'GitHub-Pages'
+        env:
+          BROWSER_ENGINE: chromium
+          SMOKE_URL: ${{ matrix.backup.url }}
+        run: node e2e/ten-lunch.cjs
       - name: Report verified backup
         if: success()
         run: echo "PASS ${{ matrix.backup.name }} — ${{ matrix.backup.url }}"
