@@ -106,7 +106,7 @@ function init(){
   $("counts").textContent=(items.length-left.length)+" / "+items.length+" ingredients fully confirmed · "+completed(state)+" / "+totalSteps+" cooking steps completed";
  });
  document.addEventListener("change",e=>{
-  if(e.target.matches("[data-item]")){const i=items.find(x=>x.id===e.target.dataset.item);if(!i)return;state.have[i.id]=clamp(e.target.value,i.need);save(state);draw();}
+  if(e.target.matches("[data-item]")){const i=items.find(x=>x.id===e.target.dataset.item);if(!i)return;state.have[i.id]=clamp(e.target.value,i.need);e.target.value=display(state.have[i.id]);save(state);/* Do not replace focused inputs on blur: would detach the next field. */}
   if(e.target.matches("[data-step]")){state.done[e.target.dataset.step]=e.target.checked;save(state);draw();}
  });
  draw();
