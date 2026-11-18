@@ -52,8 +52,15 @@ async function run(){
    await page.locator('#connectedImportSave').click();
    x=await page.evaluate(()=>JSON.parse(localStorage.getItem('good-food-user-recipes-v2')||'[]'));
    assert.equal(x.length,2);
-   assert.match(await page.locator('#cloudSyncStatus').innerText(),/not connected|not configured/i);
-   assert.equal(await page.locator('#cloudSyncControls').isVisible(),false);
+   if((new URL(url)).origin==="https://joshualparris.github.io"){
+     await page.locator('#cloudSyncControls').waitFor({state:'visible',timeout:15000});
+     assert.match(await page.locator('#cloudSyncStatus').innerText(),/Signed out|Signed in/);
+     assert.equal(await page.locator('#cloudLogin').isDisabled(),true);
+     assert.equal(await page.locator('#cloudRedirectConfirmed').isVisible(),true);
+   }else{
+     assert.match(await page.locator('#cloudSyncStatus').innerText(),/not connected|not configured|only enabled on the canonical/i);
+     assert.equal(await page.locator('#cloudSyncControls').isVisible(),false);
+   }
    await page.reload({waitUntil:'domcontentloaded'});
    await page.locator('#connectedRecipe option').first().waitFor({state:'attached'});
    assert.ok(await page.locator('#connectedRecipe option').count()>=19);
