@@ -1,0 +1,48 @@
+name: Old iPad main navigation and 17 recipe viewer
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'app.js'
+      - 'site.css'
+      - 'legacy-main.js'
+      - 'legacy-recipes.js'
+      - 'recipes-classic.html'
+      - 'e2e/legacy-main.cjs'
+      - '.github/workflows/legacy-main-browser.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'app.js'
+      - 'site.css'
+      - 'legacy-main.js'
+      - 'legacy-recipes.js'
+      - 'recipes-classic.html'
+      - 'e2e/legacy-main.cjs'
+      - '.github/workflows/legacy-main-browser.yml'
+permissions:
+  contents: read
+jobs:
+  basic-recipe-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install a pinned browser and ES5 parser
+        run: |
+          npm install --no-save playwright@1.56.1 acorn@8.15.0
+          npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Verify both browser compatibility files parse as ES5
+        run: node -e "const a=require('acorn'),f=require('fs');for(const p of ['legacy-main.js','legacy-recipes.js'])a.parse(f.readFileSync(p,'utf8'),{ecmaVersion:5});"
+      - name: Verify working navigation and all 17 recipe methods after modern JavaScript fails
+        env:
+          BROWSER_ENGINE: ${{ matrix.browser }}
+        run: node e2e/legacy-main.cjs
