@@ -1,0 +1,38 @@
+name: Ten-lunch browser journey
+on:
+  pull_request:
+    paths:
+      - 'ten-lunch-cook.html'
+      - 'ten-lunch-planner.js'
+      - 'index.html'
+      - 'app-pages.js'
+      - 'service-worker.js'
+      - 'e2e/ten-lunch.cjs'
+      - '.github/workflows/ten-lunch-browser.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ten-lunch-cook.html'
+      - 'ten-lunch-planner.js'
+      - 'index.html'
+      - 'app-pages.js'
+      - 'service-worker.js'
+      - 'e2e/ten-lunch.cjs'
+      - '.github/workflows/ten-lunch-browser.yml'
+permissions:
+  contents: read
+jobs:
+  mobile-desktop-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium Playwright
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify both viewports, quantity arithmetic, reload, labels and embedded app route
+        run: node e2e/ten-lunch.cjs
