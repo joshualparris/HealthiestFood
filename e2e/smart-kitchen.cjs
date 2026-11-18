@@ -22,7 +22,7 @@ async function main(){
    const ctx=await browser.newContext({viewport:{width,height:844},acceptDownloads:true});
    const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.stack||e.message));
    await page.goto(base+'/smart-kitchen.html',{waitUntil:'domcontentloaded'});
-   await page.locator('#recognisedLotKey option').first().waitFor();
+   await page.locator('#recognisedLotKey option').first().waitFor({state:'attached'});
    const count=await page.locator('#recognisedLotKey option').count();
    assert.ok(count>=10,'Barcode pantry categories loaded');
    await page.locator('#groceryText').fill('Wild Pink Salmon 415g\nAustralian Brown Rice 1kg\nRed Lentils 500g');
@@ -53,7 +53,7 @@ async function main(){
    await page.locator('#addFreezer').click();
    assert.match(await page.locator('#freezerStock').innerText(),/5 remaining/);
    await page.reload({waitUntil:'domcontentloaded'});
-   await page.locator('#recognisedLotKey option').first().waitFor();
+   await page.locator('#recognisedLotKey option').first().waitFor({state:'attached'});
    assert.match(await page.locator('#freezerStock').innerText(),/5 remaining/);
    assert.equal(await page.locator('#presetPicker option').count(),2);
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+3);
@@ -67,7 +67,7 @@ async function main(){
   await home.locator('#view-home').waitFor({state:'visible'});
   await home.locator('#view-home a[href="smart-kitchen.html"]').click();
   await home.waitForURL(/#page$/);
-  await home.frameLocator('#foodOtherFrame').locator('#recognisedLotKey option').first().waitFor();
+  await home.frameLocator('#foodOtherFrame').locator('#recognisedLotKey option').first().waitFor({state:'attached'});
   assert.deepEqual(errors,[]);
   await ctx.close();console.log('PASS Smart Kitchen in-app route');
  }finally{await browser.close();if(server.listening)await new Promise(resolve=>server.close(resolve));}
