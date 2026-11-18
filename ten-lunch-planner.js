@@ -66,6 +66,7 @@ function load(){try{return normalise(JSON.parse(localStorage.getItem(KEY)||"{}")
 function save(s){try{localStorage.setItem(KEY,JSON.stringify(normalise(s)));return true;}catch{return false;}}
 const escapeHTML=(s)=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function init(){
+ if(!document.getElementById("shopList"))return; // Library reused by Smart Kitchen without mounting the ten-lunch UI.
  const $=id=>document.getElementById(id);
  let state=load();
  const groups=[...new Set(items.map(i=>i.group))];

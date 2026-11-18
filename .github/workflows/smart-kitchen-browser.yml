@@ -1,0 +1,38 @@
+name: Smart Kitchen browser interactions
+on:
+  pull_request:
+    paths:
+      - 'smart-kitchen*.js'
+      - 'smart-kitchen.html'
+      - 'ten-lunch-planner.js'
+      - 'e2e/smart-kitchen.cjs'
+      - '.github/workflows/smart-kitchen-browser.yml'
+      - 'app-pages.js'
+      - 'index.html'
+  push:
+    branches: [main]
+    paths:
+      - 'smart-kitchen*.js'
+      - 'smart-kitchen.html'
+      - 'ten-lunch-planner.js'
+      - 'e2e/smart-kitchen.cjs'
+      - '.github/workflows/smart-kitchen-browser.yml'
+      - 'app-pages.js'
+      - 'index.html'
+permissions:
+  contents: read
+jobs:
+  chromium:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test Smart Kitchen mobile, desktop and in-app navigation
+        run: node e2e/smart-kitchen.cjs

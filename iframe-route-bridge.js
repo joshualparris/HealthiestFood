@@ -36,7 +36,7 @@ document.addEventListener("click",e=>{
  const name=u.pathname.split("/").pop();
  if(name==="index.html"||name===""){
   e.preventDefault();window.parent.postMessage({type:"healthiestfood-page-navigation",route:(u.hash||"#home").slice(1)},location.origin);
- }else if(["cooking-methods.html","longevity.html","product-check.html","device-timer-check.html"].includes(name)){
+ }else if(["cooking-methods.html","longevity.html","product-check.html","device-timer-check.html","smart-kitchen.html","ten-lunch-cook.html"].includes(name)){
   e.preventDefault();window.parent.postMessage({type:"healthiestfood-page-navigation",url:u.href},location.origin);
  }
 },true);
