@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'ten-lunch-cook.html'
+      - 'ten-lunch-planner.js'
       - 'longevity.html'
       - 'site.css'
       - 'offline-ready.js'
@@ -45,6 +47,8 @@ on:
   pull_request:
     paths:
       - 'index.html'
+      - 'ten-lunch-cook.html'
+      - 'ten-lunch-planner.js'
       - 'longevity.html'
       - 'site.css'
       - 'offline-ready.js'
