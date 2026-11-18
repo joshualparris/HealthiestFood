@@ -32,7 +32,7 @@ async function main(){
   const page=await browser.newPage({viewport:{width:1280,height:850},serviceWorkers:"block"});
   const errors=[];page.on("pageerror",e=>errors.push(e.message));
   let streams=0;
-  await page.route("**/api/music/tracks",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({configured:true,signedIn:true,tracks})}));
+  await page.route("**/api/music/tracks",async route=>{await pause(700);return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({configured:true,signedIn:true,tracks})});});
   await page.route("**/api/music/stream?**",route=>{
    streams++;
    const id=new URL(route.request().url()).searchParams.get("id");
@@ -41,6 +41,9 @@ async function main(){
   let loaded=false;
   for(let i=0;i<20;i++){try{const r=await page.goto(url+"#media",{waitUntil:"domcontentloaded",timeout:5000});if(r?.ok()){loaded=true;break;}}catch{}await pause(300);}
   assert.ok(loaded,"Local site unavailable");
+  await page.locator("#musicLoadTitle").waitFor();
+  assert.equal(await page.locator(".music-load-bar").getAttribute("aria-valuenow"),null);
+  assert.match(await page.locator("#musicLoadLog").textContent(),/Connecting to the music service/);
   await page.locator("#musicSort").waitFor();
   assert.equal(await page.locator("[data-music-track]").count(),4);
   assert.equal(streams,0,"Opening the library should not fetch music tags");

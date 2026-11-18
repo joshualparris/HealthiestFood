@@ -166,3 +166,52 @@ test("Page wiring: section, persistent mini player, podcast interlock and offlin
  assert.ok(read("service-worker.js").includes('"./music-cooking.js"'));
  assert.doesNotMatch(read("api/_music-lib.js"),/@gmail\.com|@cornerstone/i,"no personal emails in source");
 });
+
+
+test("Loading screen uses honest indeterminate progress and exposes a retry action",()=>{
+ const markup=music.loadingHtml();
+ assert.match(markup,/role="progressbar"/);
+ assert.doesNotMatch(markup,/aria-valuenow|[0-9]+%/);
+ assert.match(markup,/id="musicLoadElapsed"/);
+ assert.match(markup,/id="musicLoadLog"/);
+ assert.match(markup,/data-music="retry"/);
+ const css=read("site.css");
+ assert.match(css,/@keyframes music-drive-progress/);
+ assert.match(css,/prefers-reduced-motion:reduce/);
+});
+
+test("Music loader changes from loading to ready and recovers after a failed request",async()=>{
+ const response=(body,status=200)=>({ok:status<400,status,headers:new Headers({"content-type":"application/json"}),json:async()=>body});
+ let finish;
+ await withFetch(()=>new Promise(resolve=>{finish=resolve}),async()=>{
+  const promise=music.load();
+  assert.equal(music.state().status,"loading");
+  finish(response({configured:true,signedIn:true,tracks:[{id:"song",title:"A song",size:10}]}));
+  await promise;
+  assert.equal(music.state().status,"ready");
+  assert.equal(music.state().tracks,1);
+  assert.equal(music._data.loadTimer,null);
+ });
+ await withFetch(async()=>response({configured:true,signedIn:true,error:"drive_error"},502),async()=>{
+  await music.load();
+  assert.equal(music.state().status,"error");
+  assert.match(music._data.message,/Google Drive/);
+  assert.equal(music._data.loadTimer,null);
+ });
+ await withFetch(async()=>response({configured:true,signedIn:true,tracks:[]}),async()=>{
+  await music.load();
+  assert.equal(music.state().status,"ready");
+ });
+});
+
+
+test("A failed Google sign-in notice stays visible when the library is signed out",async()=>{
+ const previous=music._data.message;
+ music._data.status="idle";
+ music._data.message="Sign-in was cancelled.";
+ try{
+  await withFetch(async()=>({ok:true,status:200,headers:new Headers({"content-type":"application/json"}),json:async()=>({configured:true,signedIn:false,tracks:[]})}),()=>music.load());
+  assert.equal(music.state().status,"signedOut");
+  assert.equal(music._data.message,"Sign-in was cancelled.");
+ }finally{music._data.message=previous;}
+});
