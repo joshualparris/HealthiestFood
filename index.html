@@ -49,6 +49,8 @@
   <script src="food-planner.js" defer></script>
   <script src="whole-day-report.js" defer></script>
   <script src="site-audit.js" defer></script>
+  <script src="legacy-recipes.js" defer></script>
+  <script src="legacy-main.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -79,9 +81,9 @@
           <h1>Eat well.<br><em>Live fully.</em></h1>
           <p class="hero-lead">Breakfasts, dinners, snacks and four freezer-lunch favourites. Choose your own daily rhythm, with real dates, editable meal times and guided cooking.</p>
           <div class="hero-actions"><a class="btn btn-primary" href="smart-kitchen.html">Smart Kitchen <span>↗</span></a>
-            <a class="btn btn-primary" href="ten-lunch-cook.html">Cook 10 lunches tonight <span>↗</span></a><button class="btn btn-ghost" data-goto="plan">Plan today <span>↗</span></button><button class="btn btn-ghost" data-goto="recipes">Browse recipes <span>↗</span></button>
-            <button class="btn btn-ghost hero-secondary" data-goto="shop">See what to buy <span>↗</span></button>
-            <button class="btn btn-ghost hero-secondary" data-goto="media">Listen & watch <span>↗</span></button><a class="btn btn-ghost hero-secondary" href="cooking-methods.html">Compare cooking methods <span>↗</span></a>
+            <a class="btn btn-primary" href="ten-lunch-cook.html">Cook 10 lunches tonight <span>↗</span></a><a class="btn btn-ghost" href="#plan" data-goto="plan">Plan today <span>↗</span></a><a class="btn btn-ghost" href="recipes-classic.html" data-goto="recipes">Browse recipes <span>↗</span></a>
+            <a class="btn btn-ghost hero-secondary" href="#shop" data-goto="shop">See what to buy <span>↗</span></a>
+            <a class="btn btn-ghost hero-secondary" href="#media" data-goto="media">Listen & watch <span>↗</span></a><a class="btn btn-ghost hero-secondary" href="cooking-methods.html">Compare cooking methods <span>↗</span></a>
           </div>
           <div class="hero-facts"><div><strong>20</strong><span>freezer lunch portions (4 recipes × 5)</span></div><div><strong>17</strong><span>meal and snack recipes</span></div><div><strong>7</strong><span>days you can schedule</span></div></div>
         </div>
@@ -95,7 +97,7 @@
       </section>
       <section class="section-shell intro-note"><div><span class="section-kicker">BEYOND THE RECIPE</span><h2>Your longevity <em>guide.</em></h2></div><div><p>Daily habits, practical food swaps, nutrient checks and a clear-eyed look at Blue Zones, Blueprint and NutritionFacts.</p><a class="btn btn-primary" href="longevity.html">Explore the longevity guide ↗</a> <a class="btn btn-outline" href="health-hub.html">All my health apps ↗</a></div></section>
       <section class="section-shell home-feature">
-        <div class="section-heading"><div><span class="section-kicker">THE FOUR RECIPES</span><h2>Find your next <em>favourite.</em></h2></div><button class="text-link" data-goto="recipes">See all recipes ↗</button></div>
+        <div class="section-heading"><div><span class="section-kicker">THE FOUR RECIPES</span><h2>Find your next <em>favourite.</em></h2></div><a class="text-link" href="recipes-classic.html" data-goto="recipes">See all recipes ↗</a></div>
         <div class="recipe-grid" id="featuredCards"></div>
       </section>
       <section class="section-shell philosophy-grid">
