@@ -654,3 +654,16 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
 .method-action-preview>li::before{top:8px;left:8px;width:24px;height:24px;font-size:11px}
 @media(max-width:540px){.method-action-list{gap:9px}.method-action-list>li{padding:11px 12px 11px 45px;font-size:14px}.method-action-list>li::before{left:9px;top:10px;width:26px;height:26px}.cook-action-list>li{font-size:15px;line-height:1.75}.method-action-preview>li{font-size:12px;padding:8px 10px 8px 36px}.method-action-preview>li::before{left:7px;top:8px;width:22px;height:22px}}
 @media print{.method-action-list>li{break-inside:avoid;box-shadow:none}}
+
+/* Review 18 Nov 2026: visible labels under the mobile menu icons (names still come from aria-label),
+   and only the main hero actions on phones; the rest stay one tap away in the bottom menu. */
+@media (max-width:800px){
+  .mobile-nav > :is(button,a){flex-direction:column;gap:3px;min-height:54px}
+  .mobile-nav > :is(button,a) > .nav-label{display:block;font-size:clamp(9px,2.6vw,11px);font-weight:700;letter-spacing:0;line-height:1.1;white-space:nowrap}
+  .mobile-nav > :is(button,a) > span[aria-hidden="true"]{font-size:24px}
+  .mobile-nav > :is(button,a) > svg{display:block;width:24px;height:24px}
+}
+@media (max-width:600px){
+  .hero-actions .hero-secondary{display:none}
+}
+

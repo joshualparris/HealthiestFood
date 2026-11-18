@@ -7,7 +7,8 @@ const read=file=>fs.readFileSync(path.join(root,file),'utf8');
 const nav=html=>(html.match(/<nav class="mobile-nav"[\s\S]*?<\/nav>/)||[])[0];
 const routes=['Home','Recipes and cooking','Meal planner','Shopping list','Nutrition research','Podcasts and videos','Compare cooking methods'];
 
-test('seven mobile destinations are icons only and remain accessible',()=>{
+test('seven mobile destinations show an icon plus a short visible label and keep their accessible names',()=>{
+ const labels=['Home','Cook','Plan','Shop','Learn','Media','Methods'];
  for(const file of ['index.html','cooking-methods.html']){
   const content=nav(read(file));
   assert.ok(content,'Missing mobile navigation in '+file);
@@ -15,10 +16,12 @@ test('seven mobile destinations are icons only and remain accessible',()=>{
   assert.equal(entries.length,7,file);
   routes.forEach(name=>assert.ok(content.includes('aria-label="'+name+'"'),name+' in '+file));
   assert.equal((content.match(/<span aria-hidden="true">/g)||[]).length+(content.match(/<svg aria-hidden="true"/g)||[]).length,7);
-  // No visible word labels may slip outside the icon spans, notably "Methods".
-  const visible=content.replace(/<span aria-hidden="true">[^<]*<\/span>/g,'')
+  // Visible labels are exactly the seven short words, hidden from screen readers (aria-label is the name).
+  const shown=[...content.matchAll(/<small class="nav-label" aria-hidden="true">([^<]+)<\/small>/g)].map(m=>m[1]);
+  assert.deepEqual(shown,labels,file);
+  const stray=content.replace(/<span aria-hidden="true">[^<]*<\/span>/g,'').replace(/<small class="nav-label"[^>]*>[^<]*<\/small>/g,'')
     .replace(/<svg[^>]*>[\s\S]*?<\/svg>/g,'').replace(/<[^>]*>/g,'').replace(/\s/g,'');
-  assert.equal(visible,'',file+' unexpectedly contains text in the bar');
+  assert.equal(stray,'',file+' has text outside the icon and label');
   assert.ok(content.includes('href="cooking-methods.html"'),file);
  }
 });

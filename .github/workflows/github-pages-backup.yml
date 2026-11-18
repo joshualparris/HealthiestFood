@@ -29,6 +29,8 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Leave original uploaded photos out of the published site (the .webp versions are served)
+        run: rm -f file_*.png
       - name: Publish static site assets
         uses: actions/upload-pages-artifact@v3
         with:

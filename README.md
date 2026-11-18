@@ -1,6 +1,25 @@
-# HealthiestFood
+# HealthiestFood — Good Food, Long Game
 
-## Central Health Hub
+An evidence-led home kitchen app for Dubbo, NSW: breakfasts, dinners, snacks and four freezer-lunch recipes (5 portions each), a dated meal planner, a shopping list, guided cooking with food-safety timers, a cooking-methods comparison and a podcast/video library. It runs in the browser, saves to your device, and needs no account.
+
+**Main site: https://healthiest-food.vercel.app** · Backups (same code, may lag): [GitHub Pages](https://joshualparris.github.io/HealthiestFood/) and [Render](https://healthiest-food-backup.onrender.com/). If a page is missing on the main site, check that Vercel deployed the latest commit on `main`.
+
+| Start here | |
+|---|---|
+| Plan a day or week | [My plan](https://healthiest-food.vercel.app/#plan) |
+| Cook 10 freezer lunches | [Shop-to-cook guide](https://healthiest-food.vercel.app/ten-lunch-cook.html) |
+| Compare cooking methods | [Cooking Methods Lab](https://healthiest-food.vercel.app/cooking-methods.html) |
+| Habits and research | [Longevity guide](https://healthiest-food.vercel.app/longevity.html) |
+| All Josh's health apps | [Health Hub](https://healthiest-food.vercel.app/health-hub.html) |
+
+Run the tests with `for t in tests/*.test.cjs; do node "$t" || exit 1; done`. The sections below are a dated history of changes and evidence reports.
+
+---
+
+
+## Update history
+
+### Central Health Hub
 
 **[Open the interactive health website hub](https://healthiest-food.vercel.app/health-hub.html)** · [Verified 13 Nov 2026 health site inventory](docs/HEALTH_HUB_INVENTORY_2026-11-13.md) · [Catalogue source](health-hub-data.js)
 

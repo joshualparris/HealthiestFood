@@ -1,0 +1,3 @@
+# Original uploaded photos (about 20 MB). The site serves the converted .webp files instead;
+# the originals stay in the repo for .github/workflows/recipe-photo-conversion.yml.
+file_*.png
