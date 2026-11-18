@@ -1,0 +1,33 @@
+name: Render private music backend
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'render-music-server.js'
+      - 'api/music/**'
+      - 'api/_music-lib.js'
+      - 'tests/render-music-server.test.cjs'
+      - '.github/workflows/render-music-server.yml'
+  pull_request:
+    paths:
+      - 'render-music-server.js'
+      - 'api/music/**'
+      - 'api/_music-lib.js'
+      - 'tests/render-music-server.test.cjs'
+      - '.github/workflows/render-music-server.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test portable web server and private music API isolation
+        run: node --test tests/render-music-server.test.cjs
+      - name: Verify full music API tests still pass
+        run: node --test tests/music-cooking.test.cjs tests/music-tags.test.cjs
