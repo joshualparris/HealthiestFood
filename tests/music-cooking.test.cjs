@@ -203,3 +203,15 @@ test("Music loader changes from loading to ready and recovers after a failed req
   assert.equal(music.state().status,"ready");
  });
 });
+
+
+test("A failed Google sign-in notice stays visible when the library is signed out",async()=>{
+ const previous=music._data.message;
+ music._data.status="idle";
+ music._data.message="Sign-in was cancelled.";
+ try{
+  await withFetch(async()=>({ok:true,status:200,headers:new Headers({"content-type":"application/json"}),json:async()=>({configured:true,signedIn:false,tracks:[]})}),()=>music.load());
+  assert.equal(music.state().status,"signedOut");
+  assert.equal(music._data.message,"Sign-in was cancelled.");
+ }finally{music._data.message=previous;}
+});
