@@ -49,7 +49,7 @@ async function run(){
    await page.locator('.hero-actions [data-goto="plan"]').evaluate(el=>el.click());
    await page.locator('#view-plan').waitFor({state:'visible'});
    assert.match(await page.locator('#planGrid').innerText(),/newer browser/);
-   await page.reload({waitUntil:'domcontentloaded'});
+   await page.goto(base+'/index.html#shop',{waitUntil:'domcontentloaded'});
    await page.locator('#customShopping').waitFor({state:'visible'});
    assert.match(await page.locator('#customShopping').innerText(),/Lemon–paprika sardine bowls/);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+3),false,'Horizontal overflow '+width);
