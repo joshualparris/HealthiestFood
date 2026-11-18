@@ -3,7 +3,7 @@
  * guidance as current. Cache only same-origin static assets, never personal data.
  * An offline copy is a convenience, NOT current supermarket/product information.
  */
-const CACHE_NAME="healthiestfood-shell-20261118-legacy-ipad-v1";
+const CACHE_NAME="healthiestfood-shell-20261118-music-sorting-and-legacy-ipad-v4";
 const ASSETS=[
  "./","./index.html","./workflow-v2-core.js","./workflow-v2-ui.js","./user-recipes.js","./cloud-config.js","./cloud-sync.js","./cloud-sync-ui.js","./smart-kitchen.html","./smart-kitchen-core.js","./smart-kitchen.js","./ten-lunch-cook.html","./ten-lunch-legacy.js","./ten-lunch-planner.js","./longevity.html","./cooking-methods.html","./freezer-labels.html","./site.css","./site-data.js",
  "./whole-day-data.js","./ingredient-catalogue.js",
@@ -11,7 +11,7 @@ const ASSETS=[
  "./a.webp","./b.webp","./c.webp","./d.webp","./sn-apple.webp","./sn-eggs.webp","./sn-berries.webp",
  "./homepage-bowl.webp","./recipe-methods.js","./timers.js","./recipe-timer-purposes.js","./recipe-scale.js","./food-safety.js","./food-handling-log.js","./food-handling-ui.js",
  "./local-backup.js","./freezer-labels.js","./offline-ready.js","./cook-trial.js","./app.js","./food-shopping.js",
- "./media-data.js","./podcast-streams.js","./podcast-player.js","./music-cooking.js","./app-pages.js","./iframe-route-bridge.js","./media-library.js","./cooking-methods-data.js","./cooking-methods.js","./custom-shopping.js","./pantry-lots.js",
+ "./media-data.js","./podcast-streams.js","./podcast-player.js","./music-tags.js","./music-cooking.js","./app-pages.js","./iframe-route-bridge.js","./media-library.js","./cooking-methods-data.js","./cooking-methods.js","./custom-shopping.js","./pantry-lots.js",
  "./food-planner.js","./nutrition-coverage.js","./nutrient-ledger.js",
  "./afcd3-selected.js","./afcd3-foods.js","./whole-day-analysis.js","./science-evidence-register.js",
  "./related-health-sites.js","./whole-day-report.js","./site-audit.js","./favicon.svg","./manifest.webmanifest"

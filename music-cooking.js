@@ -4,9 +4,11 @@
  */
 (function(root,factory){const api=factory(root);if(typeof module==="object"&&module.exports)module.exports=api;if(root)root.FoodMusic=api;})(typeof window!=="undefined"?window:null,function(w){
 "use strict";
+const Tags=w?.FoodMusicTags||(typeof module==="object"&&module.exports?require("./music-tags.js"):null);
+const TAG_STORE="good-food-music-tags-v1";
 const STORE="good-food-music-v1";
 const esc=x=>String(x).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch]));
-const data={tracks:[],queue:[],index:-1,status:"idle",message:"",shuffle:false,playing:false,filter:"",audio:null,root:null,mini:null};
+const data={tracks:[],queue:[],index:-1,status:"idle",message:"",shuffle:false,playing:false,filter:"",sort:"title",group:"none",visible:200,tags:{},scanning:false,scanDone:0,scanTotal:0,scanGeneration:0,scanAbort:null,audio:null,root:null,mini:null};
 const MESSAGES={
  not_configured:"Music isn't set up on this site yet. It needs Google sign-in settings on the Vercel project.",
  offline_host:"Drive music only works on the main Vercel site, because it needs the private streaming service.",
@@ -19,11 +21,68 @@ const MESSAGES={
 };
 /* Fisher–Yates on a copy; rand is injectable for tests. */
 function shuffled(list,rand=Math.random){const a=list.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function filtered(tracks,text){const q=String(text||"").trim().toLowerCase();return q?tracks.filter(t=>(t.title+" "+(t.album||"")).toLowerCase().includes(q)):tracks;}
+function filtered(tracks,text){return Tags?Tags.filterTracks(tracks,text,data.tags):tracks.filter(t=>(t.title+" "+(t.album||"")).toLowerCase().includes(String(text||"").toLowerCase()));}
+function sorted(tracks){return Tags?Tags.sortTracks(tracks,data.sort,data.tags):tracks.slice();}
+function shownTracks(){return sorted(filtered(data.tracks,data.filter));}
+function info(t){return Tags?Tags.details(t,data.tags[t.id]||{}):{title:t.title,artist:"Unknown artist",album:t.album||"Unknown album",genre:"Unknown genre",folder:t.album||"Unfiled"};}
+function groups(tracks){
+ if(data.group==="none")return [["",tracks]];
+ const map=new Map();
+ tracks.forEach(t=>{const name=info(t)[data.group]||"Unknown";if(!map.has(name))map.set(name,[]);map.get(name).push(t);});
+ return [...map.entries()].sort((a,b)=>{
+  const missing=s=>/^(Unknown|Unfiled)/.test(s);
+  return missing(a[0])!==missing(b[0])?(missing(a[0])?1:-1):a[0].localeCompare(b[0],"en-AU",{numeric:true,sensitivity:"base"});
+ });
+}
+function saveTags(){try{localStorage.setItem(TAG_STORE,JSON.stringify(data.tags));}catch{}}
+function pendingTags(){return data.tracks.filter(t=>/mpeg|mp3/i.test(t.mime||"")&&(!data.tags[t.id]?.scanned||data.tags[t.id].size!==t.size));}
+function stopScan(){
+ data.scanGeneration++;data.scanning=false;
+ data.scanAbort?.abort();data.scanAbort=null;sync();
+}
+async function scanTags(){
+ if(data.scanning||data.status!=="ready"||!Tags)return;
+ const pending=pendingTags();if(!pending.length)return sync();
+ const generation=++data.scanGeneration;
+ data.scanning=true;data.scanDone=0;data.scanTotal=pending.length;
+ data.scanAbort=new AbortController();const signal=data.scanAbort.signal;sync();
+ let nextIndex=0;
+ async function worker(){
+  while(data.scanning&&generation===data.scanGeneration&&nextIndex<pending.length){
+   const t=pending[nextIndex++];let found={},failed=false;
+   try{
+    const res=await fetch(streamUrl(t.id),{credentials:"same-origin",headers:{Range:"bytes=0-131071"},signal});
+    if(!res.ok||!/^audio\//i.test(res.headers.get("content-type")||""))throw Error("Unavailable tag");
+    found=Tags.parseId3(await res.arrayBuffer());
+    if(!found.genre||!found.artist||!found.album){
+     const tail=await fetch(streamUrl(t.id),{credentials:"same-origin",headers:{Range:"bytes=-128"},signal});
+     if(tail.ok&&/^audio\//i.test(tail.headers.get("content-type")||"")){
+      const older=Tags.parseId3v1(await tail.arrayBuffer());
+      found={...older,...found};
+     }
+    }
+   }catch(e){if(signal.aborted)return;failed=true;}
+   if(generation!==data.scanGeneration||!data.scanning)return;
+   if(!failed)data.tags[t.id]={size:t.size,scanned:true,...found};
+   data.scanDone++;
+   if(data.scanDone%10===0){saveTags();sync();}
+  }
+ }
+ try{await Promise.all([worker(),worker()]);}
+ finally{if(generation===data.scanGeneration){saveTags();data.scanning=false;data.scanAbort=null;sync();}}
+}
 const streamUrl=id=>"/api/music/stream?id="+encodeURIComponent(id);
 const current=()=>data.queue[data.index]||null;
-function persist(){try{localStorage.setItem(STORE,JSON.stringify({shuffle:data.shuffle}));}catch{}}
-function restore(){try{data.shuffle=JSON.parse(localStorage.getItem(STORE)||"{}").shuffle===true;}catch{}}
+function persist(){try{localStorage.setItem(STORE,JSON.stringify({shuffle:data.shuffle,sort:data.sort,group:data.group}));}catch{}}
+function restore(){
+ try{
+  const options=JSON.parse(localStorage.getItem(STORE)||"{}");
+  data.shuffle=options.shuffle===true;
+  if(["title","artist","album","genre","folder"].includes(options.sort))data.sort=options.sort;
+  if(["none","artist","album","genre","folder"].includes(options.group))data.group=options.group;
+ }catch{}
+ try{const cache=JSON.parse(localStorage.getItem(TAG_STORE)||"{}");if(cache&&typeof cache==="object"&&!Array.isArray(cache))data.tags=cache;}catch{}
+}
 function ensureAudio(){
  if(data.audio)return data.audio;
  const a=new Audio();a.preload="metadata";
@@ -35,7 +94,7 @@ function ensureAudio(){
 }
 function mediaSession(t){
  if(!("mediaSession" in navigator)||!t)return;
- try{navigator.mediaSession.metadata=new MediaMetadata({title:t.title,artist:t.album||"My music",album:"HealthiestFood · Music while cooking"});
+ try{const d=info(t);navigator.mediaSession.metadata=new MediaMetadata({title:d.title,artist:d.artist,album:d.album});
   const on=(k,fn)=>{try{navigator.mediaSession.setActionHandler(k,fn);}catch{}};
   on("play",()=>data.audio?.play());on("pause",()=>data.audio?.pause());on("nexttrack",()=>next());on("previoustrack",()=>prev());}catch{}
 }
@@ -48,17 +107,17 @@ function playAt(i){
  mediaSession(t);sync();
 }
 function playTrack(id){
- const base=filtered(data.tracks,data.filter);
+ const base=shownTracks();
  const start=base.findIndex(t=>t.id===id);if(start<0)return;
  data.queue=data.shuffle?[base[start]].concat(shuffled(base.filter(t=>t.id!==id))):base;
  playAt(data.shuffle?0:start);
 }
-function playAll(){const base=filtered(data.tracks,data.filter);if(!base.length)return;data.queue=data.shuffle?shuffled(base):base;playAt(0);}
+function playAll(){const base=shownTracks();if(!base.length)return;data.queue=data.shuffle?shuffled(base):base;playAt(0);}
 function next(){if(data.index+1<data.queue.length)playAt(data.index+1);else{data.audio?.pause();data.message="End of the playlist.";sync();}}
 function prev(){const a=data.audio;if(a&&a.currentTime>4){a.currentTime=0;return;}if(data.index>0)playAt(data.index-1);}
 function toggle(){const a=data.audio;if(!a||!current())return playAll();if(a.paused)a.play().catch(()=>{});else a.pause();}
 function setShuffle(on){data.shuffle=!!on;persist();sync();}
-async function signOut(){try{await fetch("/api/music/logout",{method:"POST",credentials:"same-origin"});}catch{}data.audio?.pause();data.tracks=[];data.queue=[];data.index=-1;data.status="signedOut";sync();}
+async function signOut(){stopScan();try{await fetch("/api/music/logout",{method:"POST",credentials:"same-origin"});}catch{}data.audio?.pause();data.tracks=[];data.queue=[];data.tags={};try{localStorage.removeItem(TAG_STORE);}catch{}data.index=-1;data.status="signedOut";sync();}
 async function load(){
  data.status="loading";sync();
  try{
@@ -69,15 +128,42 @@ async function load(){
   if(!body.configured){data.status="unavailable";data.message=MESSAGES.not_configured;}
   else if(!body.signedIn){data.status="signedOut";}
   else if(body.error){data.status="error";data.message=MESSAGES[body.error]||MESSAGES.drive_error;}
-  else{data.status="ready";data.tracks=Array.isArray(body.tracks)?body.tracks:[];data.truncated=!!body.truncated;if(body.missingFolders>0)data.message="One of your music folders couldn't be opened with this Google account, so its songs aren't listed.";}
+  else{
+   data.status="ready";data.tracks=Array.isArray(body.tracks)?body.tracks:[];
+   data.truncated=!!body.truncated;
+   const valid=new Map(data.tracks.map(t=>[t.id,t.size]));
+   for(const [id,entry] of Object.entries(data.tags))if(valid.get(id)!==entry.size)delete data.tags[id];
+   if(body.missingFolders>0)data.message="One of your music folders couldn't be opened with this Google account, so its songs aren't listed.";
+  }
  }catch{data.status="unavailable";data.message=MESSAGES.offline_host;}
  sync();
 }
-function listHtml(){
- const items=filtered(data.tracks,data.filter),now=current();
- if(!items.length)return '<p class="music-empty">'+(data.tracks.length?"No songs match that search.":"No audio files were found in the music folder.")+'</p>';
- return '<ol class="music-list">'+items.slice(0,400).map(t=>'<li><button type="button" class="music-track'+(now&&now.id===t.id?' is-current':'')+'" data-music-track="'+esc(t.id)+'"><span class="music-track-title">'+esc(t.title)+'</span>'+(t.album?'<span class="music-track-album">'+esc(t.album)+'</span>':'')+'</button></li>').join("")+'</ol>'+(items.length>400?'<p class="music-empty">Showing the first 400 songs. Search to find others.</p>':'');
+function trackHtml(t,now){
+ const d=info(t);
+ const meta=[d.artist!=="Unknown artist"?d.artist:"",d.album!=="Unknown album"?d.album+(d.albumFromFolder?" (folder)":""):"",d.genre!=="Unknown genre"?d.genre:""].filter(Boolean).join(" · ");
+ return '<li><button type="button" class="music-track'+(now?.id===t.id?' is-current':'')+'" data-music-track="'+esc(t.id)+'"><span class="music-track-title">'+esc(d.title)+'</span>'+(meta?'<span class="music-track-album">'+esc(meta)+'</span>':'')+'</button></li>';
 }
+function listHtml(){
+ const items=shownTracks(),now=current();
+ if(!items.length)return '<p class="music-empty">'+(data.tracks.length?"No songs match that search.":"No audio files were found in the music folder.")+'</p>';
+ let shown=0;
+ const markup=groups(items).map(([name,list])=>{
+  const subset=list.slice(0,Math.max(0,data.visible-shown));shown+=subset.length;
+  if(!subset.length)return "";
+  const header=name?'<div class="music-group-heading"><h3>'+esc(name)+' <small>('+list.length+')</small></h3><button type="button" data-music-group="'+esc(name)+'">▶ Play group</button></div>':"";
+  return '<section class="music-group">'+header+'<ol class="music-list">'+subset.map(t=>trackHtml(t,now)).join("")+'</ol></section>';
+ }).join("");
+ return '<div class="music-browse-scroll">'+markup+'</div>'+(items.length>shown?'<button type="button" class="btn btn-outline music-more" data-music="more">Show more songs ('+shown+' of '+items.length+')</button>':'');
+}
+function playGroup(name){
+ const list=groups(shownTracks()).find(([key])=>key===name)?.[1]||[];
+ if(!list.length)return;
+ data.queue=data.shuffle?shuffled(list):list;
+ playAt(0);
+}
+function setSort(value){if(!["title","artist","album","genre","folder"].includes(value))return;data.sort=value;data.visible=200;persist();sync();}
+function setGroup(value){if(!["none","artist","album","genre","folder"].includes(value))return;data.group=value;data.visible=200;persist();sync();}
+
 function sync(){
  const box=data.root,now=current();
  if(box){
@@ -86,11 +172,20 @@ function sync(){
    if(data.status==="loading")body.innerHTML='<p class="music-empty">Loading your music from Google Drive…</p>';
    else if(data.status==="signedOut")body.innerHTML='<p>Sign in with the Google account that holds your music. Songs stream from your Drive and nothing is copied to this site.</p><a class="btn btn-primary" href="/api/music/login">Sign in with Google to play music</a>';
    else if(data.status==="ready"){
-    if(!body.querySelector("#musicList"))body.innerHTML='<div class="music-toolbar"><button type="button" class="btn btn-primary" data-music="all">▶ Play all</button><label class="music-shuffle"><input type="checkbox" id="musicShuffle"> Shuffle</label><label class="music-search"><span class="sr-only">Search songs</span><input type="search" id="musicFilter" placeholder="Search songs, artists or folders" autocomplete="off"></label><button type="button" class="text-link" data-music="signout">Sign out</button></div><p class="music-count" id="musicCount" aria-live="polite"></p><div id="musicList"></div>';
+    if(!body.querySelector("#musicList"))body.innerHTML='<div class="music-toolbar"><button type="button" class="btn btn-primary" data-music="all">▶ Play all</button><label class="music-shuffle"><input type="checkbox" id="musicShuffle"> Shuffle</label><label class="music-search"><span class="sr-only">Search songs</span><input type="search" id="musicFilter" placeholder="Search songs, artists, albums, genres or folders" autocomplete="off"></label><label class="music-sort">Sort by<select id="musicSort"><option value="title">Song title</option><option value="artist">Artist</option><option value="album">Album</option><option value="genre">Genre</option><option value="folder">Folder</option></select></label><label class="music-sort">Group by<select id="musicGroup"><option value="none">No grouping</option><option value="artist">Artist</option><option value="album">Album</option><option value="genre">Genre</option><option value="folder">Folder</option></select></label><button type="button" class="btn btn-outline" data-music="scan" id="musicScan">Read MP3 tags</button><button type="button" class="text-link" data-music="signout">Sign out</button></div><p class="music-scan-note" id="musicScanNote"></p><p class="music-count" id="musicCount" aria-live="polite"></p><div id="musicList"></div>';
     body.querySelector("#musicShuffle").checked=data.shuffle;
     const f=body.querySelector("#musicFilter");if(f&&f.value!==data.filter)f.value=data.filter;
-    body.querySelector("#musicCount").textContent=data.tracks.length+" songs"+(data.truncated?" (large library: list was capped)":"");
-    body.querySelector("#musicList").innerHTML=listHtml();
+    body.querySelector("#musicSort").value=data.sort;
+    body.querySelector("#musicGroup").value=data.group;
+    const toScan=pendingTags().length,scanButton=body.querySelector("#musicScan");
+    scanButton.textContent=data.scanning?"Stop reading tags":"Read MP3 tags";
+    scanButton.dataset.music=data.scanning?"stop":"scan";
+    scanButton.disabled=!data.scanning&&!toScan;
+    body.querySelector("#musicScanNote").textContent=data.scanning?"Reading song details: "+data.scanDone+" of "+data.scanTotal+" MP3 files. You can stop at any time.":"Artist names are estimated from filenames; album names use folders until tags are read. Genres are only available from MP3 tags. "+(toScan?toScan+" MP3 files haven't been checked.":"Available MP3 files have been checked.")+" No music is downloaded in full.";
+    body.querySelector("#musicCount").textContent=shownTracks().length+" matching of "+data.tracks.length+" songs"+(data.truncated?" (Drive listing was capped)":"");
+    const target=body.querySelector("#musicList"),scroll=target.querySelector(".music-browse-scroll"),position=scroll?.scrollTop||0;
+    target.innerHTML=listHtml();
+    const nextScroll=target.querySelector(".music-browse-scroll");if(nextScroll)nextScroll.scrollTop=position;
    }else body.innerHTML="";
   }
   const msg=box.querySelector("#musicMessage");if(msg){msg.textContent=data.message;msg.hidden=!data.message;}
@@ -100,7 +195,7 @@ function sync(){
   mini.hidden=!now;
   document.body.classList.toggle("music-active",!!now);
   if(now){
-   mini.querySelector("#musicNowTitle").textContent=now.title;
+   mini.querySelector("#musicNowTitle").textContent=info(now).title;
    const t=mini.querySelector("#musicToggle");t.textContent=data.playing?"❚❚":"▶";t.setAttribute("aria-label",data.playing?"Pause music":"Play music");t.setAttribute("aria-pressed",String(data.playing));
   }
  }
@@ -112,18 +207,19 @@ function mount(){
  data.mini=document.getElementById("musicMini");
  const onClick=e=>{
   const t=e.target.closest("[data-music-track]");if(t)return playTrack(t.dataset.musicTrack);
+  const g=e.target.closest("[data-music-group]");if(g)return playGroup(g.dataset.musicGroup);
   const b=e.target.closest("[data-music]");if(!b)return;
-  ({all:playAll,signout:signOut,toggle,next,prev,open:()=>{location.hash="media";setTimeout(()=>data.root?.scrollIntoView({behavior:"smooth",block:"start"}),60);}})[b.dataset.music]?.();
+  ({all:playAll,signout:signOut,toggle,next,prev,more:()=>{data.visible+=200;sync();},scan:scanTags,stop:stopScan,open:()=>{location.hash="media";setTimeout(()=>data.root?.scrollIntoView({behavior:"smooth",block:"start"}),60);}})[b.dataset.music]?.();
  };
  data.root?.addEventListener("click",onClick);
  data.mini?.addEventListener("click",onClick);
- data.root?.addEventListener("change",e=>{if(e.target.id==="musicShuffle")setShuffle(e.target.checked);});
- data.root?.addEventListener("input",e=>{if(e.target.id==="musicFilter"){data.filter=e.target.value;const list=data.root.querySelector("#musicList");if(list)list.innerHTML=listHtml();}});
+ data.root?.addEventListener("change",e=>{if(e.target.id==="musicShuffle")setShuffle(e.target.checked);if(e.target.id==="musicSort")setSort(e.target.value);if(e.target.id==="musicGroup")setGroup(e.target.value);});
+ data.root?.addEventListener("input",e=>{if(e.target.id==="musicFilter"){data.filter=e.target.value;data.visible=200;sync();}});
  const status=new URLSearchParams(location.search).get("music");
  if(status){if(status!=="signed_in")data.message=MESSAGES[status]||MESSAGES.error;try{history.replaceState(null,"",location.pathname+location.hash);}catch{}}
  if(data.root)load();
 }
 if(w&&w.document){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount);else mount();}
 const pause=()=>data.audio?.pause();
-return {mount,load,pause,playTrack,playAll,next,prev,toggle,setShuffle,shuffled,filtered,streamUrl,state:()=>({status:data.status,tracks:data.tracks.length,index:data.index,shuffle:data.shuffle,playing:data.playing,current:current()}),_data:data};
+return {mount,load,pause,playTrack,playAll,playGroup,next,prev,toggle,setShuffle,setSort,setGroup,scanTags,stopScan,shuffled,filtered,sorted,groups,listHtml,streamUrl,state:()=>({status:data.status,tracks:data.tracks.length,index:data.index,shuffle:data.shuffle,sort:data.sort,group:data.group,scanning:data.scanning,playing:data.playing,current:current()}),_data:data};
 });
