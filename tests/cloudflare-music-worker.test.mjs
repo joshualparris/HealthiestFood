@@ -72,3 +72,71 @@ test("rejects attempts to proxy APIs or mutate content",async()=>{
  assert.equal((await handle(new Request("https://worker.example/api/music/tracks",{method:"POST"}),env)).status,405);
  assert.equal((await handle(new Request("https://worker.example/",{method:"POST"}),{})).status,405);
 });
+
+test("Google OAuth can use the existing approved Good Food callback while proxied to Cloudflare",async()=>{
+ const e={...env,MUSIC_PUBLIC_ORIGIN:"https://healthiest-food.vercel.app"};
+ const response=await handle(new Request("https://worker.example/api/music/login"),e);
+ assert.equal(response.status,302);
+ const google=new URL(response.headers.get("location"));
+ assert.equal(google.searchParams.get("redirect_uri"),"https://healthiest-food.vercel.app/api/music/callback");
+ assert.equal(google.searchParams.get("scope"),"openid email https://www.googleapis.com/auth/drive.readonly");
+});
+test("encrypted cursor scans over 300 artist folders with fewer than 50 Drive subrequests per call",async()=>{
+ const A="17p5ZJtrUNVKJMlW0EO4aatiguzv9BM1v",B="1k1AcSLD9HfkeY1-C8nO7aSSr7K8KXI09";
+ const folders=322,records={[A]:[],[B]:[]};
+ for(let i=0;i<folders;i++){
+  const id="folder"+String(i).padStart(11,"0");
+  records[A].push({id,name:"Artist "+i,mimeType:"application/vnd.google-apps.folder"});
+  records[id]=[{id:"song"+String(i).padStart(12,"0"),name:"Song "+i+".mp3",mimeType:"audio/mpeg",size:"100"}];
+ }
+ const prev=globalThis.fetch;
+ let requests=0, peak=0, total=0;
+ const ck=await seal({email:"cook@example.com",at:"live",exp:Date.now()+3600000,rt:"refresh"},env.MUSIC_SESSION_SECRET);
+ const cookie="hf_music="+encodeURIComponent(ck);
+ globalThis.fetch=async url=>{
+  requests++;
+  const u=new URL(url),q=u.searchParams.get("q");
+  if(!q)return new Response(JSON.stringify({name:"Music"}),{status:200,headers:{"content-type":"application/json"}});
+  const id=q.match(/^'([^']+)'/)[1];
+  return new Response(JSON.stringify({files:records[id]||[]}),{status:200,headers:{"content-type":"application/json"}});
+ };
+ try{
+  let cursor=null,step=0;
+  const songs=new Map();
+  for(;step<35;step++){
+   const before=requests;
+   const request=new Request("https://food.example/api/music/tracks?mode=page",{
+    method:cursor?"POST":"GET",
+    headers:{"Cookie":cookie,...(cursor?{"Content-Type":"application/json"}:{})},
+    ...(cursor?{body:JSON.stringify({cursor})}:{})
+   });
+   const reply=await handle(request,env);
+   assert.equal(reply.status,200);
+   const page=await reply.json();
+   assert.equal(page.pageMode,"cursor");
+   for(const track of page.tracks)songs.set(track.id,track);
+   assert.ok(requests-before<=48,"One Worker call exceeded the 50 subrequest allowance");
+   peak=Math.max(peak,requests-before);
+   cursor=page.nextCursor;
+   if(page.done){
+    assert.equal(page.truncated,false);
+    assert.equal(page.foldersScanned,folders+2);
+    break;
+   }
+  }
+  assert.ok(step<35);
+  assert.equal(songs.size,folders);
+  assert.ok(peak>10&&peak<=48);
+ }finally{globalThis.fetch=prev;}
+});
+test("cursor tampering is rejected and cannot list another signed-in account's Drive",async()=>{
+ const ck=await seal({email:"cook@example.com",at:"live",exp:Date.now()+3600000},env.MUSIC_SESSION_SECRET);
+ const r=await handle(new Request("https://food.example/api/music/tracks?mode=page",{
+  method:"POST",headers:{"Cookie":"hf_music="+encodeURIComponent(ck),"Content-Type":"application/json"},
+  body:JSON.stringify({cursor:"not-a-real-cursor"})}),env);
+ assert.equal(r.status,400);
+ assert.equal((await r.json()).error,"invalid_cursor");
+ const denied=await handle(new Request("https://food.example/api/music/tracks?mode=page",{
+  method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({cursor:"bad"})}),env);
+ assert.deepEqual(await denied.json(),{configured:true,signedIn:false,tracks:[]});
+});
