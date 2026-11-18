@@ -61,6 +61,34 @@ async function run(){
    await context.close();
    process.stdout.write('PASS standalone ten-lunch experience at '+width+'px\n');
   }
+  // Simulate legacy Safari: the modern syntax bundle fails to load.
+  // The ES5 fallback must still build the checklist and switch to cooking.
+  const oldContext=await browser.newContext({viewport:{width:768,height:1024}});
+  const oldPage=await oldContext.newPage();
+  await oldPage.route('**/ten-lunch-planner.js',route=>route.abort());
+  await oldPage.goto(base+'/ten-lunch-cook.html',{waitUntil:'domcontentloaded'});
+  await oldPage.locator('#shopList .ingredient').first().waitFor();
+  assert.equal(await oldPage.locator('#shopList .ingredient').count(),21);
+  await oldPage.locator('input[data-item="salmon"]').fill('1');
+  await oldPage.locator('input[data-item="salmon"]').blur();
+  await oldPage.locator('#pane-shop button[data-tab="cook"]').click();
+  assert.equal(await oldPage.locator('#pane-cook').isVisible(),true,'Old Safari cook button must work');
+  assert.equal(await oldPage.locator('#steps .step').count(),18);
+  await oldPage.locator('input[data-step="containers"]').check();
+  assert.match(await oldPage.locator('#counts').innerText(),/1 \/ 18 steps/);
+  await oldPage.reload({waitUntil:'domcontentloaded'});
+  assert.equal(await oldPage.locator('#pane-cook').isVisible(),true,'Legacy progress persists');
+  await oldContext.close();
+  process.stdout.write('PASS iPad Safari ES5 fallback with modern script unavailable\n');
+  // If all JavaScript fails, the full instructions must remain readable.
+  const noJsContext=await browser.newContext({javaScriptEnabled:false,viewport:{width:768,height:1024}});
+  const noJsPage=await noJsContext.newPage();
+  await noJsPage.goto(base+'/ten-lunch-cook.html',{waitUntil:'domcontentloaded'});
+  assert.equal(await noJsPage.locator('#staticCookingSteps .phase').count(),5);
+  assert.equal(await noJsPage.locator('#staticCookingSteps li').count(),18);
+  assert.equal(await noJsPage.locator('#staticCookingSteps').isVisible(),true);
+  await noJsContext.close();
+  process.stdout.write('PASS static instructions when JavaScript is disabled\n');
   const context=await browser.newContext({viewport:{width:390,height:844}});
   const p=await context.newPage();const errors=[];
   p.on('pageerror',e=>errors.push(e.message));
