@@ -135,6 +135,92 @@ async function listTracks(accessToken, roots) {
   if (missing === roots.length) throw new Error("folder_not_found");
   return { tracks, truncated: queue.length > 0 || tracks.length >= 4000, missingFolders: missing };
 }
+
+/* Cursor-based listing: each request stays below Cloudflare Free's 50 external
+ * subrequests. Cursor state is authenticated and encrypted with the same
+ * server-only key as sessions, and bound to the signed-in Google account. */
+const PAGE_BATCH=20,MAX_SCAN_FOLDERS=8000,MAX_SCAN_TRACKS=15000,MAX_SCAN_PAGES=500;
+async function scanPage(accessToken,cfg,email,cursor) {
+ let state;
+ if (cursor) {
+  if(typeof cursor!=="string"||cursor.length>750000)throw new Error("invalid_cursor");
+  state=await unseal(cursor,cfg.secret);
+  if(!state||state.email!==email||state.roots!==cfg.folders.join(",")||
+     !Array.isArray(state.queue)||!Array.isArray(state.seenFolders)||
+     !Number.isInteger(state.pages)||state.pages>=MAX_SCAN_PAGES)throw new Error("invalid_cursor");
+ } else {
+  const names=await Promise.all(cfg.folders.map(async (id,i)=>{
+   try {
+    const r=await fetch("https://www.googleapis.com/drive/v3/files/"+encodeURIComponent(id)+"?fields=name&supportsAllDrives=true",
+     {headers:{Authorization:"Bearer "+accessToken}});
+    return r.ok?String((await r.json()).name||"Music"):"Music "+(i+1);
+   } catch{return "Music "+(i+1);}
+  }));
+  state={email,roots:cfg.folders.join(","),pages:0,visited:0,total:0,missing:0,skipped:0,
+   queue:cfg.folders.map((id,i)=>({id,path:names[i],token:"",root:true})),
+   seenFolders:[...cfg.folders]};
+ }
+ const seenFolders=new Set(state.seenFolders),pageTracks=[],seenTracks=new Set();
+ let requests=0;
+ async function listItem(item){
+  const q="'"+item.id+"' in parents and trashed=false and (mimeType='application/vnd.google-apps.folder' or mimeType contains 'audio/')";
+  const args=new URLSearchParams({q,pageSize:"1000",orderBy:"name",supportsAllDrives:"true",
+   includeItemsFromAllDrives:"true",fields:"nextPageToken,files(id,name,mimeType,size)",...(item.token?{pageToken:item.token}:{})});
+  let r;
+  for(let attempt=0;attempt<2;attempt++){
+   r=await fetch("https://www.googleapis.com/drive/v3/files?"+args,{headers:{Authorization:"Bearer "+accessToken}});
+   if(r.ok||![429,500,502,503,504].includes(r.status)||attempt===1)break;
+  }
+  if(!r.ok)throw Object.assign(new Error("Drive listing error"),{status:r.status});
+  return await r.json();
+ }
+ while(state.queue.length&&requests<PAGE_BATCH&&state.visited<MAX_SCAN_FOLDERS&&state.total<MAX_SCAN_TRACKS){
+  const batch=state.queue.splice(0,Math.min(6,PAGE_BATCH-requests));
+  const data=await Promise.all(batch.map(async item=>{try{return{data:await listItem(item)}}catch(error){return{error}}}));
+  requests+=batch.length;
+  for(let i=0;i<batch.length;i++){
+   const item=batch[i],result=data[i];
+   state.visited++;
+   if(result.error){
+    if([403,404].includes(result.error.status)){
+     if(item.root)state.missing++;
+     else state.skipped++;
+     continue;
+    }
+    throw result.error;
+   }
+   const rows=Array.isArray(result.data.files)?result.data.files:[];
+   if(result.data.nextPageToken)
+    state.queue.unshift({...item,token:result.data.nextPageToken});
+   for(const file of rows){
+    if(!file?.id)continue;
+    if(file.mimeType==="application/vnd.google-apps.folder"){
+     if(!seenFolders.has(file.id)){
+      seenFolders.add(file.id);
+      state.queue.push({id:file.id,path:item.path?item.path+" / "+file.name:file.name,token:""});
+     }
+    }else if(String(file.mimeType||"").startsWith("audio/")&&!seenTracks.has(file.id)&&state.total<MAX_SCAN_TRACKS){
+     seenTracks.add(file.id);
+     pageTracks.push({id:file.id,title:String(file.name||"").replace(/\.(mp3|m4a|aac|ogg|oga|wav|flac|opus)$/i,""),
+      album:item.path,mime:file.mimeType,size:Number(file.size)||0});
+     state.total++;
+    }
+   }
+  }
+ }
+ state.pages++;
+ state.seenFolders=[...seenFolders];
+ const truncated=state.visited>=MAX_SCAN_FOLDERS||state.total>=MAX_SCAN_TRACKS||state.pages>=MAX_SCAN_PAGES;
+ const done=!state.queue.length||truncated;
+ if(state.missing===cfg.folders.length)throw new Error("folder_not_found");
+ return{
+  pageMode:"cursor",configured:true,signedIn:true,tracks:pageTracks,
+  nextCursor:done?null:await seal(state,cfg.secret),done,truncated,
+  foldersScanned:state.visited,foldersQueued:state.queue.length,songsFound:state.total,
+  missingFolders:state.missing,skippedFolders:state.skipped
+ };
+}
+
 function clampRange(header) {
   const max = 3 * 1024 * 1024;
   const m = /^bytes=(\d*)-(\d*)$/.exec(String(header || "").trim());
@@ -151,12 +237,12 @@ async function musicApi(request, env, pathname) {
     if (request.method !== "POST") return json(405, { error: "method_not_allowed" });
     return json(200, { signedIn: false }, setCookie(COOKIE, "", 0));
   }
-  if (request.method !== "GET") return json(405, { error: "method_not_allowed" });
+  if (request.method !== "GET" && !(pathname === "/api/music/tracks" && request.method === "POST" && new URL(request.url).searchParams.get("mode") === "page")) return json(405, { error: "method_not_allowed" });
   if (!cfg.ready) {
     if (pathname === "/api/music/tracks") return json(200, { configured: false, signedIn: false, tracks: [] });
     return json(503, { error: "not_configured" });
   }
-  const origin = new URL(request.url).origin;
+  const origin = String(env.MUSIC_PUBLIC_ORIGIN || new URL(request.url).origin).replace(/\/$/, "");
   const callback = origin + "/api/music/callback";
   if (pathname === "/api/music/login") {
     const state = base64url(random(24));
@@ -193,6 +279,18 @@ async function musicApi(request, env, pathname) {
   if (pathname === "/api/music/tracks") {
     const logged = await session(request, cfg);
     if (!logged) return json(200, { configured: true, signedIn: false, tracks: [] });
+    const paged = new URL(request.url).searchParams.get("mode") === "page";
+    if (paged) {
+      try {
+        const input = request.method === "POST" ? await request.json() : {};
+        const d = await scanPage(logged.s.at, cfg, logged.s.email, input?.cursor);
+        return json(200, d, logged.cookie);
+      } catch (error) {
+        return json(error?.message==="invalid_cursor"?400:502, { configured:true,signedIn:true,
+          error:error?.message==="invalid_cursor"?"invalid_cursor":error?.message==="folder_not_found"?"folder_not_found":"drive_error",
+          tracks:[] },logged.cookie);
+      }
+    }
     try {
       const d = await listTracks(logged.s.at, cfg.folders);
       return json(200, { configured: true, signedIn: true, ...d }, logged.cookie);

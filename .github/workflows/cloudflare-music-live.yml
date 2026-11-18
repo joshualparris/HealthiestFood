@@ -23,3 +23,5 @@ jobs:
           node-version: '22'
       - name: Verify Cloudflare deployed URL and unauthenticated access
         run: node --test tests/cloudflare-music-live.test.mjs
+      - name: Verify Vercel backup route reaches Cloudflare
+        run: node --test tests/music-backup-route.test.mjs
