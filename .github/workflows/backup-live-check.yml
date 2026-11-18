@@ -46,6 +46,11 @@ jobs:
           BROWSER_ENGINE: chromium
           SMOKE_URL: ${{ matrix.backup.url }}
         run: node e2e/ten-lunch.cjs
+      - name: Verify Smart Kitchen interactions on published GitHub Pages
+        if: matrix.backup.name == 'GitHub-Pages'
+        env:
+          SMOKE_URL: ${{ matrix.backup.url }}
+        run: node e2e/smart-kitchen.cjs
       - name: Report verified backup
         if: success()
         run: echo "PASS ${{ matrix.backup.name }} — ${{ matrix.backup.url }}"
