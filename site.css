@@ -719,3 +719,21 @@ body.music-active{padding-bottom:80px}
 .music-group-heading button{border:1px solid #b8cfaf;background:#fffdf7;border-radius:8px;padding:7px 10px;font-size:.77rem;font-weight:700;color:var(--pine);min-height:36px;flex-shrink:0}
 .music-more{margin-top:12px}
 @media (max-width:600px){.music-sort{flex:1 1 calc(50% - 10px)}.music-sort select{width:100%}.music-toolbar #musicScan{width:100%}.music-group-heading button{min-height:44px}}
+
+/* Drive music loading: indeterminate progress until Google Drive returns the full list. */
+.music-load,.music-load-error{max-width:680px;margin:12px auto;padding:24px;border:1px solid #c8d9c3;border-radius:18px;background:#f4f8ef}
+.music-load-icon{display:grid;place-items:center;width:54px;height:54px;border-radius:50%;background:#e2edce;color:#285e43;font-size:29px;margin-bottom:12px}
+.music-load h3,.music-load-error h3{font:600 clamp(23px,4vw,31px)/1.2 var(--serif);margin:4px 0 8px;color:var(--pine)}
+.music-load p,.music-load-error p{line-height:1.6;margin:0 0 17px;color:#45634f}
+.music-load-bar{position:relative;overflow:hidden;height:10px;border-radius:100px;background:#dce9d3;margin:19px 0 9px}
+.music-load-bar>span{display:block;position:absolute;left:0;top:0;bottom:0;width:33%;border-radius:100px;background:#428259;animation:music-drive-progress 1.6s ease-in-out infinite}
+@keyframes music-drive-progress{from{transform:translateX(-110%)}to{transform:translateX(315%)}}
+.music-load-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#4d6855;font-size:.8rem;font-variant-numeric:tabular-nums}
+.music-load-details{margin:18px 0;color:#365b45;font-size:.86rem}
+.music-load-details summary{cursor:pointer;min-height:32px;font-weight:700}
+.music-load-details ol{margin:9px 0 14px;padding:8px 8px 8px 30px;max-height:210px;overflow:auto;border-radius:10px;background:#fffdf8;line-height:1.8}
+.music-load-details li{overflow-wrap:anywhere}
+.music-load-details time{font-variant-numeric:tabular-nums;color:#688470;margin-right:6px;font-size:.8em}
+.music-load-error{border-color:#e9cf95;background:#fff9e9}
+@media(max-width:540px){.music-load,.music-load-error{padding:17px}.music-load-meta{font-size:.75rem}}
+@media(prefers-reduced-motion:reduce){.music-load-bar>span{animation:none;width:50%}}
