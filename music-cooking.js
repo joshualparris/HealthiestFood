@@ -232,7 +232,7 @@ async function load(){
  // Google Drive can be slow with many nested folders, but should not hang forever.
  const timeout=setTimeout(()=>controller.abort(),180000);
  try{
-  const r=await fetch("/api/music/tracks?mode=page",{credentials:"same-origin",headers:{Accept:"application/json"},signal:controller.signal});
+  const r=await fetch("/api/music/tracks?mode=page&stream=1",{credentials:"same-origin",headers:{Accept:"application/x-ndjson, application/json"},signal:controller.signal});
   if(generation!==data.loadGeneration)return;
   const body=await readMusicResponse(r,controller.signal);
   if(generation!==data.loadGeneration)return;
