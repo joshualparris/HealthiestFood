@@ -69,7 +69,7 @@ async function load(){
   if(!body.configured){data.status="unavailable";data.message=MESSAGES.not_configured;}
   else if(!body.signedIn){data.status="signedOut";}
   else if(body.error){data.status="error";data.message=MESSAGES[body.error]||MESSAGES.drive_error;}
-  else{data.status="ready";data.tracks=Array.isArray(body.tracks)?body.tracks:[];data.truncated=!!body.truncated;}
+  else{data.status="ready";data.tracks=Array.isArray(body.tracks)?body.tracks:[];data.truncated=!!body.truncated;if(body.missingFolders>0)data.message="One of your music folders couldn't be opened with this Google account, so its songs aren't listed.";}
  }catch{data.status="unavailable";data.message=MESSAGES.offline_host;}
  sync();
 }
@@ -86,7 +86,7 @@ function sync(){
    if(data.status==="loading")body.innerHTML='<p class="music-empty">Loading your music from Google Drive…</p>';
    else if(data.status==="signedOut")body.innerHTML='<p>Sign in with the Google account that holds your music. Songs stream from your Drive and nothing is copied to this site.</p><a class="btn btn-primary" href="/api/music/login">Sign in with Google to play music</a>';
    else if(data.status==="ready"){
-    if(!body.querySelector("#musicList"))body.innerHTML='<div class="music-toolbar"><button type="button" class="btn btn-primary" data-music="all">▶ Play all</button><label class="music-shuffle"><input type="checkbox" id="musicShuffle"> Shuffle</label><label class="music-search"><span class="sr-only">Search songs</span><input type="search" id="musicFilter" placeholder="Search songs or folders" autocomplete="off"></label><button type="button" class="text-link" data-music="signout">Sign out</button></div><p class="music-count" id="musicCount" aria-live="polite"></p><div id="musicList"></div>';
+    if(!body.querySelector("#musicList"))body.innerHTML='<div class="music-toolbar"><button type="button" class="btn btn-primary" data-music="all">▶ Play all</button><label class="music-shuffle"><input type="checkbox" id="musicShuffle"> Shuffle</label><label class="music-search"><span class="sr-only">Search songs</span><input type="search" id="musicFilter" placeholder="Search songs, artists or folders" autocomplete="off"></label><button type="button" class="text-link" data-music="signout">Sign out</button></div><p class="music-count" id="musicCount" aria-live="polite"></p><div id="musicList"></div>';
     body.querySelector("#musicShuffle").checked=data.shuffle;
     const f=body.querySelector("#musicFilter");if(f&&f.value!==data.filter)f.value=data.filter;
     body.querySelector("#musicCount").textContent=data.tracks.length+" songs"+(data.truncated?" (large library: list was capped)":"");
