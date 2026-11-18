@@ -116,40 +116,75 @@ async function folderName(accessToken, id) {
   } catch { return ""; }
 }
 
-/* Breadth-first walk of every music folder (Drive v3 only supports direct `in parents`).
- * Each track's album is its folder path, starting with the library folder's own name,
- * so searching a folder name narrows the list. A file shared into both libraries appears once. */
-async function listTracks(accessToken, rootIds, limits = { folders: 300, tracks: 4000 }) {
-  const roots = [].concat(rootIds);
-  const names = await Promise.all(roots.map(id => folderName(accessToken, id)));
-  const queue = roots.map((id, i) => ({ id, path: names[i] })), tracks = [], seen = new Set(), seenFolders = new Set(roots);
-  let missing = 0;
-  let visited = 0;
-  while (queue.length && visited < limits.folders && tracks.length < limits.tracks) {
-    const folder = queue.shift(); visited++;
-    let pageToken = "";
-    do {
-      const q = "'" + folder.id + "' in parents and trashed=false and (mimeType='application/vnd.google-apps.folder' or mimeType contains 'audio/')";
-      const url = "https://www.googleapis.com/drive/v3/files?" + new URLSearchParams({
-        q, pageSize: "1000", orderBy: "name", supportsAllDrives: "true", includeItemsFromAllDrives: "true",
-        fields: "nextPageToken,files(id,name,mimeType,size)", ...(pageToken ? { pageToken } : {})
-      });
-      const r = await fetch(url, { headers: { Authorization: "Bearer " + accessToken } });
-      if (!r.ok) {
-        // One unreachable library should not hide the other.
-        if (roots.includes(folder.id) && (r.status === 404 || r.status === 403)) { missing++; break; }
-        throw Object.assign(new Error("Drive list failed"), { status: r.status });
-      }
-      const data = await r.json();
-      for (const f of data.files || []) {
-        if (f.mimeType === "application/vnd.google-apps.folder") { if (!seenFolders.has(f.id)) { seenFolders.add(f.id); queue.push({ id: f.id, path: folder.path ? folder.path + " / " + f.name : f.name }); } }
-        else if (tracks.length < limits.tracks && !seen.has(f.id) && seen.add(f.id)) tracks.push({ id: f.id, title: f.name.replace(/\.(mp3|m4a|aac|ogg|oga|wav|flac|opus)$/i, ""), album: folder.path, mime: f.mimeType, size: Number(f.size) || 0 });
-      }
-      pageToken = data.nextPageToken || "";
-    } while (pageToken && tracks.length < limits.tracks);
+
+/* Scan both JoshBooks music roots. Their artist folders exceed the old 300-folder cap.
+ * Parallel Drive requests are limited so large iTunes libraries can finish promptly.
+ * Results merge in breadth-first order, retaining folder names and deduplication. */
+const SCAN_LIMITS={folders:8000,tracks:15000};
+const SCAN_WORKERS=16;
+async function listFolderAudio(accessToken,id){
+ const files=[];
+ let token="";
+ do{
+  const q="'"+id+"' in parents and trashed=false and (mimeType='application/vnd.google-apps.folder' or mimeType contains 'audio/')";
+  const url="https://www.googleapis.com/drive/v3/files?"+new URLSearchParams({
+   q,pageSize:"1000",orderBy:"name",supportsAllDrives:"true",includeItemsFromAllDrives:"true",
+   fields:"nextPageToken,files(id,name,mimeType,size)",...(token?{pageToken:token}:{})
+  });
+  let r;
+  for(let attempt=0;attempt<3;attempt++){
+   r=await fetch(url,{headers:{Authorization:"Bearer "+accessToken}});
+   if(r.ok||![429,500,502,503,504].includes(r.status)||attempt===2)break;
+   await new Promise(done=>setTimeout(done,200*(attempt+1)));
   }
-  if (missing === roots.length) throw Object.assign(new Error("No music folder reachable"), { status: 404 });
-  return { tracks, truncated: queue.length > 0 || tracks.length >= limits.tracks, missingFolders: missing };
+  if(!r.ok)throw Object.assign(new Error("Drive list failed"),{status:r.status});
+  const data=await r.json();
+  files.push(...(Array.isArray(data.files)?data.files:[]));
+  token=data.nextPageToken||"";
+ }while(token);
+ return files;
+}
+async function listTracks(accessToken,rootIds,limits=SCAN_LIMITS,onProgress){
+ const roots=[...new Set([].concat(rootIds).filter(id=>FILE_ID.test(id)))];
+ if(!roots.length)throw Object.assign(new Error("No music folder configured"),{status:404});
+ const names=await Promise.all(roots.map(id=>folderName(accessToken,id)));
+ const queue=roots.map((id,i)=>({id,path:names[i]}));
+ const tracks=[],seen=new Set(),seenFolders=new Set(roots);
+ let missing=0,skipped=0,visited=0;
+ while(queue.length&&visited<limits.folders&&tracks.length<limits.tracks){
+  const batch=queue.splice(0,Math.min(SCAN_WORKERS,limits.folders-visited));
+  const results=await Promise.all(batch.map(async folder=>{
+   try{return{files:await listFolderAudio(accessToken,folder.id)};}
+   catch(error){return{error};}
+  }));
+  for(let i=0;i<batch.length;i++){
+   const folder=batch[i],result=results[i];
+   visited++;
+   if(result.error){
+    if([403,404].includes(result.error.status)){
+     if(roots.includes(folder.id))missing++;
+     else skipped++;
+     continue;
+    }
+    throw result.error;
+   }
+   for(const file of result.files){
+    if(!file||!file.id)continue;
+    if(file.mimeType==="application/vnd.google-apps.folder"){
+     if(!seenFolders.has(file.id)){
+      seenFolders.add(file.id);
+      queue.push({id:file.id,path:folder.path?folder.path+" / "+file.name:file.name});
+     }
+    }else if(String(file.mimeType||"").startsWith("audio/")&&!seen.has(file.id)&&tracks.length<limits.tracks){
+     seen.add(file.id);
+     tracks.push({id:file.id,title:String(file.name||"").replace(/\.(mp3|m4a|aac|ogg|oga|wav|flac|opus)$/i,""),album:folder.path,mime:file.mimeType,size:Number(file.size)||0});
+    }
+   }
+  }
+  if(typeof onProgress==="function")onProgress({foldersScanned:visited,foldersQueued:queue.length,songsFound:tracks.length});
+ }
+ if(missing===roots.length)throw Object.assign(new Error("No music folder reachable"),{status:404});
+ return{tracks,truncated:queue.length>0||tracks.length>=limits.tracks,missingFolders:missing,skippedFolders:skipped,foldersScanned:visited};
 }
 
 /* Clamp a browser Range header to a bounded chunk. Returns the upstream Range value. */
