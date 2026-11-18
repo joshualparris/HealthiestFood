@@ -83,8 +83,21 @@ function init(){
   $("steps").innerHTML=phases.map(p=>'<section class="phase"><h2>'+escapeHTML(p.name)+'</h2><p>'+escapeHTML(p.detail)+'</p>'+p.steps.map(([id,task])=>'<label class="step '+(state.done[id]?'is-done':'')+'"><input type="checkbox" data-step="'+id+'" '+(state.done[id]?'checked':'')+'><span>'+escapeHTML(task)+'</span></label>').join("")+'</section>').join("");
   $("doneSummary").textContent=stepCount===totalSteps?'All checkboxes completed. Confirm the meals have actually chilled and frozen safely.':stepCount+' of '+totalSteps+' cooking steps ticked. A checkbox is not proof of food safety.';
   $("printDate").textContent=new Intl.DateTimeFormat("en-AU",{timeZone:"Australia/Sydney",day:"2-digit",month:"short",year:"numeric"}).format(new Date());
+  if($("staticCookingSteps"))$("staticCookingSteps").hidden=true;
+  if($("legacyHelp"))$("legacyHelp").hidden=true;
  }
- function goto(tab){state.tab=tab;save(state);draw();document.getElementById("pageTitle").focus({preventScroll:true});window.scrollTo({top:0,behavior:"smooth"});}
+ function goto(tab){
+  if(!["shop","cook","finish"].includes(tab))return;
+  state.tab=tab;save(state);draw();
+  // When nested in the main app, the OUTER page owns the scrollbar.
+  // Scrolling only this iframe leaves the user looking at the old page position.
+  try{
+   if(window.parent!==window&&window.frameElement&&window.parent.location.origin===window.location.origin){
+    const frameBox=window.frameElement.getBoundingClientRect();
+    window.parent.scrollTo(0,Math.max(0,window.parent.pageYOffset+frameBox.top-90));
+   }else window.scrollTo(0,0);
+  }catch(err){window.scrollTo(0,0);}
+ }
  document.addEventListener("click",e=>{
   const tab=e.target.closest("[data-tab]");if(tab){goto(tab.dataset.tab);return;}
   if(e.target.id==="copyMissing"){
