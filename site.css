@@ -719,3 +719,18 @@ body.music-active{padding-bottom:80px}
 .music-group-heading button{border:1px solid #b8cfaf;background:#fffdf7;border-radius:8px;padding:7px 10px;font-size:.77rem;font-weight:700;color:var(--pine);min-height:36px;flex-shrink:0}
 .music-more{margin-top:12px}
 @media (max-width:600px){.music-sort{flex:1 1 calc(50% - 10px)}.music-sort select{width:100%}.music-toolbar #musicScan{width:100%}.music-group-heading button{min-height:44px}}
+
+/* Old Safari fallback: legible recipe lists when CSS Grid, variables and the modern app are unavailable. */
+.legacy-main .recipe-grid{display:block!important;max-width:100%}
+.legacy-main .legacy-recipe-list{display:block;width:100%;max-width:100%}
+.legacy-main .legacy-recipe-card{display:block;padding:18px;margin:12px 0;border:1px solid #d9e5d8;border-radius:12px;background:#fffdf7;color:#193f32;text-decoration:none;min-height:0;white-space:normal;overflow-wrap:break-word;word-wrap:break-word}
+.legacy-main .legacy-recipe-card strong{display:block;font-size:1.13rem}
+.legacy-main .legacy-recipe-card span,.legacy-main .legacy-recipe-card small{display:block;color:#496e56;line-height:1.5;margin-top:5px}
+.legacy-main .legacy-detail{background:#fffdf7;border:1px solid #d9e5d8;border-radius:12px;padding:18px;max-width:100%;overflow-wrap:break-word;word-wrap:break-word}
+.legacy-main .legacy-detail h2{font:normal 1.65rem Georgia,serif;margin:8px 0 12px}
+.legacy-main .legacy-detail h3{margin:16px 0 6px}
+.legacy-main .legacy-detail li{padding:4px 0;line-height:1.5}
+.legacy-main .legacy-detail button{min-height:44px;min-width:44px;margin:4px}
+.legacy-main .legacy-warning{padding:12px;border-left:4px solid #39725c;background:#eaf4ec;line-height:1.5}
+.legacy-main .view-body{min-height:70vh}
+@media(max-width:700px){.legacy-main .section-shell{width:auto;margin-left:16px;margin-right:16px}.legacy-main .legacy-detail{padding:14px}.legacy-main .legacy-recipe-card{padding:15px}}
