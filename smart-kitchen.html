@@ -49,6 +49,9 @@ hr{border:0;border-top:1px solid #e1eae2;margin:20px 0}
 <script src="user-recipes.js" defer></script>
 <script src="smart-kitchen.js" defer></script>
 <script src="workflow-v2-ui.js" defer></script>
+<script src="cloud-config.js" defer></script>
+<script src="cloud-sync.js" defer></script>
+<script src="cloud-sync-ui.js" defer></script>
 <script src="iframe-route-bridge.js" defer></script>
 </head>
 <body>
@@ -228,6 +231,21 @@ hr{border:0;border-top:1px solid #e1eae2;margin:20px 0}
 <h3>Nutrition and sync readiness</h3>
 <p><strong>Micronutrients:</strong> the existing scientific model has incomplete data for many actual products. No recipe will be labelled complete unless calcium, iodine, vitamin D and other nutrients are properly calculated from verified labels and AFCD3.</p>
 <p><strong>Private cloud sync:</strong> not connected to a dedicated project yet. The safe database schema and integration are prepared separately. Existing browser data remains local until you sign in and explicitly choose to upload or download it.</p>
+<div id="cloudSyncRoot" class="notice">
+<h3>Private cloud sync</h3>
+<p id="cloudSyncStatus" role="status">Cloud backend not configured. Your data remain private in this browser.</p>
+<div id="cloudSyncControls" hidden>
+<label>Account email <input id="cloudEmail" type="email" autocomplete="email" placeholder="Your email address"></label>
+<div class="actions">
+<button id="cloudLogin">Email me a sign-in link</button>
+<button id="cloudInspect">Compare local and cloud copies</button>
+<button id="cloudPush">Upload my local copy</button>
+<button id="cloudPull">Download cloud copy</button>
+<button id="cloudSignOut">Sign out</button>
+</div>
+<p class="muted">Upload and download require confirmation. Cloud changes are never silently merged, and a conflict prevents stale overwrite. Your local records remain on this device until you explicitly replace them.</p>
+</div>
+</div>
 <p id="connectedStatus" class="muted" role="status"></p>
 </section>
 <section id="sharing" class="card">
