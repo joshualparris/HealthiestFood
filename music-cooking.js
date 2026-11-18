@@ -146,9 +146,39 @@ function loadTick(){
  }
 }
 
-async function readMusicResponse(response) {
+async function readMusicResponse(response,signal) {
  const type=response.headers.get("content-type")||"";
- if(type.includes("application/json"))return response.json();
+ if(type.includes("application/json")){
+  let body=await response.json();
+  if(body.pageMode!=="cursor")return body;
+  const tracks=new Map();
+  let lastLogged=0;
+  for(let batch=0;batch<500&&body.pageMode==="cursor";batch++){
+   if(body.error||!body.signedIn)return body;
+   for(const track of body.tracks||[])if(track?.id&&!tracks.has(track.id))tracks.set(track.id,track);
+   const count=tracks.size,folders=body.foldersScanned||0;
+   data.musicProgress={foldersScanned:folders,songsFound:count,foldersQueued:body.foldersQueued||0};
+   const label=data.root?.querySelector("#musicLoadPhase");
+   if(label)label.textContent=count+" songs found · "+folders+" folders checked";
+   const meter=data.root?.querySelector(".music-load-bar");
+   if(meter)meter.setAttribute("aria-valuetext",count+" songs found in "+folders+" folders");
+   if(folders-lastLogged>=40||body.done){
+    lastLogged=folders;
+    loadLog("Checked "+folders+" folders; found "+count+" songs so far.");
+   }
+   if(body.done)return {configured:true,signedIn:true,tracks:[...tracks.values()],truncated:body.truncated,
+    missingFolders:body.missingFolders,skippedFolders:body.skippedFolders};
+   if(!body.nextCursor)throw Error("Missing music scan continuation");
+   const next=await fetch("/api/music/tracks?mode=page",{
+    method:"POST",credentials:"same-origin",
+    headers:{"Content-Type":"application/json",Accept:"application/json"},
+    body:JSON.stringify({cursor:body.nextCursor}),signal
+   });
+   body=await next.json();
+   if(!next.ok)return {configured:true,signedIn:true,error:body.error||"drive_error",tracks:[]};
+  }
+  throw Error("Music scan exceeded its safety limit");
+ }
  if(!type.includes("application/x-ndjson")||!response.body||typeof response.body.getReader!=="function")
   throw new Error("Music service did not return a supported response");
  const reader=response.body.getReader(),decoder=new TextDecoder();
@@ -202,9 +232,9 @@ async function load(){
  // Google Drive can be slow with many nested folders, but should not hang forever.
  const timeout=setTimeout(()=>controller.abort(),180000);
  try{
-  const r=await fetch("/api/music/tracks?stream=1",{credentials:"same-origin",headers:{Accept:"application/x-ndjson, application/json"},signal:controller.signal});
+  const r=await fetch("/api/music/tracks?mode=page",{credentials:"same-origin",headers:{Accept:"application/json"},signal:controller.signal});
   if(generation!==data.loadGeneration)return;
-  const body=await readMusicResponse(r);
+  const body=await readMusicResponse(r,controller.signal);
   if(generation!==data.loadGeneration)return;
   if(!r.ok&&!body.error)throw Error("Music service returned HTTP "+r.status);
   if(!body.configured){data.status="unavailable";data.message=MESSAGES.not_configured;loadLog("Music sign-in is not configured on the server.");}
