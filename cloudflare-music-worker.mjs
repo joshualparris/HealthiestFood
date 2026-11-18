@@ -237,7 +237,7 @@ async function musicApi(request, env, pathname) {
     if (request.method !== "POST") return json(405, { error: "method_not_allowed" });
     return json(200, { signedIn: false }, setCookie(COOKIE, "", 0));
   }
-  if (request.method !== "GET" && !(pathname === "/api/music/tracks" && request.method === "POST")) return json(405, { error: "method_not_allowed" });
+  if (request.method !== "GET" && !(pathname === "/api/music/tracks" && request.method === "POST" && new URL(request.url).searchParams.get("mode") === "page")) return json(405, { error: "method_not_allowed" });
   if (!cfg.ready) {
     if (pathname === "/api/music/tracks") return json(200, { configured: false, signedIn: false, tracks: [] });
     return json(503, { error: "not_configured" });
