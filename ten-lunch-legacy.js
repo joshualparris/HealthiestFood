@@ -46,6 +46,7 @@
       var names=["shop","cook","finish"];
       for(i=0;i<names.length;i++){el("tab-"+names[i]).setAttribute("aria-selected",names[i]===s.tab?"true":"false");el("pane-"+names[i]).hidden=names[i]!==s.tab;}
       if(el("staticCookingSteps"))el("staticCookingSteps").hidden=true;
+      if(el("legacyHelp"))el("legacyHelp").hidden=true;
       var date=new Date().toDateString(),labels=document.getElementsByClassName("labelDate");
       for(i=0;i<labels.length;i++)labels[i].textContent=date;
       if(el("printDate"))el("printDate").textContent=date;
