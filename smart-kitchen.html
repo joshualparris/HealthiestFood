@@ -16,6 +16,10 @@ h1{font:700 clamp(2.15rem,4.4vw,3.2rem)/1.13 Georgia,serif;margin:14px 0}h2{font
 .lead{color:#526a60;max-width:780px;font-size:1.08rem}.muted{color:#5a7065;font-size:.9rem}
 .card{background:white;border:1px solid #dce8df;border-radius:17px;margin:20px 0;padding:clamp(16px,3vw,26px);box-shadow:0 3px 12px #123b2609}
 section.card:target{outline:3px solid #87b49d}.notice{background:#eff7ef;border-left:4px solid #2c7a56;padding:12px 14px;border-radius:7px}
+/* Long user-entered product names, Auth URLs and source links must wrap on phones. */
+main,.card,.notice,.warning,.output,.entry,.row>span{min-width:0;overflow-wrap:anywhere;word-wrap:break-word}
+code,a{overflow-wrap:anywhere;word-break:break-word}
+
 .warning{background:#fff4e3;border-left:4px solid #ac7728;padding:12px 14px;border-radius:7px}
 button,input,textarea,select{font:inherit}input,textarea,select{width:100%;min-height:44px;padding:10px;border:1px solid #9ab4a5;border-radius:10px;background:#fff;color:#163d2c}
 textarea{min-height:110px;resize:vertical}label{display:block;font-weight:650;font-size:.94rem;margin:8px 0}label>small{font-weight:400;display:block}
