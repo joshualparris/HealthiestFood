@@ -10,8 +10,8 @@ test('uploaded homepage image replaces decorative SVG, while actionable HTML rem
  assert.match(hero,/<img class="homepage-bowl-photo" src="homepage-bowl\.webp"/);
  assert.doesNotMatch(hero,/<svg class="bowl-art"/);
  assert.doesNotMatch(hero,/<div class="art-caption/);
- assert.match(hero,/<a class="btn btn-ghost" href="cooking-methods\.html">Compare cooking methods/);
- for(const [value,caption] of [['20','V6 freezer lunches'],['17','meal and snack recipes'],['7','days you can schedule']]){
+ assert.match(hero,/<a class="btn btn-ghost hero-secondary" href="cooking-methods\.html">Compare cooking methods/);
+ for(const [value,caption] of [['20','freezer lunch portions (4 recipes × 5)'],['17','meal and snack recipes'],['7','days you can schedule']]){
   assert.ok(hero.includes('<strong>'+value+'</strong><span>'+caption+'</span>'),caption+' remains real selectable text');
  }
  assert.match(css,/\.homepage-bowl-photo\{[^}]*object-fit:contain/);

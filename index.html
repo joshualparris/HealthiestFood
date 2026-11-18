@@ -76,10 +76,10 @@
           <p class="hero-lead">Breakfasts, dinners, snacks and four freezer-lunch favourites. Choose your own daily rhythm, with real dates, editable meal times and guided cooking.</p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="ten-lunch-cook.html">Cook 10 lunches tonight <span>↗</span></a><button class="btn btn-ghost" data-goto="plan">Plan today <span>↗</span></button><button class="btn btn-ghost" data-goto="recipes">Browse recipes <span>↗</span></button>
-            <button class="btn btn-ghost" data-goto="shop">See what to buy <span>↗</span></button>
-            <button class="btn btn-ghost" data-goto="media">Listen & watch <span>↗</span></button><a class="btn btn-ghost" href="cooking-methods.html">Compare cooking methods <span>↗</span></a>
+            <button class="btn btn-ghost hero-secondary" data-goto="shop">See what to buy <span>↗</span></button>
+            <button class="btn btn-ghost hero-secondary" data-goto="media">Listen & watch <span>↗</span></button><a class="btn btn-ghost hero-secondary" href="cooking-methods.html">Compare cooking methods <span>↗</span></a>
           </div>
-          <div class="hero-facts"><div><strong>20</strong><span>V6 freezer lunches</span></div><div><strong>17</strong><span>meal and snack recipes</span></div><div><strong>7</strong><span>days you can schedule</span></div></div>
+          <div class="hero-facts"><div><strong>20</strong><span>freezer lunch portions (4 recipes × 5)</span></div><div><strong>17</strong><span>meal and snack recipes</span></div><div><strong>7</strong><span>days you can schedule</span></div></div>
         </div>
         <div class="hero-art hero-art-photo">
           <img class="homepage-bowl-photo" src="homepage-bowl.webp" width="1040" height="925" decoding="async" fetchpriority="high" alt="Nourishing bowl of grains, chickpeas, roasted carrots, kale, avocado, tomatoes and lemon, with More plants, less fuss and Made to nourish badges">
@@ -102,7 +102,7 @@
     </section>
 
     <section id="view-recipes" class="view hidden section-shell view-body">
-      <div class="page-head"><span class="section-kicker">YOUR RECIPE COLLECTION</span><h1>Good food for <em>every day.</em></h1><p>Choose a breakfast, lunch, dinner or snack. Four original V6 freezer lunches plus adult portion suggestions adapted from historical household recipes.</p></div>
+      <div class="page-head"><span class="section-kicker">YOUR RECIPE COLLECTION</span><h1>Good food for <em>every day.</em></h1><p>Choose a breakfast, lunch, dinner or snack. Four original freezer lunches plus adult portion suggestions adapted from historical household recipes.</p></div>
       <section class="wellbeing-note"><strong>Cooking ten work lunches?</strong> Use the <a href="ten-lunch-cook.html">new 5+5 shop-to-freezer guide</a> to check your basket, cook in the right order, and print labels. Your progress stays on this device.</section>
       <div class="meal-filters" role="group" aria-label="Filter recipes by meal type"><button type="button" data-recipe-type="all" class="is-active" aria-pressed="true">All meals</button><button type="button" data-recipe-type="breakfast">Breakfasts</button><button type="button" data-recipe-type="lunch">Lunches</button><button type="button" data-recipe-type="dinner">Dinners</button><button type="button" data-recipe-type="snack">Snacks</button></div>
       <div class="recipe-grid" id="recipeCards"></div>
@@ -197,13 +197,13 @@
 
   <footer class="site-footer"><div class="footer-inner"><div><strong>good food<span>.</span></strong><p>Made for the long game. Rooted in evidence, grounded in real life.</p></div><div><a href="#science">Sources & safety</a><a href="#media">Podcasts & videos</a><a href="cooking-methods.html">Cooking methods ↗</a><a href="ten-lunch-cook.html">Cook 10 lunches ↗</a><a href="longevity.html">Longevity guide ↗</a><a href="health-hub.html">My health hub ↗</a><a href="https://github.com/joshualparris/HealthiestFood" target="_blank" rel="noopener noreferrer">GitHub ↗</a><small>V6 · Updated 16 Oct 2026 · All prices indicative</small></div></div></footer>
   <nav class="mobile-nav" aria-label="Mobile navigation">
-    <button type="button" data-goto="home" aria-label="Home" title="Home"><span aria-hidden="true">⌂</span></button>
-    <button type="button" data-goto="recipes" aria-label="Recipes and cooking" title="Cook"><span aria-hidden="true">♨</span></button>
-    <button type="button" data-goto="plan" aria-label="Meal planner" title="Plan"><span aria-hidden="true">▦</span></button>
-    <button type="button" data-goto="shop" aria-label="Shopping list" title="Shop"><span aria-hidden="true">☑</span></button>
-    <button type="button" data-goto="science" aria-label="Nutrition research" title="Learn"><span aria-hidden="true">✧</span></button>
-    <button type="button" data-goto="media" aria-label="Podcasts and videos" title="Media"><span aria-hidden="true">♫</span></button>
-    <a class="cm-mobile-link" href="cooking-methods.html" aria-label="Compare cooking methods" title="Methods"><svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.9a4 4 0 0 1 .4-7.9 5.5 5.5 0 0 1 10.2 0 4 4 0 0 1 1.4 7.9V21H6Z"/><path d="M6 17h12"/></svg></a>
+    <button type="button" data-goto="home" aria-label="Home" title="Home"><span aria-hidden="true">⌂</span><small class="nav-label" aria-hidden="true">Home</small></button>
+    <button type="button" data-goto="recipes" aria-label="Recipes and cooking" title="Cook"><span aria-hidden="true">♨</span><small class="nav-label" aria-hidden="true">Cook</small></button>
+    <button type="button" data-goto="plan" aria-label="Meal planner" title="Plan"><span aria-hidden="true">▦</span><small class="nav-label" aria-hidden="true">Plan</small></button>
+    <button type="button" data-goto="shop" aria-label="Shopping list" title="Shop"><span aria-hidden="true">☑</span><small class="nav-label" aria-hidden="true">Shop</small></button>
+    <button type="button" data-goto="science" aria-label="Nutrition research" title="Learn"><span aria-hidden="true">✧</span><small class="nav-label" aria-hidden="true">Learn</small></button>
+    <button type="button" data-goto="media" aria-label="Podcasts and videos" title="Media"><span aria-hidden="true">♫</span><small class="nav-label" aria-hidden="true">Media</small></button>
+    <a class="cm-mobile-link" href="cooking-methods.html" aria-label="Compare cooking methods" title="Methods"><svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.9a4 4 0 0 1 .4-7.9 5.5 5.5 0 0 1 10.2 0 4 4 0 0 1 1.4 7.9V21H6Z"/><path d="M6 17h12"/></svg><small class="nav-label" aria-hidden="true">Methods</small></a>
   </nav>
   <button id="floatingTimers" class="floating-timers hidden" type="button" aria-label="Open cooking countdown timers">◷ <span id="floatingTimerCount">0</span> <span id="floatingTimerSummary">timers</span></button>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
