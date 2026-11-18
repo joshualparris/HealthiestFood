@@ -6,9 +6,9 @@ function memory(initial={}){
  return {get length(){return m.size},key:i=>[...m.keys()][i]??null,getItem:k=>m.get(k)??null,setItem:(k,v)=>m.set(k,String(v)),removeItem:k=>m.delete(k)};
 }
 function clientMock(){
- let data=null;
+ let data=null,userId="private-user";
  return {
-  auth:{getUser:async()=>({data:{user:{id:'private-user'}},error:null}),signInWithOtp:async()=>({error:null}),signOut:async()=>({error:null})},
+  auth:{getUser:async()=>({data:{user:{id:userId}},error:null}),signInWithOtp:async()=>({error:null}),signOut:async()=>({error:null})},
   from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data,error:null})})})}),
   rpc:async(name,args)=>{
    assert.equal(name,'save_healthiestfood_snapshot');
@@ -16,6 +16,7 @@ function clientMock(){
    data={snapshot:args.new_snapshot,revision:(data?.revision||0)+1,updated_at:new Date().toISOString()};
    return {data:[{was_conflict:false,saved_revision:data.revision}],error:null};
   },
+  switchUser:id=>{userId=id;},
   inject:(snapshot,revision)=>{data={snapshot,revision,updated_at:new Date().toISOString()}},
   current:()=>data
  };
@@ -62,4 +63,22 @@ test('cloud js and new UI compile and do not silently send or download data',()=
  assert.match(read('cloud-sync-ui.js'),/confirm\(/);
  assert.match(read('cloud-sync-ui.js'),/before-cloud-pull\.json/);
  assert.match(read('smart-kitchen.html'),/id="cloudSyncRoot"/);
+});
+
+test('same-browser account switch cannot inherit another account\'s revision authority',async()=>{
+ const store=memory({'good-food-pantry':'{"amount":3}'}),remote=clientMock();
+ const sync=Cloud.make(remote,Backup,store);
+ const first=await sync.push();assert.equal(first.ok,true);
+ assert.equal(first.revision,1);
+ const m=JSON.parse(store.getItem(Cloud.META));assert.equal(m.ownerId,'private-user');
+ remote.switchUser('a-different-user');
+ store.setItem('good-food-pantry','{"amount":7}');
+ const blocked=await sync.push();
+ assert.equal(blocked.conflict,true);
+ assert.equal(remote.current().revision,1);
+ assert.equal(remote.current().snapshot.records['good-food-pantry'],'{"amount":3}');
+ remote.switchUser('private-user');
+ const allowed=await sync.push();
+ assert.equal(allowed.ok,true);
+ assert.equal(allowed.revision,2);
 });
