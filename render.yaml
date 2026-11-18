@@ -1,0 +1,24 @@
+# Optional separate Render service; does not modify the existing static backup.
+# Deploy only after reviewing the service plan and completing Google OAuth setup.
+services:
+  - type: web
+    name: healthiest-food-music
+    runtime: node
+    plan: free
+    buildCommand: echo "No build step required"
+    startCommand: node render-music-server.js
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22.16.0
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: ALLOWED_GOOGLE_EMAILS
+        sync: false
+      - key: MUSIC_SESSION_SECRET
+        generateValue: true
+      - key: MUSIC_PUBLIC_ORIGIN
+        sync: false
