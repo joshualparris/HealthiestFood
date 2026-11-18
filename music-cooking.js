@@ -10,7 +10,7 @@ const STORE="good-food-music-v1";
 const esc=x=>String(x).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch]));
 const data={tracks:[],queue:[],index:-1,status:"idle",message:"",shuffle:false,playing:false,filter:"",sort:"title",group:"none",visible:200,tags:{},scanning:false,scanDone:0,scanTotal:0,scanGeneration:0,scanAbort:null,musicProgress:null,loadAbort:null,loadTimer:null,loadStarted:0,loadDuration:0,loadGeneration:0,loadLog:[],loadNotice:0,justSignedIn:false,audio:null,root:null,mini:null};
 const MESSAGES={
- not_configured:"Music isn't set up on this site yet. It needs Google sign-in settings on the Vercel project.",
+ not_configured:"Music isn't set up on this site yet. This host needs its own private Google sign-in settings.",
  offline_host:"Drive music only works on the main Vercel site, because it needs the private streaming service.",
  not_allowed:"That Google account isn't on the allowed list for this music library.",
  bad_state:"Sign-in expired before it finished. Please try again.",
@@ -282,7 +282,7 @@ function sync(){
     const target=body.querySelector("#musicList"),scroll=target.querySelector(".music-browse-scroll"),position=scroll?.scrollTop||0;
     target.innerHTML=listHtml();
     const nextScroll=target.querySelector(".music-browse-scroll");if(nextScroll)nextScroll.scrollTop=position;
-   }else if(data.status==="unavailable"&&data.message===MESSAGES.offline_host)body.innerHTML='<div class="music-load-error"><h3>Drive music needs its private streaming service</h3><p>This backup can still show recipes, but the Google Drive library is currently hosted on the main site.</p><a class="btn btn-primary" href="https://healthiest-food.vercel.app/#media">Open Drive music on the main site</a></div>';
+   }else if(data.status==="unavailable"&&[MESSAGES.offline_host,MESSAGES.not_configured].includes(data.message))body.innerHTML='<div class="music-load-error"><h3>Drive music needs its private streaming service</h3><p>This backup can show recipes, but its Google Drive streaming service is not yet available. Use the main player for now.</p><a class="btn btn-primary" href="https://healthiest-food.vercel.app/#media">Open Drive music on the main site</a></div>';
    else if(data.status==="error"||data.status==="unavailable")body.innerHTML='<div class="music-load-error"><h3>Couldn\'t load your music</h3><p>You can try again without changing your Google sign-in.</p><button type="button" class="btn btn-primary" data-music="retry">↻ Retry loading</button><details class="music-load-details"><summary>Show loading details</summary><ol>'+data.loadLog.map(item=>'<li><time>'+item.elapsed+'s</time> '+esc(item.message)+'</li>').join("")+'</ol></details></div>';
    else body.innerHTML="";
   }

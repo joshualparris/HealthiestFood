@@ -220,7 +220,7 @@ test("Static backup explains streaming limitation and offers a working-site link
  const source=read("music-cooking.js");
  assert.match(source,/Drive music needs its private streaming service/);
  assert.match(source,/https:\/\/healthiest-food\.vercel\.app\/#media/);
- assert.match(source,/data\.message===MESSAGES\.offline_host/);
+ assert.match(source,/MESSAGES\.not_configured\]\.includes\(data\.message\)/);
 });
 
 test("JoshBooks-style 322 artist folders are all discovered with bounded parallelism",async()=>{
