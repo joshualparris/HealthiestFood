@@ -153,7 +153,8 @@ async function load(){
  const controller=new AbortController();
  data.loadAbort=controller;
  data.loadStarted=Date.now();data.loadDuration=0;data.loadNotice=0;data.loadLog=[];
- data.message="";data.status="loading";
+ const signInNotice=data.status==="idle"?data.message:"";
+ data.message=signInNotice;data.status="loading";
  sync();
  loadLog(data.justSignedIn?"Google sign-in finished. Requesting your music library.":"Connecting to the music service and checking your sign-in.");
  data.justSignedIn=false;
@@ -180,7 +181,7 @@ async function load(){
    data.tracks=tracks;data.truncated=!!body.truncated;
    const valid=new Map(data.tracks.map(t=>[t.id,t.size]));
    for(const [key,entry] of Object.entries(data.tags))if(valid.get(key)!==entry.size)delete data.tags[key];
-   if(body.missingFolders>0)data.message="One of your music folders couldn't be opened with this Google account, so its songs aren't listed.";
+   data.message=body.missingFolders>0?"One of your music folders couldn't be opened with this Google account, so its songs aren't listed.":"";
    data.status="ready";
   }
  }catch(e){
