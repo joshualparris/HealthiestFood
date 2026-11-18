@@ -1,6 +1,7 @@
 name: Music library browser checks
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - 'music-cooking.js'
