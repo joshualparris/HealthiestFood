@@ -23,7 +23,7 @@ function init(){
      activeVoice=null,activeStream=null,scanActive=false,wakeLock=null;
  const mapping=Shop.mappings||[];
  function placeProductChoices(){
-  $("recognisedLotKey").innerHTML=mapping.map(m=>'<option value="'+esc(m.key)+'">'+esc(m.buy)+" ("+esc(m.unit||"each")+')</option>").join("");
+  $("recognisedLotKey").innerHTML=mapping.map(m=>'<option value="'+esc(m.key)+'">'+esc(m.buy)+" ("+esc(m.unit||"each")+')</option>').join("");
   setLotUnit();
  }
  function setLotUnit(){
