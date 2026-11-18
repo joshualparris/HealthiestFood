@@ -314,7 +314,7 @@ function copyShop(){
 function fallbackCopy(content){const t=document.createElement("textarea");t.value=content;document.body.append(t);t.select();try{document.execCommand("copy");toast("Shopping list copied");}catch{toast("Copy unavailable on this browser");}t.remove();}
 function resetAll(){if(!confirm("Clear all saved shopping ticks and 20-day planning progress on this device?"))return;state=makeState();save();renderShop();renderPlan();toast("Progress reset");}
 document.addEventListener("click",e=>{
- const nav=e.target.closest("[data-goto]");if(nav){setRoute(nav.dataset.goto);return}
+ const nav=e.target.closest("[data-goto]");if(nav){if(nav.tagName==="A")e.preventDefault();setRoute(nav.dataset.goto);return}
  const typeBtn=e.target.closest("[data-recipe-type]");if(typeBtn){changeRecipeType(typeBtn.dataset.recipeType);return;}
  const choice=e.target.closest("[data-select]");if(choice){if(!selectRecipe(choice.dataset.select))return;if(recipeType!=="all"&&recipe(selected).category!==recipeType)recipeType=recipe(selected).category;renderCards();setRoute("recipes");renderDetail();setTimeout(()=>$("#selected-recipe")?.scrollIntoView({behavior:"smooth",block:"start"}),40);return}
  const scaled=e.target.closest("#recipeDetail .stepper [data-servings]");if(scaled){applyServingChange(scaled);return}
@@ -363,4 +363,5 @@ $("#shopSearch").addEventListener("input",e=>{search=e.target.value.toLowerCase(
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&cook){closeCook();return}if(e.key==="Tab"&&cook){const list=$("button:not(:disabled),input:not(:disabled),a[href],select:not(:disabled)",$("#cookOverlay")).filter(el=>el.getClientRects().length);if(list.length){const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){last.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===last){first.focus();e.preventDefault();}}}});
 window.addEventListener("hashchange",()=>renderView(location.hash.slice(1)));
 servings=recipe(selected).yield;window.FoodDataBackup?.init();window.FoodTrial?.init();renderCards();renderDetail();renderPlan();renderShop();renderSources();window.FoodMedia?.init();window.FoodNutrition?.render();renderView(location.hash.slice(1));
+window.HealthiestFoodMainAppReady=true;
 })();
