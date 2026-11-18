@@ -46,6 +46,12 @@ jobs:
           BROWSER_ENGINE: chromium
           SMOKE_URL: ${{ matrix.backup.url }}
         run: node e2e/ten-lunch.cjs
+      - name: Verify older iPad recipe browsing on published GitHub Pages
+        if: matrix.backup.name == 'GitHub-Pages'
+        env:
+          SMOKE_URL: ${{ matrix.backup.url }}
+          BROWSER_ENGINE: chromium
+        run: node e2e/legacy-main.cjs
       - name: Verify Smart Kitchen interactions on published GitHub Pages
         if: matrix.backup.name == 'GitHub-Pages'
         env:
