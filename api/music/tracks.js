@@ -6,8 +6,8 @@ module.exports = async (req, res) => {
   const s = await L.session(req, res, cfg);
   if (!s) return L.json(res, 200, { configured: true, signedIn: false, tracks: [] });
   try {
-    const { tracks, truncated } = await L.listTracks(s.at, cfg.folder);
-    return L.json(res, 200, { configured: true, signedIn: true, tracks, truncated }, { cache: "private, max-age=300" });
+    const { tracks, truncated, missingFolders } = await L.listTracks(s.at, cfg.folders);
+    return L.json(res, 200, { configured: true, signedIn: true, tracks, truncated, missingFolders }, { cache: "private, max-age=300" });
   } catch (e) {
     return L.json(res, 502, { configured: true, signedIn: true, error: e.status === 404 ? "folder_not_found" : "drive_error", tracks: [] });
   }

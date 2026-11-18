@@ -73,18 +73,47 @@ test("A session for a removed email is no longer honoured",async()=>{
  assert.equal(JSON.parse(r.body).signedIn,false);
 });
 
-test("Tracks walks subfolders and returns only audio",async()=>{
+const ROOT_A="17p5ZJtrUNVKJMlW0EO4aatiguzv9BM1v",ROOT_B="1k1AcSLD9HfkeY1-C8nO7aSSr7K8KXI09";
+function driveMock(listing,names={[ROOT_A]:"Music",[ROOT_B]:"Shared music"},deny=[]){
  const calls=[];
- await withFetch(async url=>{calls.push(url);const q=new URL(url).searchParams.get("q");
-  const files=q.startsWith("'17p5ZJtrUNVKJMlW0EO4aatiguzv9BM1v'")?[{id:"folderAAAAAAAA",name:"Hillsong",mimeType:"application/vnd.google-apps.folder"},{id:"songAAAAAAAAAA",name:"Riptide.mp3",mimeType:"audio/mpeg",size:"10"}]:[{id:"songBBBBBBBBBB",name:"Oceans.mp3",mimeType:"audio/mpeg",size:"20"}];
-  return {ok:true,json:async()=>({files})};},async()=>{
+ const fn=async url=>{calls.push(url);const u=new URL(url);const q=u.searchParams.get("q");
+  if(!q){const id=decodeURIComponent(u.pathname.split("/").pop());return deny.includes(id)?{ok:false,status:404,json:async()=>({})}:{ok:true,json:async()=>({name:names[id]||""})};}
+  const parent=q.slice(1,q.indexOf("'",1));
+  if(deny.includes(parent))return {ok:false,status:404,json:async()=>({})};
+  return {ok:true,json:async()=>({files:listing[parent]||[]})};};
+ return {fn,calls};
+}
+const song=(id,name)=>({id,name,mimeType:"audio/mpeg",size:"10"}),dir=(id,name)=>({id,name,mimeType:"application/vnd.google-apps.folder"});
+
+test("Tracks covers both music libraries by default, walks subfolders and lists shared files once",async()=>{
+ assert.deepEqual(L.config().folders,[ROOT_A,ROOT_B]);
+ const m=driveMock({[ROOT_A]:[dir("folderAAAAAAAA","Hillsong"),song("songAAAAAAAAAA","Riptide.mp3")],folderAAAAAAAA:[song("songBBBBBBBBBB","Oceans.mp3")],[ROOT_B]:[song("songCCCCCCCCCC","Halo.m4a"),song("songAAAAAAAAAA","Riptide.mp3")]});
+ await withFetch(m.fn,async()=>{
   const r=mockRes();await tracks(req("/api/music/tracks",{cookie:sessionCookie()}),r);
   const body=JSON.parse(r.body);
-  assert.deepEqual(body.tracks.map(t=>[t.title,t.album]),[["Riptide",""],["Oceans","Hillsong"]]);
+  assert.deepEqual(body.tracks.map(t=>[t.title,t.album]),[["Riptide","Music"],["Halo","Shared music"],["Oceans","Music / Hillsong"]]);
+  assert.equal(body.missingFolders,0);
   assert.equal(r.headers["cache-control"],"private, max-age=300");
  });
- assert.equal(calls.length,2);
- assert.ok(calls.every(u=>u.startsWith("https://www.googleapis.com/drive/v3/files?")));
+ assert.ok(m.calls.every(u=>u.startsWith("https://www.googleapis.com/drive/v3/files")));
+});
+
+test("One unreachable library still lists the other; none reachable is an error",async()=>{
+ const listing={[ROOT_A]:[song("songAAAAAAAAAA","Riptide.mp3")]};
+ await withFetch(driveMock(listing,undefined,[ROOT_B]).fn,async()=>{
+  const r=mockRes();await tracks(req("/api/music/tracks",{cookie:sessionCookie()}),r);
+  const body=JSON.parse(r.body);
+  assert.equal(body.tracks.length,1);assert.equal(body.missingFolders,1);
+ });
+ await withFetch(driveMock(listing,undefined,[ROOT_A,ROOT_B]).fn,async()=>{
+  const r=mockRes();await tracks(req("/api/music/tracks",{cookie:sessionCookie()}),r);
+  assert.equal(r.statusCode,502);assert.equal(JSON.parse(r.body).error,"folder_not_found");
+ });
+});
+
+test("MUSIC_FOLDER_IDS overrides the libraries and ignores malformed IDs",()=>{
+ process.env.MUSIC_FOLDER_IDS="abcdefghijkl, ../bad , abcdefghijkl";
+ try{assert.deepEqual(L.config().folders,["abcdefghijkl"]);}finally{delete process.env.MUSIC_FOLDER_IDS}
 });
 
 test("Stream forwards a clamped Range with the user's token and refuses non-audio",async()=>{

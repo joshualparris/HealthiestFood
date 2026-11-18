@@ -235,6 +235,6 @@ Set these Vercel environment variables (Production), then redeploy:
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | A Google OAuth "Web application" client. Add `https://<your-domain>/api/music/callback` as an authorised redirect URI. |
 | `ALLOWED_GOOGLE_EMAILS` | Comma-separated Google accounts allowed to listen. Empty means nobody can sign in. |
 | `MUSIC_SESSION_SECRET` | 32+ random characters; encrypts the sign-in cookie. Changing it signs everyone out. |
-| `MUSIC_FOLDER_ID` (optional) | The Drive folder to play. Subfolders are included. Defaults to the starred "Music" folder. |
+| `MUSIC_FOLDER_IDS` (optional) | Comma-separated Drive folder IDs to play. Subfolders are included. Defaults to both music libraries (the starred "Music" folder and the larger shared music folder). |
 
 The app asks for read-only Drive access (`drive.readonly`), and the stream endpoint refuses anything that is not audio.

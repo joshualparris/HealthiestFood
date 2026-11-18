@@ -3,7 +3,8 @@
  * that uses the signed-in user's own Drive token. Nothing is rehosted or cached here.
  *
  * Required Vercel env vars: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, MUSIC_SESSION_SECRET
- * (32+ random chars) and ALLOWED_GOOGLE_EMAILS (comma separated). Optional: MUSIC_FOLDER_ID.
+ * (32+ random chars) and ALLOWED_GOOGLE_EMAILS (comma separated). Optional: MUSIC_FOLDER_IDS
+ * (comma separated Drive folder IDs; subfolders are included).
  * The session is an AES-256-GCM encrypted, HttpOnly cookie, so no database is needed.
  */
 "use strict";
@@ -12,7 +13,8 @@ const crypto = require("node:crypto");
 const SESSION_COOKIE = "hf_music";
 const STATE_COOKIE = "hf_music_state";
 const SESSION_DAYS = 30;
-const DEFAULT_FOLDER = "17p5ZJtrUNVKJMlW0EO4aatiguzv9BM1v"; // starred "Music" folder
+// The owner's two music libraries: the starred "Music" folder and the larger shared collection.
+const DEFAULT_FOLDERS = ["17p5ZJtrUNVKJMlW0EO4aatiguzv9BM1v", "1k1AcSLD9HfkeY1-C8nO7aSSr7K8KXI09"];
 const SCOPE = "openid email https://www.googleapis.com/auth/drive.readonly";
 // Vercel functions cap response bodies, so each stream response carries at most this many bytes.
 // Audio elements request the next range automatically.
@@ -22,9 +24,10 @@ const FILE_ID = /^[A-Za-z0-9_-]{10,200}$/;
 function config() {
   const env = process.env;
   const allowed = String(env.ALLOWED_GOOGLE_EMAILS || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
-  const folder = FILE_ID.test(env.MUSIC_FOLDER_ID || "") ? env.MUSIC_FOLDER_ID : DEFAULT_FOLDER;
+  const listed = String(env.MUSIC_FOLDER_IDS || env.MUSIC_FOLDER_ID || "").split(",").map(s => s.trim()).filter(id => FILE_ID.test(id));
+  const folders = listed.length ? [...new Set(listed)] : DEFAULT_FOLDERS;
   const ready = Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET && String(env.MUSIC_SESSION_SECRET || "").length >= 32 && allowed.length);
-  return { ready, clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET, secret: env.MUSIC_SESSION_SECRET, allowed, folder };
+  return { ready, clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET, secret: env.MUSIC_SESSION_SECRET, allowed, folders };
 }
 
 function origin(req) {
@@ -106,9 +109,21 @@ async function session(req, res, cfg) {
   } catch { return null; }
 }
 
-/* Breadth-first walk of the music folder (Drive v3 only supports direct `in parents`). */
-async function listTracks(accessToken, rootId, limits = { folders: 150, tracks: 2000 }) {
-  const queue = [{ id: rootId, path: "" }], tracks = [];
+async function folderName(accessToken, id) {
+  try {
+    const r = await fetch("https://www.googleapis.com/drive/v3/files/" + encodeURIComponent(id) + "?fields=name&supportsAllDrives=true", { headers: { Authorization: "Bearer " + accessToken } });
+    return r.ok ? String((await r.json()).name || "") : "";
+  } catch { return ""; }
+}
+
+/* Breadth-first walk of every music folder (Drive v3 only supports direct `in parents`).
+ * Each track's album is its folder path, starting with the library folder's own name,
+ * so searching a folder name narrows the list. A file shared into both libraries appears once. */
+async function listTracks(accessToken, rootIds, limits = { folders: 300, tracks: 4000 }) {
+  const roots = [].concat(rootIds);
+  const names = await Promise.all(roots.map(id => folderName(accessToken, id)));
+  const queue = roots.map((id, i) => ({ id, path: names[i] })), tracks = [], seen = new Set(), seenFolders = new Set(roots);
+  let missing = 0;
   let visited = 0;
   while (queue.length && visited < limits.folders && tracks.length < limits.tracks) {
     const folder = queue.shift(); visited++;
@@ -120,16 +135,21 @@ async function listTracks(accessToken, rootId, limits = { folders: 150, tracks: 
         fields: "nextPageToken,files(id,name,mimeType,size)", ...(pageToken ? { pageToken } : {})
       });
       const r = await fetch(url, { headers: { Authorization: "Bearer " + accessToken } });
-      if (!r.ok) throw Object.assign(new Error("Drive list failed"), { status: r.status });
+      if (!r.ok) {
+        // One unreachable library should not hide the other.
+        if (roots.includes(folder.id) && (r.status === 404 || r.status === 403)) { missing++; break; }
+        throw Object.assign(new Error("Drive list failed"), { status: r.status });
+      }
       const data = await r.json();
       for (const f of data.files || []) {
-        if (f.mimeType === "application/vnd.google-apps.folder") queue.push({ id: f.id, path: folder.path ? folder.path + " / " + f.name : f.name });
-        else if (tracks.length < limits.tracks) tracks.push({ id: f.id, title: f.name.replace(/\.(mp3|m4a|aac|ogg|oga|wav|flac|opus)$/i, ""), album: folder.path, mime: f.mimeType, size: Number(f.size) || 0 });
+        if (f.mimeType === "application/vnd.google-apps.folder") { if (!seenFolders.has(f.id)) { seenFolders.add(f.id); queue.push({ id: f.id, path: folder.path ? folder.path + " / " + f.name : f.name }); } }
+        else if (tracks.length < limits.tracks && !seen.has(f.id) && seen.add(f.id)) tracks.push({ id: f.id, title: f.name.replace(/\.(mp3|m4a|aac|ogg|oga|wav|flac|opus)$/i, ""), album: folder.path, mime: f.mimeType, size: Number(f.size) || 0 });
       }
       pageToken = data.nextPageToken || "";
     } while (pageToken && tracks.length < limits.tracks);
   }
-  return { tracks, truncated: queue.length > 0 || tracks.length >= limits.tracks };
+  if (missing === roots.length) throw Object.assign(new Error("No music folder reachable"), { status: 404 });
+  return { tracks, truncated: queue.length > 0 || tracks.length >= limits.tracks, missingFolders: missing };
 }
 
 /* Clamp a browser Range header to a bounded chunk. Returns the upstream Range value. */
