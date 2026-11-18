@@ -10,12 +10,21 @@
 const META="hf-cloud-snapshot-meta-v1",TABLE="healthiestfood_snapshots";
 function make(client,backup,storage){
  if(!client?.from||!client?.rpc||!backup?.serialize||!backup?.parse||!backup?.restore)throw Error("Missing trusted sync dependencies");
- function meta(){try{return JSON.parse(storage.getItem(META)||"null")||{}}catch{return {}}}
- function setMeta(v){storage.setItem(META,JSON.stringify(v));}
+ let activeUserId=null;
+ function meta(){try{
+  const v=JSON.parse(storage.getItem(META)||"null");
+  // Never reuse sync authority across authenticated users on a shared browser.
+  return v&&v.ownerId===activeUserId&&activeUserId?v:{};
+ }catch{return {}}}
+ function setMeta(v){
+  if(!activeUserId)throw Error("Sync metadata requires an authenticated account identity");
+  storage.setItem(META,JSON.stringify({...v,ownerId:activeUserId}));
+ }
  function local(){return JSON.parse(backup.serialize(storage,"HealthiestFood browser"));}
  async function remote(){
   const {data:{user},error:authError}=await client.auth.getUser();
-  if(authError||!user)throw Error("Sign in before syncing");
+  if(authError||!user?.id)throw Error("Sign in before syncing");
+  activeUserId=String(user.id);
   const {data,error}=await client.from(TABLE).select("revision,snapshot,updated_at").eq("doc_key","primary").maybeSingle();
   if(error)throw error;
   if(data){

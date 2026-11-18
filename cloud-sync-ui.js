@@ -7,7 +7,7 @@ async function boot(){
  if(!$("cloudSyncRoot"))return;
  const config=window.FOOD_CLOUD_CONFIG,api=window.FoodCloudSync,backup=window.FoodDataBackup;
  const status=s=>{if($("cloudSyncStatus"))$("cloudSyncStatus").textContent=s;};
- if(!api?.validConfig(config)){status("Not connected. A dedicated Supabase project, owner account and costs have not yet been approved. All records stay on this device.");return;}
+ if(!api?.validConfig(config)){status("Cloud sync is not configured. A dedicated HealthiestFood project is not yet active. All records stay on this device; no data are uploaded.");return;}
  // A fixed version is loaded only for an explicitly configured HTTPS project.
  if(!window.supabase?.createClient){
   try{await new Promise((resolve,reject)=>{
