@@ -6,7 +6,7 @@
 "use strict";
 if(typeof window==="undefined"||typeof document==="undefined")return;
 const known={"cooking-methods.html":{route:"lab",frame:"foodLabFrame"},"longevity.html":{route:"guide",frame:"foodGuideFrame"},
- "product-check.html":{route:"page",frame:"foodOtherFrame"},"device-timer-check.html":{route:"page",frame:"foodOtherFrame"}};
+ "ten-lunch-cook.html":{route:"page",frame:"foodOtherFrame"},"product-check.html":{route:"page",frame:"foodOtherFrame"},"device-timer-check.html":{route:"page",frame:"foodOtherFrame"}};
 function routeForUrl(url){try{
  const u=new URL(url,location.href);
  if(u.origin!==location.origin)return null;
