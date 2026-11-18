@@ -94,6 +94,17 @@ function init(){
   if(e.target.id==="resetSession"&&confirm("Clear this 10-lunch shopping and cooking progress on this device?")){state=normalise({});save(state);draw();}
   if(e.target.id==="printLabels")window.print();
  });
+ document.addEventListener("input",e=>{
+  if(!e.target.matches("[data-item]"))return;
+  const i=items.find(x=>x.id===e.target.dataset.item);if(!i)return;
+  state.have[i.id]=clamp(e.target.value,i.need);
+  save(state);
+  const short=gap(i,state.have[i.id]),out=e.target.closest(".ingredient")?.querySelector("output");
+  if(out){out.className=short?"missing":"enough";out.textContent=short?"Still need "+display(short)+" "+i.unit:"✓ Quantity covered";}
+  const left=missing(state);
+  $("shortList").textContent=left.length?"Still to confirm / buy ("+left.length+"): "+left.map(x=>x.item.name+" "+display(x.qty)+" "+x.item.unit).join("; "):"All target quantities entered. Check allergen labels and freshness.";
+  $("counts").textContent=(items.length-left.length)+" / "+items.length+" ingredients fully confirmed · "+completed(state)+" / "+totalSteps+" cooking steps completed";
+ });
  document.addEventListener("change",e=>{
   if(e.target.matches("[data-item]")){const i=items.find(x=>x.id===e.target.dataset.item);if(!i)return;state.have[i.id]=clamp(e.target.value,i.need);save(state);draw();}
   if(e.target.matches("[data-step]")){state.done[e.target.dataset.step]=e.target.checked;save(state);draw();}
