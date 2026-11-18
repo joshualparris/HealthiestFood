@@ -59,7 +59,9 @@ test('pull requires explicit consent and refuses overwriting dirty local changes
 });
 test('cloud js and new UI compile and do not silently send or download data',()=>{
  for(const x of ['cloud-sync.js','cloud-sync-ui.js','cloud-config.js'])assert.doesNotThrow(()=>new vm.Script(read(x)),x);
- assert.match(read('cloud-config.js'),/enabled:false/);
+ assert.match(read('cloud-config.js'),/enabled:true/);
+ assert.match(read('cloud-config.js'),/allowedOrigin:\"https:\/\/joshualparris.github.io\"/);
+ assert.match(read('cloud-sync-ui.js'),/cloudRedirectConfirmed/);
  assert.match(read('cloud-sync-ui.js'),/confirm\(/);
  assert.match(read('cloud-sync-ui.js'),/before-cloud-pull\.json/);
  assert.match(read('smart-kitchen.html'),/id="cloudSyncRoot"/);
