@@ -5,7 +5,8 @@ const path=require('node:path');
 const root=path.resolve(__dirname,'..');
 const read=file=>fs.readFileSync(path.join(root,file),'utf8');
 const nav=html=>(html.match(/<nav class="mobile-nav"[\s\S]*?<\/nav>/)||[])[0];
-const routes=['Home','Recipes and cooking','Meal planner','Shopping list','Nutrition research','Podcasts and videos','Compare cooking methods'];
+// Each accessible name starts with its visible word (WCAG 2.5.3 label in name).
+const routes=['Home','Cook: recipes and cooking','Plan: meal planner','Shop: shopping list','Learn: nutrition research','Media: podcasts, videos and music','Methods: compare cooking methods'];
 
 test('seven mobile destinations show an icon plus a short visible label and keep their accessible names',()=>{
  const labels=['Home','Cook','Plan','Shop','Learn','Media','Methods'];
@@ -19,6 +20,7 @@ test('seven mobile destinations show an icon plus a short visible label and keep
   // Visible labels are exactly the seven short words, hidden from screen readers (aria-label is the name).
   const shown=[...content.matchAll(/<small class="nav-label" aria-hidden="true">([^<]+)<\/small>/g)].map(m=>m[1]);
   assert.deepEqual(shown,labels,file);
+  labels.forEach((word,i)=>assert.ok(routes[i].startsWith(word),routes[i]+' must start with '+word));
   const stray=content.replace(/<span aria-hidden="true">[^<]*<\/span>/g,'').replace(/<small class="nav-label"[^>]*>[^<]*<\/small>/g,'')
     .replace(/<svg[^>]*>[\s\S]*?<\/svg>/g,'').replace(/<[^>]*>/g,'').replace(/\s/g,'');
   assert.equal(stray,'',file+' has text outside the icon and label');
@@ -35,7 +37,7 @@ test('mobile bar has evenly sized targets and unambiguous selected-state styles'
  const main=read('app.js');
  assert.match(main,/b\.setAttribute\("aria-current","page"\)/);
  assert.match(main,/b\.removeAttribute\("aria-current"\)/);
- assert.match(nav(read('cooking-methods.html')),/href="cooking-methods\.html" aria-label="Compare cooking methods" aria-current="page"/);
+ assert.match(nav(read('cooking-methods.html')),/href="cooking-methods\.html" aria-label="Methods: compare cooking methods" aria-current="page"/);
 });
 
 test('Cooking Methods hero back button has readable dark text on its light fill',()=>{

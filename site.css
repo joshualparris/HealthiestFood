@@ -659,6 +659,7 @@ html.embedded-site .cm-page{overflow:visible;max-width:100%}
    and only the main hero actions on phones; the rest stay one tap away in the bottom menu. */
 @media (max-width:800px){
   .mobile-nav > :is(button,a){flex-direction:column;gap:3px;min-height:54px}
+  .mobile-nav > :is(button,a):not(.active):not([aria-current="page"]) > .nav-label{color:#55695a} /* 5.6:1 on #fffdf7 */
   .mobile-nav > :is(button,a) > .nav-label{display:block;font-size:clamp(9px,2.6vw,11px);font-weight:700;letter-spacing:0;line-height:1.1;white-space:nowrap}
   .mobile-nav > :is(button,a) > span[aria-hidden="true"]{font-size:24px}
   .mobile-nav > :is(button,a) > svg{display:block;width:24px;height:24px}
