@@ -98,6 +98,21 @@ test("Tracks covers both music libraries by default, walks subfolders and lists 
  assert.ok(m.calls.every(u=>u.startsWith("https://www.googleapis.com/drive/v3/files")));
 });
 
+test("A library with many subfolders cannot consume the scan budget before the other library",async()=>{
+ const listing={[ROOT_A]:[],[ROOT_B]:[dir("folderBBBBBBBB","Worship")],folderBBBBBBBB:[song("songBBBBBBBBBB","Oceans.mp3")]};
+ for(let i=0;i<20;i++){
+  const id="folderA"+String(i).padStart(7,"0");
+  listing[ROOT_A].push(dir(id,"Album "+i));
+  listing[id]=[song("songA"+String(i).padStart(9,"0"),"Track "+i+".mp3")];
+ }
+ await withFetch(driveMock(listing).fn,async()=>{
+  const out=await L.listTracks("live",[ROOT_A,ROOT_B],{folders:8,tracks:4000});
+  assert.equal(out.truncated,true);
+  assert.ok(out.tracks.some(t=>t.album==="Shared music / Worship"),"second library's subfolder is reached");
+  assert.ok(out.tracks.some(t=>t.album.startsWith("Music / ")),"first library still contributes");
+ });
+});
+
 test("One unreachable library still lists the other; none reachable is an error",async()=>{
  const listing={[ROOT_A]:[song("songAAAAAAAAAA","Riptide.mp3")]};
  await withFetch(driveMock(listing,undefined,[ROOT_B]).fn,async()=>{

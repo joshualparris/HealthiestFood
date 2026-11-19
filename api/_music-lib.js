@@ -148,11 +148,26 @@ async function listTracks(accessToken,rootIds,limits=SCAN_LIMITS,onProgress){
  const roots=[...new Set([].concat(rootIds).filter(id=>FILE_ID.test(id)))];
  if(!roots.length)throw Object.assign(new Error("No music folder configured"),{status:404});
  const names=await Promise.all(roots.map(id=>folderName(accessToken,id)));
- const queue=roots.map((id,i)=>({id,path:names[i]}));
+ // Keep a breadth-first queue per library and take turns filling each worker
+ // batch. A large library can no longer consume the full scan budget first.
+ const queues=roots.map((id,i)=>[{id,path:names[i],library:i}]);
  const tracks=[],seen=new Set(),seenFolders=new Set(roots);
- let missing=0,skipped=0,visited=0;
- while(queue.length&&visited<limits.folders&&tracks.length<limits.tracks){
-  const batch=queue.splice(0,Math.min(SCAN_WORKERS,limits.folders-visited));
+ let missing=0,skipped=0,visited=0,turn=0;
+ while(queues.some(q=>q.length)&&visited<limits.folders&&tracks.length<limits.tracks){
+  const batch=[];
+  const batchLimit=Math.min(SCAN_WORKERS,limits.folders-visited);
+  while(batch.length<batchLimit&&queues.some(q=>q.length)){
+   let selected=false;
+   for(let attempts=0;attempts<queues.length;attempts++){
+    const index=turn++%queues.length;
+    if(queues[index].length){
+     batch.push(queues[index].shift());
+     selected=true;
+     break;
+    }
+   }
+   if(!selected)break;
+  }
   const results=await Promise.all(batch.map(async folder=>{
    try{return{files:await listFolderAudio(accessToken,folder.id)};}
    catch(error){return{error};}
@@ -173,7 +188,7 @@ async function listTracks(accessToken,rootIds,limits=SCAN_LIMITS,onProgress){
     if(file.mimeType==="application/vnd.google-apps.folder"){
      if(!seenFolders.has(file.id)){
       seenFolders.add(file.id);
-      queue.push({id:file.id,path:folder.path?folder.path+" / "+file.name:file.name});
+      queues[folder.library].push({id:file.id,path:folder.path?folder.path+" / "+file.name:file.name,library:folder.library});
      }
     }else if(String(file.mimeType||"").startsWith("audio/")&&!seen.has(file.id)&&tracks.length<limits.tracks){
      seen.add(file.id);
@@ -181,10 +196,10 @@ async function listTracks(accessToken,rootIds,limits=SCAN_LIMITS,onProgress){
     }
    }
   }
-  if(typeof onProgress==="function")onProgress({foldersScanned:visited,foldersQueued:queue.length,songsFound:tracks.length});
+  if(typeof onProgress==="function")onProgress({foldersScanned:visited,foldersQueued:queues.reduce((n,q)=>n+q.length,0),songsFound:tracks.length});
  }
  if(missing===roots.length)throw Object.assign(new Error("No music folder reachable"),{status:404});
- return{tracks,truncated:queue.length>0||tracks.length>=limits.tracks,missingFolders:missing,skippedFolders:skipped,foldersScanned:visited};
+ return{tracks,truncated:queues.some(q=>q.length)||tracks.length>=limits.tracks,missingFolders:missing,skippedFolders:skipped,foldersScanned:visited};
 }
 
 /* Clamp a browser Range header to a bounded chunk. Returns the upstream Range value. */
