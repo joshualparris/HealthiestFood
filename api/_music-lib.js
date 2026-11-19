@@ -192,7 +192,7 @@ async function listTracks(accessToken,rootIds,limits=SCAN_LIMITS,onProgress){
      }
     }else if(String(file.mimeType||"").startsWith("audio/")&&!seen.has(file.id)&&tracks.length<limits.tracks){
      seen.add(file.id);
-     tracks.push({id:file.id,title:String(file.name||"").replace(/\\.(mp3|m4a|aac|ogg|oga|wav|flac|opus)$/i,""),album:folder.path,mime:file.mimeType,size:Number(file.size)||0});
+     tracks.push({id:file.id,title:String(file.name||"").replace(/\.(mp3|m4a|aac|ogg|oga|wav|flac|opus)$/i,""),album:folder.path,mime:file.mimeType,size:Number(file.size)||0});
     }
    }
   }
